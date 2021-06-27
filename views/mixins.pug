@@ -1,7 +1,7 @@
 
 mixin item(title,value,unit,size,trend,field)
   .col.text-center.text-nowrap.mb-2
-    div(class=(size != 'main') ? 'border h-100 bg-white' : '')
+    div(class=(size != 'main') ? 'h-100 mini-card' : '')
 
       if title == "Sunrise"
         - trend = "sunrise"

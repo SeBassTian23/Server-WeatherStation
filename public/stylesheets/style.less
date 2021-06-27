@@ -1,3 +1,18 @@
+:root[data-theme="theme-light"] {
+  --mode-bg-color: #f8f9fa!important;
+  --mode-text-color: #212529!important;
+  --mode-bg-card: #fff;
+  --mode-border-card: 1px solid rgba(0,0,0,.125);
+  --mode-table-accent: rgba(0, 0, 0, 0.05);
+}
+:root[data-theme="theme-dark"] {
+  --mode-bg-color: #212529!important;
+  --mode-text-color: #f8f9fa!important;
+  --mode-bg-card: #343a40!important;
+  --mode-border-card: 1px solid rgba(255,255,255,.075)!important;
+  --mode-table-accent: rgba(255, 255, 255, 0.05);
+}
+
 blockquote {
   padding: 0 1em;
   color: var(--gray-dark);
@@ -6,6 +21,30 @@ blockquote {
 
 a {
   text-decoration: none;
+}
+
+body {
+  background-color: var(--mode-bg-color);
+  color: var(--mode-text-color);
+}
+
+.table {
+  color: var(--mode-text-color);
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+  --bs-table-accent-bg: var(--mode-table-accent);
+  color: var(--mode-text-color);
+}
+
+.card {
+  background-color: var(--mode-bg-card);
+  border: var(--mode-border-card);
+}
+
+.mini-card {
+  background-color: var(--mode-bg-card);
+  border: var(--mode-border-card);
 }
 
 .smaller {
@@ -85,7 +124,7 @@ h6 > span[class*='uv-index'] {
 .aqi-51-100 {
   background-color: rgb(255,255,0);
   border: 1px solid darken(rgb(255,255,0),5%);
-  color: inherit;
+  color: var(--bs-dark);
 }
 
 .aqi-101-150 {

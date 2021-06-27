@@ -78,8 +78,11 @@ block append footer
       });
 
       var radioElUnits = document.querySelector('#checkImpericalUnits');
-      if( document.cookie.split(';')[0] == "unit=i" )
-        radioElUnits.checked = true;
+      document.cookie.split(";").forEach(function(c) {
+        var cc = c.trim().split("=");
+        if( cc[0] == "unit" && cc[1] == "i")
+          radioElUnits.checked = true;
+      });
       radioElUnits.addEventListener('change', function (event) {
         setTimeout(function(){
           if(radioElUnits.checked)
@@ -90,4 +93,19 @@ block append footer
         }, 160);
       });
 
+      var radioElDisplayMode = document.querySelectorAll('input[name=radioDisplayMode]');
+      radioElDisplayMode.forEach(function(el){
+        document.cookie.split(";").forEach(function(c) {
+          var cc = c.trim().split("=");
+          if( cc[0] == "mode" && cc[1] == el.value){
+            el.checked = true;
+            document.querySelector('html').dataset.theme = `theme-${el.value}`;
+          }
+        });
+        el.addEventListener('change', function (event) {
+          var value = event.target.value;
+          document.querySelector('html').dataset.theme = `theme-${value}`;
+          document.cookie = `mode=${value};path=/`;
+        });
+      });
     });
