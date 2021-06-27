@@ -51,7 +51,7 @@ const colors = {
 };
 
 // Order of headers
-const header = require('../db-cols-view.json');
+const header = require('../db-cols.json');
 
 var page_data_template = {
   title: 'Today | Weather Station',

@@ -153,6 +153,8 @@ router.post('/', (req, res) => {
     else{
         db.serialize(function() {
             var ins = [];
+            cols.push("device_id");
+            cols.push("created_at");
             for(var i in cols){
                 if(req.body.data[cols[i]] !== undefined){
                     if(cols[i] == "created_at")

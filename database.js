@@ -4,8 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const sqlite3 = require('sqlite3').verbose();
 const DBSOURCE = process.env.DATABASE_FILE;
-
-const header = require("./db-cols.json");
+const jetpack = require('fs-jetpack');
 
 let db = new sqlite3.cached.Database(DBSOURCE, function(err){
   if (err) {
