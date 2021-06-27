@@ -1,0 +1,38 @@
+//- Daily Observations Table
+mixin tblheader(row)
+  tr
+    th(style="vertical-align:middle;")
+      | Time
+    each itm,key in row
+      th(style="vertical-align:middle;")
+        | #{itm.title}
+        if itm.unit != ""
+          |  [#{itm.unit}]
+
+mixin tblrow(rows)
+  each row in rows
+    tr
+      each cell,key in row
+        if cell !== null
+          td #{cell}
+        else
+          td N/A
+
+if selectedDate == "now"
+  .container
+    .card.rounded-0.mt-4
+      .card-body
+        a.float-end.me-2(href="/download/latest") #[i.bi.bi-download.text-muted]
+        h5.card-title.text-info Latest Observations
+        h6.card-subtitle.mb-2.text-muted(style="font-weight:lighter;") Latest #[strong #{observations.length}] observations for today. Use download to get the data collected for the day so far.
+        .row
+          if observations.length > 0
+            .col-sm.table-responsive
+              table.table.table-sm.table-striped.small
+                thead.thead-light.text-center(style="font-size:smaller;")
+                  +tblheader(current)
+                tbody.text-center.text-nowrap
+                  +tblrow(observations)
+          else
+            .col
+              .alert No data recorded

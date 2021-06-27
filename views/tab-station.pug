@@ -1,0 +1,42 @@
+.card.rounded-0
+    .card-body
+        h5.card-title.text-info Weather Station  
+            small.text-muted.smaller(style="font-weight:lighter;") #{device_id}
+        h6.card-subtitle.text-muted.smaller
+            span.me-4.d-inline-block Elevation: #{location.alt} m
+            span.me-4.d-inline-block
+                if battery_voltage != "N/A"
+                if battery_voltage > 3.8
+                    | <i class="bi bi-battery-full"></i> #{battery_voltage}V
+                else if battery_voltage > 3.3
+                    | <i class="bi bi-battery-half"></i> #{battery_voltage}V
+                else
+                    | <i class="bi bi-battery"></i> #{battery_voltage}V
+            span.d-inline-block &bull; active
+
+    #mapid(style="width:100%;height:200px;")
+.card.rounded-0.mt-2
+    .card-body
+        h5.card-title.text-info Station Information
+        h6.card-subtitle.mb-2.text-muted(style="font-weight:lighter;") Statistics
+        .row.mt-3
+            .col
+                dl.small
+                    dt.col-sm-12.col-6 Data Sets
+                    dd.col-sm-12.col-6.fw-lighter #{measurements}
+                    dt.col-sm-12.col-6 Days recorded
+                    dd.col-sm-12.col-6.fw-lighter #{days}
+                    dt.col-sm-12.col-6 Latest Entry
+                    dd.col-sm-12.col-6.fw-lighter #{latest}
+                    dt.col-sm-12.col-6 Start Entry
+                    dd.col-sm-12.col-6.fw-lighter #{start}
+                    dt.col-sm-12.col-6 Timezone
+                    dd.col-sm-12.col-6.fw-lighter #{timezone}
+                    dt.col-sm-12.col-6 Database Size
+                    dd.col-sm-12.col-6.fw-lighter #{size}
+            .col.pt-2
+                figure.figure
+                    img(src="/images/weather-station.jpg").figure-img.img-fluid
+                    figcaption.figure-caption
+                        | Project: 
+                        a.card-link(href="https://github.com/sebasstian23/ESP32-WeatherStation", target="_blank") GitHub

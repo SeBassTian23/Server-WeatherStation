@@ -1,0 +1,93 @@
+extends layout.pug
+
+block append head
+    //- chart.js
+    script(defer, src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js', integrity='sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==', crossorigin='anonymous')
+    script(defer, src='https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js', crossorigin='anonymous')
+
+    script(defer, src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8", crossorigin='anonymous')
+    script(defer, src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7", crossorigin='anonymous')
+
+    //- leaflet map
+    link(rel='stylesheet', href='https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', integrity='sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==', crossorigin='')
+    script(defer, src='https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', integrity='sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==', crossorigin='')
+
+    //- local resources
+    script(defer src='/javascripts/calendar.js', crossorigin='anonymous')
+    script(defer src='/javascripts/graph.js')
+
+    if selectedDate == 'now'
+      script(defer src='/javascripts/stream.js')
+
+block append header
+  include mixins.pug
+  include header.pug
+  include header-sub.pug
+
+block append content
+  include summary.pug
+  include graphs.pug
+  include observations.pug
+
+block append footer
+  include footer.pug
+
+  script.
+    var graphs = !{graphs};
+    var sunrise = "#{sunrise}";
+    var sunset = "#{sunset}";
+    var map
+    document.addEventListener("DOMContentLoaded", (event) => {
+      calendar('#calendar', '#{selectedDate}', '#{selectedDate}', !{dates});
+
+      var tabElMap = document.querySelector('button[data-bs-target="#pills-station"]')
+      tabElMap.addEventListener('shown.bs.tab', function (event) {
+
+        if(!map){
+          map = L.map('mapid', {scrollWheelZoom: false}).setView(['#{location.lat}', '#{location.lng}'], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(map);
+          L.circle(['#{location.lat}', '#{location.lng}'], {
+              color: 'red',
+              weight: 1,
+              fillColor: '#f03',
+              fillOpacity: 0.5,
+              radius: 500
+          }).addTo(map);          
+        }
+        
+        map.invalidateSize(false);
+      });
+
+      var btnElGraphs = document.querySelector('#fullscreen-graphs');
+      btnElGraphs.addEventListener('click', function (event) {
+
+        event.preventDefault();
+        if (btnElGraphs.children[0].classList.contains('bi-fullscreen')) {
+            btnElGraphs.children[0].classList.remove('bi-fullscreen');
+            btnElGraphs.children[0].classList.add('bi-fullscreen-exit');
+            document.querySelector('#graphs-container').classList.remove('row-cols-md-2');
+        } else {
+            btnElGraphs.children[0].classList.remove('bi-fullscreen-exit');
+            btnElGraphs.children[0].classList.add('bi-fullscreen');
+            document.querySelector('#graphs-container').classList.add('row-cols-md-2');
+        }
+
+        document.activeElement.blur();
+      });
+
+      var radioElUnits = document.querySelector('#checkImpericalUnits');
+      if( document.cookie.split(';')[0] == "unit=i" )
+        radioElUnits.checked = true;
+      radioElUnits.addEventListener('change', function (event) {
+        setTimeout(function(){
+          if(radioElUnits.checked)
+            document.cookie = "unit=i;path=/";
+          else
+            document.cookie = "unit=;path=/";
+          location.reload();
+        }, 160);
+      });
+
+    });

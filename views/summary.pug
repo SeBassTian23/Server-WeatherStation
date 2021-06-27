@@ -1,0 +1,46 @@
+//- Header row with date and main parameters displayed
+.container
+  .row.align-items-top.pb-4
+    .col-sm
+
+      //- Current Values
+      if selectedDate == 'now'
+        .row.row-cols-2.row-cols-sm-2.row-cols-md-3.row-cols-lg-4.row-cols-xl-5.mb-3
+          each itm, key in current
+            if key > 3 && key < current.length
+              +item(itm.title,itm.value,itm.unit, null, itm.trend, itm.field)
+          +item('Sunrise', sunriseFormated, '', null,2)
+          +item('Sunset', sunsetFormated, '', null,-2)
+
+
+      //- Summary Table and header
+      include summary-table.pug
+
+    //- Sidebar
+    .col-sm-4.pt-4.pt-sm-0.d-print-none
+      .card.rounded-0.p-0.mb-2
+        ul.nav.nav-pills.nav-fill.nav-justified(id="pills-tab",role="tablist")
+          li.nav-item(role="presentation")
+            button.nav-link.py-1.active#pills-calendar-tab(data-bs-toggle="pill",data-bs-target="#pills-calendar",type="button",role="tab",aria-controls="pills-calendar",aria-selected="true") #[i.bi.bi-calendar-event] #[span(style="display:block;font-size: 0.7em;") Calendar]
+          
+          li.nav-item(role="presentation")
+            button.nav-link.py-1#pills-station-tab(data-bs-toggle="pill",data-bs-target="#pills-station",type="button",role="tab",aria-controls="pills-station",aria-selected="false") #[i.bi.bi-pin-map-fill] #[span(style="display:block;font-size: 0.7em;") Station]
+
+          li.nav-item(role="presentation")
+            button.nav-link.py-1#pills-settings-tab(data-bs-toggle="pill",data-bs-target="#pills-settings",type="button",role="tab",aria-controls="pills-settings",aria-selected="true") #[i.bi.bi-sliders] #[span(style="display:block;font-size: 0.7em;") Settings]
+
+          li.nav-item(role="presentation")
+            button.nav-link.py-1#pills-help-tab(data-bs-toggle="pill",data-bs-target="#pills-help",type="button",role="tab",aria-controls="pills-help",aria-selected="false") #[i.bi.bi-info-square] #[span(style="display:block;font-size: 0.7em;") Info]
+
+      .tab-content
+        #pills-calendar.tab-pane.fade.show.active(role="tabpanel",aria-labelledby="pills-calendar-tab")
+          include tab-calendar.pug
+
+        #pills-station.tab-pane.fade(role="tabpanel",aria-labelledby="pills-station-tab")
+          include tab-station.pug
+
+        #pills-settings.tab-pane.fade(role="tabpanel",aria-labelledby="pills-settings-tab")
+          include tab-settings.pug
+
+        #pills-help.tab-pane.fade(role="tabpanel",aria-labelledby="pills-help-tab")
+          include tab-info.pug

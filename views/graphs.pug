@@ -1,0 +1,31 @@
+
+//- Daily Observations Graph
+mixin graph(id, yaxis, traces)
+  canvas(id=id, width="400", height="175", class="ratio ratio-21x9", data-yaxis=yaxis, data-traces=traces, class="")
+
+.container
+  .card.rounded-0
+    .card-body
+      button.float-end.bg-white.border-0.btn.btn-light#fullscreen-graphs #[i.bi.bi-fullscreen.text-muted]
+      h5.card-title.text-info Graphs 
+      h6.card-subtitle.mb-2.text-muted.fw-lighter Graphing of data collected   
+        if view == 'now'
+            | today.
+        else
+            | the period of a #{view}. 
+
+        if view == "month"
+          | The data has been averaged for each hour. 
+
+        if view == "year"
+          | The data has been averaged for each day. 
+        
+        | Click and drag to zoom in and double click to zoom out.
+      .row.row-cols-1.row-cols-md-2#graphs-container
+        if summary.length > 0
+          each val, index in graphOptions
+            .col.py-3
+              +graph("chart"+index, val.yaxis, val.traces)
+        else
+          .col
+            .alert No data recorded

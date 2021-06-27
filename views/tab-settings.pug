@@ -1,0 +1,16 @@
+.card.rounded-0
+    .card-body
+        h5.card-title Settings
+        .row.py-2
+            .col
+                span.card-title.text-info Application
+                .form-check.form-switch.mt-2
+                    input#checkImpericalUnits.form-check-input(type="checkbox")
+                    label.form-check-label(for="checkImpericalUnits") Imperial Units #[small.text-muted (℉, inHg)]
+                p.smaller.text-muted.mt-2 #[i.bi.bi-info-square] Display values in imperial units
+
+        .row.py-2
+            .col
+                h6.card-title.text-info Database
+                button.btn.btn-outline-secondary.btn-sm(type="button",disabled) #[i.bi.bi-stars] Vaccum
+                p.smaller.text-muted.mt-2 #[i.bi.bi-info-square] Clean up the database to reduce its file size

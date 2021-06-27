@@ -1,0 +1,42 @@
+.card.rounded-0
+    .card-body
+        h5.card-title.text-info Info
+        h6.card-subtitle.fw-lighter Resources for Parameters
+        .row.mt-2
+            .col-auto
+                | Air Quality Index
+                hr
+                ul.list-unstyled.small
+                    li #[i.bi.bi-square-fill(style="color:rgb(0,228,0);")] Good: #[span.fw-lighter 0-50]
+                    li #[i.bi.bi-square-fill(style="color:rgb(255,255,0);")] Moderate: #[span.fw-lighter 51-100]
+                    li #[i.bi.bi-square-fill(style="color:rgb(255,126,0);")] Unhealthy for Sensitive Groups: #[span.fw-lighter 101-150]
+                    li #[i.bi.bi-square-fill(style="color:rgb(255,0,0);")] Unhealthy: #[span.fw-lighter 151-200]
+                    li #[i.bi.bi-square-fill(style="color:rgb(153,0,76);")] Very Unhealthy: #[span.fw-lighter 201-300]
+                    li #[i.bi.bi-square-fill(style="color:rgb(76,0,38);")] Hazardous: #[span.fw-lighter 301 or higher]
+                p.smaller
+                    span.fw-lighter Source: 
+                    a(href="https://www.airnow.gov/aqi/aqi-basics/", target="_blank") airnow.gov
+            .col-auto
+                | UV Index
+                hr
+                ul.list-unstyled.small
+                    li #[i.bi.bi-square-fill(style="color:rgb(61,164,44);")] Low: #[span.fw-lighter 0-2]
+                    li #[i.bi.bi-square-fill(style="color:rgb(255,243,0);")] Moderate: #[span.fw-lighter 3-5]
+                    li #[i.bi.bi-square-fill(style="color:rgb(241,138,0);")] High: #[span.fw-lighter 6-7]
+                    li #[i.bi.bi-square-fill(style="color:rgb(215,46,15);")] Very High: #[span.fw-lighter 8-10]
+                    li #[i.bi.bi-square-fill(style="color:rgb(178,102,161);")] Extreme: #[span.fw-lighter 11+]
+                p.smaller
+                    span.fw-lighter Source: 
+                    a(href="https://www.who.int/news-room/q-a-detail/radiation-the-ultraviolet-(uv)-index", target="_blank") who.int
+
+            .col-auto
+                | Heat Index
+                hr
+                ul.list-unstyled.small
+                    li #[i.bi.bi-square-fill.heat-index-0] Caution: #[span.fw-lighter 27℃ - 32℃]
+                    li #[i.bi.bi-square-fill.heat-index-1] Extreme Caution: #[span.fw-lighter 32℃ - 39℃]
+                    li #[i.bi.bi-square-fill.heat-index-2] Danger: #[span.fw-lighter 39℃ - 51℃]
+                    li #[i.bi.bi-square-fill.heat-index-3] Extreme Danger: #[span.fw-lighter 52℃ or higher]
+                p.smaller
+                    span.fw-lighter Source: 
+                    a(href="https://www.weather.gov/ama/heatindex", target="_blank") weather.gov

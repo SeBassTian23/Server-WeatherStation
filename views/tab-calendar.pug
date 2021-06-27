@@ -1,0 +1,17 @@
+.card.rounded-0
+    .card-body#calendar
+.card.rounded-0.my-2
+    .card-body
+        h6.card-subtitle.fw-lighter.mb-2 Shortcuts
+        .row.row-cols-1.row-cols-md-2
+            if selectedDate != 'now'
+                .col
+                    a.small(href="/") #[i.bi.bi-clock] Today
+            .col
+                a.small#calendar-yesterday(href="#") #[i.bi.bi-calendar-event] Yesterday
+            .col
+                a.small#calendar-week(href="#") #[i.bi.bi-calendar-date] A Week Ago
+            .col
+                a.small#calendar-month(href="#") #[i.bi.bi-calendar-month] This Month
+            .col
+                a.small#calendar-month(href="/"+year) #[i.bi.bi-calendar] This Year
