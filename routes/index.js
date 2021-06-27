@@ -256,6 +256,16 @@ var buildCurrent = function (header, rows, units) {
 
     arr.push(obj);
   }
+
+  // Color temperature thermometer by heat index if it is available
+  var hiIdx = arr.findIndex(function(e){ return e.header == "Heat Index [C]"; });
+  var tiIdx = arr.findIndex(function(e){ return e.header == "Temperature [C]"; });
+  if(hiIdx > -1 && tiIdx > -1 ){
+    if( arr[hiIdx].trend.match(/heat-index/i) ){
+      arr[tiIdx].trend = `thermometer-sun ${arr[hiIdx].trend}`;
+    }
+  }
+
   return arr || [];
 };
 
