@@ -430,11 +430,14 @@ router.get('/', function (req, res) {
     data.dates = JSON.stringify(dates, null, 0);
 
     data = buildAppSummary(data, appdata);
-
-    data.time = dayjs(appdata.latest).tz(DEVICE_TIMEZONE).format('LT');
-    data.year = dayjs(appdata.latest).tz(DEVICE_TIMEZONE).format('YYYY');
-    data.weekday = dayjs(appdata.latest).tz(DEVICE_TIMEZONE).format('dddd');
-    data.month = dayjs(appdata.latest).tz(DEVICE_TIMEZONE).format('MMMM DD');
+    
+    if( dayjs().isSame(appdata.latest, 'day') )
+      data.time = dayjs(appdata.latest).tz(DEVICE_TIMEZONE).format('LT');
+    else
+      data.time = "N/A";
+    data.year = dayjs().tz(DEVICE_TIMEZONE).format('YYYY');
+    data.weekday = dayjs().tz(DEVICE_TIMEZONE).format('dddd');
+    data.month = dayjs().tz(DEVICE_TIMEZONE).format('MMMM DD');
     data.sunrise = getSunriseDateTimeUtc(new Date(), DEVICE_LATITUDE, DEVICE_LONGITUDE);
     data.sunset = getSunsetDateTimeUtc(new Date(), DEVICE_LATITUDE, DEVICE_LONGITUDE);
 
