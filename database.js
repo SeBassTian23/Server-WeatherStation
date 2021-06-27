@@ -27,7 +27,7 @@ const initializeDB = function(){
             else{
                 if(row === undefined){
                     console.log('Empty Database, creating Tables.');
-                    var query = initQuery(header);
+                    var query = jetpack.read('./db.sql') || "";
                     db.exec(query);
                 }
                 else{
@@ -37,30 +37,5 @@ const initializeDB = function(){
         });
     });
 };
-
-const initQuery = function(cols){
-    return `
-CREATE TABLE "data" (
-    "ID"	INTEGER UNIQUE,
-${cols.map(function(col){
-    return `    "${col}"\tNUMERIC DEFAULT NULL`;
-}).join(',\n')},
-    PRIMARY KEY("ID" AUTOINCREMENT)
-);
-CREATE INDEX "data_idx" ON "data" (
-    "created_at"	ASC
-);
-CREATE INDEX "device_id_idx" ON "data" (
-    "device_id"	ASC
-);
-CREATE INDEX "list_idx" ON "data" (
-    "device_id"	DESC,
-    "created_at"	DESC
-);`;
-};
-
-// db.on('trace', (data) => {
-//   console.log(data)
-// });
 
 module.exports = db;
