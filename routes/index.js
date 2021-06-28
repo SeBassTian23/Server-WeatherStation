@@ -261,7 +261,7 @@ var buildCurrent = function (header, rows, units) {
   var hiIdx = arr.findIndex(function(e){ return e.header == "Heat Index [C]"; });
   var tiIdx = arr.findIndex(function(e){ return e.header == "Temperature [C]"; });
   if(hiIdx > -1 && tiIdx > -1 ){
-    if( arr[hiIdx].trend.match(/heat-index/i) ){
+    if( arr[hiIdx].trend && arr[hiIdx].trend.match(/heat-index/i) ){
       arr[tiIdx].trend = `thermometer-sun ${arr[hiIdx].trend}`;
     }
   }
