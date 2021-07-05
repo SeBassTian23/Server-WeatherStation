@@ -309,9 +309,9 @@ var buildGraphs = function (header, rows, units) {
       if (obj[header[j]] === undefined)
         obj[header[j]] = [];
       if (rows[i][header[j]] === null || rows[i][header[j]] == "N/A")
-        obj[header[j]].push({ t: rows[i].Time, y: null });
+        obj[header[j]].push({ x: rows[i].Time, y: null });
       else {
-        obj[header[j]].push({ t: rows[i].Time, y: _.round(unitConverter(rows[i][header[j]], header[j], units)[0], 2) });
+        obj[header[j]].push({ x: rows[i].Time, y: _.round(unitConverter(rows[i][header[j]], header[j], units)[0], 2) });
       }
     }
     // rows[i].Time = dayjs(rows[i].Time).format('LT');
