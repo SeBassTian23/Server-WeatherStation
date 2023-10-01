@@ -1,6 +1,8 @@
 {
     "name": "Weather Station",
     "short_name": "Weather Station",
+    "start_url": "/",
+    "icon": "assets/favicon.ico",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,7 +15,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
+    "theme_color": "#212529",
     "background_color": "#ffffff",
     "display": "standalone"
 }
