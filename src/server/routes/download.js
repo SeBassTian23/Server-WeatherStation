@@ -1,5 +1,5 @@
 var express = require('express');
-const { Parser } = require('json2csv');
+const { Parser } = require('@json2csv/plainjs');
 const db = require('../db/sqlite');
 var router = express.Router();
 
