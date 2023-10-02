@@ -1,0 +1,252 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+:root[data-theme="theme-light"] {
+  --mode-bg-color: #f8f9fa!important;
+  --mode-text-color: #212529!important;
+  --mode-bg-card: #fff;
+  --mode-border-card: 1px solid rgba(0,0,0,.125);
+  --mode-table-accent: rgba(0, 0, 0, 0.05);
+}
+:root[data-theme="theme-dark"] {
+  --mode-bg-color: #212529!important;
+  --mode-text-color: #f8f9fa!important;
+  --mode-bg-card: #343a40!important;
+  --mode-border-card: 1px solid rgba(255,255,255,.075)!important;
+  --mode-table-accent: rgba(255, 255, 255, 0.05);
+}
+
+blockquote {
+  padding: 0 1em;
+  color: var(--gray-dark);
+  border-left: .25em solid var(--gray);
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  background-color: var(--mode-bg-color);
+  color: var(--mode-text-color);
+}
+
+.table {
+  color: var(--mode-text-color);
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+  --bs-table-accent-bg: var(--mode-table-accent);
+  color: var(--mode-text-color);
+}
+
+.card {
+  background-color: var(--mode-bg-card);
+  border: var(--mode-border-card);
+}
+
+.mini-card {
+  background-color: var(--mode-bg-card);
+  border: var(--mode-border-card);
+}
+
+.smaller {
+  font-size: .75em;
+}
+
+.index {
+  background: transparent;
+  border-radius: 0.2em;
+  padding: 0.05em 0.2em;
+  color: #ffffff;
+}
+
+.index-lg {
+  padding: 0em 0.2em !important;
+}
+
+.heat-index-0 {
+  color:#fff300;
+}
+
+.heat-index-1 {
+  color: #fdd015;
+}
+
+.heat-index-2 {
+  color: #fb6600;
+}
+
+.heat-index-3 {
+  color: #cc0003;
+}
+
+h6 > span[class*='uv-index'] {
+  line-height: 24px;
+}
+
+.uv-index-0-2 {
+  background-color: rgb(61,164,44);
+}
+
+.uv-index-3-5 {
+  background-color: rgb(255,243,0);
+  color: inherit;
+}
+
+.uv-index-6-7 {
+  background-color: rgb(241,138,0);
+  color: inherit;
+}
+
+.uv-index-8-10 {
+  background-color: rgb(215,46,15);
+}
+
+.uv-index-11 {
+  background-color: rgb(178,102,161);
+}
+
+.uv-index-nan {
+  color: #212529;
+}
+
+.aqi {
+  color: rgb(255,255,255);
+}
+
+.aqi-lg {
+  color: rgb(255,255,255);
+}
+
+.aqi-0-50 {
+  background-color: rgb(0,228,0);
+  border: 1px solid darken(rgb(0,228,0), 5%);
+}
+
+.aqi-51-100 {
+  background-color: rgb(255,255,0);
+  border: 1px solid darken(rgb(255,255,0),5%);
+  color: var(--bs-dark);
+}
+
+.aqi-101-150 {
+  background-color: rgb(255,126,0);
+  border: 1px solid darken(rgb(255,126,0), 5%);    
+}
+
+.aqi-151-200 {
+  background-color: rgb(255,0,0);
+  border: 1px solid darken(rgb(255,0,0), 5%);    
+}
+
+.aqi-201-300 {
+  background-color: rgb(153,0,76);
+  border: 1px solid darken(rgb(153,0,76), 5%);    
+}
+
+.aqi-301 {
+  background-color: rgb(76,0,38);
+  border: 1px solid darken(rgb(76,0,38), 5%);    
+}
+
+.aqi-nan {
+  color: #212529;
+}
+
+.uv-index-bg {
+  width: 200px;
+  height: 20px;
+  background-image: linear-gradient(
+    to right,
+    rgb(61,164,44) 0%,
+    rgb(61,164,44) 20%,
+    rgb(255,243,0) 20%,
+    rgb(255,243,0) 40%,
+    rgb(241,138,0) 40%,
+    rgb(241,138,0) 60%,
+    rgb(215,46,15) 60%,
+    rgb(215,46,15) 80%,
+    rgb(178,102,161) 80%,
+    rgb(178,102,161) 100%
+  );
+}
+
+.today {
+  width:1.6em;
+  height:1.6em;
+  color:white;
+  border-radius:.2rem;
+  display: inline-block;
+}
+
+.indicator {
+  font-size: 0.75em;
+  margin-right: 0.3em;
+}
+
+.unit {
+  font-size: 0.65em;
+  margin-left: 0.3em;
+}
+
+.ws-card {
+  box-shadow: 0 6px 12px rgba(140,152,164,.075);
+  border: .0625rem solid rgba(231,234,243,.7);
+  background-color: #fff;
+  color: #677788;
+}
+
+ul#pills-tab li:nth-child(n+2) {
+  border-left: 1px solid rgba(0,0,0,.125);
+}
+
+ul#pills-tab button.active {
+  border-bottom: 2px solid #0d6efd;
+  color: #fff;
+  border-radius: 0px;
+}
+
+/* // #summary-cards-lg div:nth-child(n+2) div {
+//   border-left: 1px solid rgba(0,0,0,.125);
+// }
+
+// color: #0d6efd; */
+
+/* General */
+.card {
+  border-radius: 0!important;
+}
+
+#calendar {
+  padding: 0
+}
+
+#shortcutlinks a{
+  text-decoration: none;
+  color: initial;
+}
+
+#shortcutlinks a:hover {
+  filter:brightness(.7)
+}
+
+#shortcutlinks a i {
+  color: var(--bs-primary);
+}
+
+
+#mapid .leaflet-tile-pane {
+  filter: grayscale(1);
+}
