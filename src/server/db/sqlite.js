@@ -1,4 +1,4 @@
-const jetpack = require('fs-jetpack');
+const fs = require('fs');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -33,7 +33,7 @@ const initializeDB = function(){
             else{
                 if(row === undefined){
                     console.log('Empty Database, creating from schema.');
-                    let query = jetpack.read('./src/server/db/sql/db.sql') || "";
+                    let query = fs.readFileSync('./src/server/db/sql/db.sql', 'utf8') || "";
                     db.exec(query, ()=> {
                       // Add Initial Device
                       query = `BEGIN TRANSACTION;\n`
