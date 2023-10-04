@@ -4,8 +4,6 @@ import Card from 'react-bootstrap/Card'
 import Row from 'react-bootstrap/Row'
 import Table from 'react-bootstrap/Table'
 
-import NoData from '../Helpers/NoData';
-
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 dayjs.extend(localizedFormat)
@@ -13,18 +11,20 @@ dayjs.extend(localizedFormat)
 import { LabelUnitFormat } from '../../helpers/label-format';
 
 export default function Latest(props) {
-  return (
-    <Card className='card rounded-0 mt-4'>
-      <Card.Body>
-        <a className='float-end bg-transparent border-0' href='/download/latest' title="Download Latest Observations">
-          <i className='bi bi-download text-muted' />
-        </a>
-        <Card.Title className='text-info'>Latest Observations</Card.Title>
-        <Card.Subtitle className='mb-2 text-muted fw-light'>Latest <b>{props.rows? props.rows.length : 0}</b> observation(s) for today.</Card.Subtitle>
-        <LatestContent {...props} />
-      </Card.Body>
-    </Card>
-  )
+
+  if(Array.isArray(props.rows) && props.rows.length >0)
+    return (
+      <Card className='card rounded-0 mt-4'>
+        <Card.Body>
+          <a className='float-end bg-transparent border-0' href='/download/latest' title="Download Latest Observations">
+            <i className='bi bi-download text-muted' />
+          </a>
+          <Card.Title className='text-info'>Latest Observations</Card.Title>
+          <Card.Subtitle className='mb-2 text-muted fw-light'>Latest <b>{props.rows? props.rows.length : 0}</b> observation(s) for today.</Card.Subtitle>
+          <LatestContent {...props} />
+        </Card.Body>
+      </Card>
+    )
 }
 
 const LatestContent = (props) => {
@@ -59,11 +59,6 @@ const LatestContent = (props) => {
           </tbody>
         </Table>
       </Row>
-    )
-  }
-  else {
-    return (
-      <NoData />
     )
   }
 }
