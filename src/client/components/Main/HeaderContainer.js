@@ -5,39 +5,6 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navbar from 'react-bootstrap/Navbar';
 
-const cards = [
-  {
-    title: "title",
-    field: "field",
-    unit: "unit",
-    trend: "trend",
-    icon: null,
-    class: "class",
-    size: "main|small",
-    value: "value"
-  },
-  {
-    title: "Sunrise",
-    field: "field",
-    unit: null,
-    trend: "trend",
-    icon: "bi-sunrise",
-    class: "class",
-    size: "small",
-    value: "6:51 AM"
-  },
-  {
-    title: "Sunset",
-    field: "field",
-    unit: null,
-    trend: "trend",
-    icon: "bi-sunset",
-    class: "class",
-    size: "small",
-    value: "8:12 PM"
-  }
-]
-
 export default function HeaderContainer(props) {
   return (
     <header>

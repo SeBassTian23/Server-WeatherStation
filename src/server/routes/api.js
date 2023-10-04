@@ -105,8 +105,6 @@ router.get('/', function (req, res) {
     cards.push({
       "field": 'Sunrise',
       'size': 'sm',
-      'icon': 'bi-sunrise',
-      'trend': 'bi-sunrise',
       'value': data.graphs.sunrise,
       'unit': null,
       'label': 'Sunrise'
@@ -114,8 +112,6 @@ router.get('/', function (req, res) {
     cards.push({
       "field": 'Sunset',
       'size': 'sm',
-      'icon': 'bi-sunset',
-      'trend': 'bi-sunset',
       'value': data.graphs.sunset,
       'unit': null,
       'label': 'Sunset'

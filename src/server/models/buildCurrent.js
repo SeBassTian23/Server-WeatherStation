@@ -21,7 +21,7 @@ const buildCurrent = function (header, rows) {
     var obj = {
       label: header[i],
       value: (isNumber(round(value, 2))) ? round(value, 2) : "N/A",
-      icon: function (rows, field) {
+      trend: function (rows, field) {
         var data = [];
         for (var r in rows)
           data.push(rows[r][header[i]]);
@@ -33,41 +33,6 @@ const buildCurrent = function (header, rows) {
           trend = "↘";
         else
           trend = null;
-
-        if (field == "Temperature [C]") {
-          if (value <= 0)
-            trend = "bi-thermometer-snow text-primary";
-          else if (value < 10)
-            trend = "bi-thermometer-low";
-          else if (value > 35)
-            trend = "bi-thermometer-sun text-danger";
-          else if (value > 30)
-            trend = "bi-thermometer-sun text-warning";
-          else if (value > 25)
-            trend = "bi-thermometer-high";
-          else
-            trend = "bi-thermometer-half";
-        }
-
-        if (field == "rel. Humidity [%]")
-          trend = "bi-moisture";
-
-        if (field == "Pressure (PMSL) [hPa]")
-          trend = "bi-speedometer";
-
-        if (field == "AQI")
-          trend = "bi-tree-fill";
-
-        if (field == "Heat Index [C]") {
-          if (value >= 52)
-            trend = "bi-exclamation-diamond-fill heat-index-3";
-          else if (value > 39)
-            trend = "bi-exclamation-diamond-fill heat-index-2";
-          else if (value > 32)
-            trend = "bi-exclamation-diamond-fill heat-index-1";
-          else if (value >= 27)
-            trend = "bi-exclamation-diamond-fill heat-index-0";
-        }
 
         return trend;
       }(rows, header[i]),

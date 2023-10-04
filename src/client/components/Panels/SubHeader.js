@@ -21,7 +21,6 @@ export default function SubHeader(props) {
 
   useEffect( () => {
     setData(props);
-    console.log(data)
   }, [props])
 
   let summary = ''
