@@ -1,6 +1,10 @@
+:root, [data-bs-theme="light"] {
+  --bs-yellow-200: #ffe69c;
+}
+
 .react-calendar {
   max-width: 100%;
-  background: white;
+  background: transparent;
   /* border: 1px solid #a0a096; */
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.125em;
@@ -42,11 +46,11 @@
   background: none;
 }
 .react-calendar__navigation button:disabled {
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
 }
 .react-calendar__navigation button:enabled:hover,
 .react-calendar__navigation button:enabled:focus {
-  background-color: #e6e6e6;
+  /* background-color: #e6e6e6; */
 }
 .react-calendar__month-view__weekdays {
   text-align: center;
@@ -65,10 +69,10 @@
   font-weight: bold;
 }
 .react-calendar__month-view__days__day--weekend {
-  color: #d10000;
+  color: var(--bs-danger);
 }
 .react-calendar__month-view__days__day--neighboringMonth {
-  color: #757575;
+  /* color: #757575; */
 }
 .react-calendar__year-view .react-calendar__tile,
 .react-calendar__decade-view .react-calendar__tile,
@@ -83,34 +87,38 @@
   line-height: 16px;
 }
 .react-calendar__tile:disabled {
-  background-color: #f0f0f0;
+  background-color: var(--bs-tertiary-bg);
 }
 .react-calendar__tile:enabled:hover,
 .react-calendar__tile:enabled:focus {
-  background-color: #e6e6e6;
+  background-color: var(--bs-secondary-bg);
 }
-.react-calendar__tile--now {
-  background: #ffff76;
+.react-calendar__tile--now:not(.react-calendar__tile--active),
+.react-calendar__tile--now.react-calendar__tile:disabled {
+  background: var(--bs-yellow-200);
 }
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-  background: #ffffa9;
+  /* background: #ffffa9; */
 }
-.react-calendar__tile--hasActive {
-  background: #76baff;
+.react-calendar__tile--active {
+  color: var(--bs-light);
+  background-color: var(--bs-primary) !important;
 }
 .react-calendar__tile--hasActive:enabled:hover,
 .react-calendar__tile--hasActive:enabled:focus {
-  background: #a9d4ff;
+  /* background: #a9d4ff; */
 }
 .react-calendar__tile--active {
-  background: #006edc;
-  color: white;
+  color: var(--bs-light);
+  background-color: var(--bs-primary);
 }
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
-  background: #1087ff;
+  /* background: #1087ff; */
+  /* color: var(--bs-light);
+  background-color: var(--bs-primary); */
 }
 .react-calendar--selectRange .react-calendar__tile--hover {
-  background-color: #e6e6e6;
+  /* background-color: #e6e6e6; */
 }

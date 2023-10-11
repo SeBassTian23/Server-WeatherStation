@@ -8,7 +8,7 @@ export default function NoData() {
     <Row>
       <Col className='text-center'>
         <i className='bi-activity text-muted opacity-25' style={{fontSize: '12em'}} />
-        <p className='fw-light'>No data found&hellip;</p>
+        <p className='fw-light'>No Data Available</p>
       </Col>
     </Row>
   )

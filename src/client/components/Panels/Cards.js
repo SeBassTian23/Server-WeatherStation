@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
 
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -93,7 +94,7 @@ export default function Cards(props) {
 
         return (
           <Col className='text-center text-nowrap mb-2' key={idx}>
-            <div className={`border ${card.size === 'sm' ? 'h-100 mini-card' : ''}`} title={cardTitle.trimEnd()}>
+            <Card className={ card.size === 'sm' ? 'h-100 mini-card' : ''} title={cardTitle.trimEnd()}>
               <div className={`fw-light mt-2 mb-0 ${card.size === 'lg' ? 'fs-4' : 'fs-5'}`} data-field={card.field}>
                 {icon && <strong className='text-info indicator'>{icon}</strong>}
                 {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(card.value).format('LT') : card.value}
@@ -102,7 +103,7 @@ export default function Cards(props) {
                 }
               </div>
               <span className='mb-2 d-block text-muted smaller'>{LabelUnitStrip(card.label)}</span>
-            </div>
+            </Card>
           </Col>
         )
       })}
