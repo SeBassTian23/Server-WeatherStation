@@ -5,21 +5,17 @@ import Current from './pages/Current';
 import Past from './pages/Past';
 import NotFound from './pages/NotFound';
 
-import { SettingsContext, useSettingsStore } from './context/settings';
-
 export default function RenderRoutes(props) {
   return (
     <Suspense fallback={<h1>Loading Content...</h1>}> 
-      <SettingsContext.Provider value={useSettingsStore}>
-        <Routes>
-          <Route path='/' exact element={<Current path='/' />}></Route>
-          <Route path='/:year/:month/:day' element={< ValidatePath />}></Route>
-          <Route path='/:year/:month' element={< ValidatePath />}></Route>
-          <Route path='/:year' element={< ValidatePath />}></Route>
-          <Route path='/:start,:end' element={< ValidatePath />}></Route>
-          <Route path='*' element={<NotFound />}></Route>
-        </Routes>      
-      </SettingsContext.Provider>    
+      <Routes>
+        <Route path='/' exact element={<Current path='/' />}></Route>
+        <Route path='/:year/:month/:day' element={< ValidatePath />}></Route>
+        <Route path='/:year/:month' element={< ValidatePath />}></Route>
+        <Route path='/:year' element={< ValidatePath />}></Route>
+        <Route path='/:start,:end' element={< ValidatePath />}></Route>
+        <Route path='*' element={<NotFound />}></Route>
+      </Routes>      
     </Suspense>
   );
 }

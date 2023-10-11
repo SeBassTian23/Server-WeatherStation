@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState, useReducer, createContext } from 'react'
 
 import Card from 'react-bootstrap/Card'
 import Row from 'react-bootstrap/Row'
@@ -7,29 +7,11 @@ import TabPane from 'react-bootstrap/TabPane'
 
 import Form from 'react-bootstrap/Form'
 
-import {SettingsContext} from '../../context/settings';
+import * as ACTIONS from '../../constants/actions'
+
+import {SettingsContext} from '../../context/settingsContext'
 
 export default function TabSettings(props) {
-
-  // constructor(props) {
-  //   super(props);
-  // }
-
-  // var radioElDisplayMode = document.querySelectorAll('input[name=radioDisplayMode]');
-  //     radioElDisplayMode.forEach(function(el){
-  //       document.cookie.split(";").forEach(function(c) {
-  //         var cc = c.trim().split("=");
-  //         if( cc[0] == "mode" && cc[1] == el.value){
-  //           el.checked = true;
-  //           document.querySelector('html').dataset.theme = `theme-${el.value}`;
-  //         }
-  //       });
-  //       el.addEventListener('change', function (event) {
-  //         var value = event.target.value;
-  //         document.querySelector('html').dataset.theme = `theme-${value}`;
-  //         document.cookie = `mode=${value};path=/`;
-  //       });
-  //     });
   return (
     <TabPane eventKey='settings'>
       <Card>
@@ -37,29 +19,29 @@ export default function TabSettings(props) {
           <Card.Title className='text-info'>Settings</Card.Title>
           <Row className='py-3'>
             <Col>
-              <Card.Subtitle>Application</Card.Subtitle>
-              <UnitsToggleRadio />
-              <Form.Text className="text-muted">Display values in imperial units</Form.Text>
+              <Card.Subtitle>Units</Card.Subtitle>
+              <UnitsSelect />
+              <Form.Text className="text-muted">Select Units to Display Data</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Display Mode</Card.Subtitle>
-              <ThemeToggleSelect />
+              <ThemeSelect />
               <Form.Text className="text-muted">Select Light/Dark Mode</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Calendar</Card.Subtitle>
-              <CalendarToggleSelect />
+              <CalendarSelect />
               <Form.Text className="text-muted">Select Type of Calendar</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Cache</Card.Subtitle>
-              <CacheToggleRadio />
+              <CacheToggle />
               <Form.Text className="text-muted">Cache Data from past Days when viewed</Form.Text>
             </Col>
           </Row>
@@ -69,43 +51,69 @@ export default function TabSettings(props) {
   )
 }
 
-const UnitsToggleRadio = (props) => {
-  const settings = useContext(SettingsContext)
+const UnitsSelect = (props) => {
+  const [state, dispatch] = useContext(SettingsContext);
+  
+  const selectHandler = (e) => {
+    e.preventDefault();
+    dispatch({type: ACTIONS.SELECT_UNITS,  payload: e.target.value })
+  };
+
   return (
-    <Form.Check type='switch' id='checkImpericalUnits' className='mt-2'>
-      <Form.Check.Input type='checkbox' isValid={false} onChange={settings.toggleUnits} />
-      <Form.Check.Label>Imperial Units <small className='text-muted'>(℉, inHg)</small></Form.Check.Label>
-    </Form.Check>
+    <Form.Select defaultValue={state.units} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='selectUnits' size='sm' className='mt-2'>
+      {[{label:'Imperial (℉, inHg)',value:'imperial'},{label:'Metric (℃, hPa)',value:'metric'},{label:'SI (K, Pa)',value:'si'}].map( (m,idx) => {
+        return <option key={`units${idx}`} value={m.value}>{m.label}</option>
+      })}
+    </Form.Select>
   )
 }
 
-const ThemeToggleSelect = (props) => {
-  const { theme, toggleTheme } = useContext(SettingsContext);
+const ThemeSelect = (props) => {
+  const [state, dispatch] = useContext(SettingsContext);
+  
+  const selectHandler = (e) => {
+    e.preventDefault();
+    dispatch({type: ACTIONS.SELECT_THEME,  payload: e.target.value })
+  };
+
   return (
-    <Form.Select onChange={toggleTheme} aria-label="Select Display Mode" id='radioDisplayModeLight' size='sm' className='mt-2'>
+    <Form.Select defaultValue={state.theme} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='radioDisplayModeLight' size='sm' className='mt-2'>
       {[{label:'Auto',value:'auto'},{label:'Light',value:'light'},{label:'Dark',value:'dark'}].map( (m,idx) => {
-        return <option key={`displaymode${idx}`} value={m.value} defaultValue={theme}>{m.label}</option>
+        return <option key={`displaymode${idx}`} value={m.value}>{m.label}</option>
       })}
     </Form.Select>
   )
 }
 
-const CalendarToggleSelect = (props) => {
-  const { calendar, toggleCalendar } = useContext(SettingsContext);
+const CalendarSelect = (props) => {
+  const [state, dispatch] = useContext(SettingsContext);
+  
+  const selectHandler = (e) => {
+    e.preventDefault();
+    dispatch({type: ACTIONS.SELECT_CALENDAR,  payload: e.target.value })
+  };
+
   return (
-    <Form.Select onChange={toggleCalendar} aria-label="Select Display Mode" id='radioCalendarTypeSelect' size='sm' className='mt-2'>
+    <Form.Select defaultValue={state.calendarType} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='radioCalendarTypeSelect' size='sm' className='mt-2'>
       {[{label:'Gregory',value:'gregory'},{label:'ISO8601',value:'iso8601'},{label:'Hebrew',value:'hebrew'},{label:'Islamic',value:'islamic'}].map( (m,idx) => {
-        return <option key={`calendarmode${idx}`} value={m.value} defaultValue={calendar}>{m.label}</option>
+        return <option key={`calendarmode${idx}`} value={m.value}>{m.label}</option>
       })}
     </Form.Select>
   )
 }
 
-const CacheToggleRadio = (props) => {
-  const settings = useContext(SettingsContext)
+const CacheToggle = (props) => {
+  const [ state, dispatch ] = useContext(SettingsContext)
+  const [checked, setChecked] = useState( (state.cache === 'on')? true : null );
+
+  const toggleHandler = (e) => {
+    setChecked(prev => !prev)
+    dispatch({type: ACTIONS.TOGGLE_CACHE, payload: e.target.checked? 'on': 'off' })
+  };
+
   return (
     <Form.Check type='switch' id='checkCache' className='mt-2'>
-      <Form.Check.Input type='checkbox' isValid={false} onChange={settings.toggleCache} />
+      <Form.Check.Input type='checkbox' isValid={false} onChange={(e) => toggleHandler(e)} checked={checked} />
       <Form.Check.Label>Cache Data</Form.Check.Label>
     </Form.Check>
   )

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 
 import SubHeader from '../components/Panels/SubHeader'
 import Summary from '../components/Panels/Summary'
@@ -10,15 +10,32 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import {apiStructure} from '../constants/api'
+import { SettingsContext } from '../context/settingsContext'
 
 export default function Past(props) {
 
+  const [state] = useContext(SettingsContext);
   const [data, setData] = useState(apiStructure);
 
   useEffect(() => {
+    var cachedData = {};
+    if(state.cache === 'on'){
+      cachedData = localStorage.getItem('cachedData') || '{}';
+      cachedData = JSON.parse(cachedData)
+      if(cachedData[props.path] !== undefined ){
+        setData(cachedData[props.path]);
+        return
+      }
+    }
+
     fetch('/api' + props.path)
       .then(res => res.json())
-      .then(obj => {  
+      .then(obj => {
+        if(state.cache === 'on'){
+          cachedData[props.path] = obj.body;
+          localStorage.setItem('cachedData', JSON.stringify(cachedData))
+        }
+        console.log(obj.body)
         setData(obj.body);
       })
       .catch((err) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,8 @@ import Calendar from 'react-calendar';
 import dayjs from 'dayjs'
 
 import { Link } from 'react-router-dom'
+
+import {SettingsContext} from '../../context/settingsContext'
 
 import '../../styles/calendar.css';
 
@@ -80,12 +82,15 @@ function CalendarCard(props) {
     const onClickYear = (e) => {
         navigate(dayjs(e).format('/YYYY'))
     }
+
+    const [state] = useContext(SettingsContext);
+
     return (
         <Card className='rounded-0 my-2'>
             <Card.Body id='calendar'>
                 {/* minDate={} onClick=(value) value={new Date()} selectRange={true} */}
                 <Calendar
-                    calendarType='gregory'
+                    calendarType={state.calendarType}
                     selectRange={false}
                     onClickYear={onClickYear}
                     onClickMonth={onClickMonth}
