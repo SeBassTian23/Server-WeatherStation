@@ -103,10 +103,10 @@ export const humidityToStr = function( data, type, units ){
     return (
         <>
           <strong>{valueAsWords(data.avg, humidity)}</strong>
-          {(type == "day" && valueAsWords(data.avg, humidity) === 'low' ) && <> with a minimum of {data.min.toFixed(0) || data.min}%</>}
-          {(type == "day" && valueAsWords(data.avg, humidity) === 'medium' ) && <> at an average of {data.avg.toFixed(0) || data.avg}%</>}
-          {(type == "day" && valueAsWords(data.avg, humidity) === 'high' ) && <> with a maximum of {data.max.toFixed(0) || data.max}%</>}
-          {(type == "month" ) && <> ({data.avg.toFixed(0) || data.avg}%)</>}
+          {(type == "day" && valueAsWords(data.avg, humidity) === 'low' ) && <> with a minimum of {data.min? data.min.toFixed(0) : data.min}%</>}
+          {(type == "day" && valueAsWords(data.avg, humidity) === 'medium' ) && <> at an average of {data.avg? data.avg.toFixed(0) : data.avg}%</>}
+          {(type == "day" && valueAsWords(data.avg, humidity) === 'high' ) && <> with a maximum of {data.max? data.max.toFixed(0) : data.max}%</>}
+          {(type == "month" ) && <> ({data.avg? data.avg.toFixed(0) : data.avg}%)</>}
         </>
       );
 };
@@ -121,7 +121,7 @@ export const airqualityToStr = function( data, type, units ){
     return (
         <>
           <strong>{valueAsWords(data.avg, airquality)}</strong>
-          {(type == "day" ) && <> reaching <strong>{valueAsWords(data.max, airquality)}</strong> levels in the <strong>{timeToStr(data.max_time, type)}</strong></>}
+          {(type == "day" && valueAsWords(data.max, airquality) !== valueAsWords(data.avg, airquality) ) && <> reaching <strong>{valueAsWords(data.max, airquality)}</strong> levels in the <strong>{timeToStr(data.max_time, type)}</strong></>}
           {(type == "month" ) && <> reaching <strong>{valueAsWords(data.max, airquality)}</strong> levels on <strong>{data.max_day}</strong></>}
         </>
       );

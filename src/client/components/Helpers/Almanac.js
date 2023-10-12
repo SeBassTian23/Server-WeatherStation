@@ -16,7 +16,9 @@ export default function Almanac(props) {
   const humidity = humidityToStr( props.params['rel. Humidity [%]'] || [], props.type);
   const airquality = airqualityToStr( props.params['AQI'] || [], props.type);
 
-  if(temperature.props.children === 'N/A' && humidity.props.children === 'N/A' && airquality.props.children === 'N/A')
+  console.log(props.params)
+
+  if(!props.params['Temperature [C]'].avg && !props.params['rel. Humidity [%]'].avg && !props.params['AQI'].avg)
     return <></>
 
   return (
