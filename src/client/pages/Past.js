@@ -35,7 +35,6 @@ export default function Past(props) {
           cachedData[props.path] = obj.body;
           localStorage.setItem('cachedData', JSON.stringify(cachedData))
         }
-        console.log(obj.body)
         setData(obj.body);
       })
       .catch((err) => {

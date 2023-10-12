@@ -1,11 +1,32 @@
-const unitConverter = require('./convert.js');
+import React from 'react'
+import {unitConverter} from './convert'
+import {aqi} from '../constants/parameters'
+
+// 
+export const periodToStr = function(type){
+  // Day
+  if( type == "day")
+     return `This day`;
+      
+  // Month
+  if( type == "month")
+    return `This month`;
+
+  // Year
+  if( type == "year")
+    return `This year`;
+
+  // Year
+  if( type == "range")
+    return `This time period`;
+}
 
 // Parts of the Day
-const timeToStr = function( input, type ){
+export const timeToStr = function( input, type ){
 
     var str = input;
 
-    times = {
+    const times = {
         "day": {
             "night": [0,2],
             "late night": [2,5],
@@ -26,18 +47,17 @@ const timeToStr = function( input, type ){
 
     for( var phrase in times[type] ){
         if( input !== null && input <= times[type][phrase][1] ){
-            str = `<strong>${phrase}</strong>`;
-            break;
+            return phrase;
         }
     }
     return str;
 };
 
-const temperatureToStr = function( data, type, units ){
+export const temperatureToStr = function( data, type, units='i' ){
 
     var str = "N/A";
 
-    var temperature = {
+    const temperature = {
         "freezing": [Infinity,0],
         "very cold": [0,6],
         "cold": [6,10],
@@ -50,91 +70,61 @@ const temperatureToStr = function( data, type, units ){
         "scorching": [41, Infinity]
     };
 
-    for( var phrase in temperature ){
-        if( data.avg !== null &&  data.avg <= temperature[phrase][1] ){
-            str = `<strong>${phrase}</strong>`;
-            var min = unitConverter(data.min, "℃", units);
-            var max = unitConverter(data.max, "℃", units);
-            if ((data.min !== null && data.max !== null) && (data.max - data.min) > 10 && type == "day"){
-                str += ` with temperatures between ${min[0]}${min[1]} in the ${timeToStr(data.min_time, type)} and ${max[0]}${max[1]} in the ${timeToStr(data.max_time, type)}`;
-            }
-            else if ((data.min !== null && data.max !== null) && (data.max - data.min) > 10 && type == "month"){
-                str += ` with temperatures between ${min[0]}${min[1]} on ${timeToStr(data.min_day, type)} and ${max[0]}${max[1]} on ${timeToStr(data.max_day, type)}`;
-            }
-            else{
-                str += ` with an average temperature of ${data.avg? data.avg.toFixed(2) : data.avg}℃`;
-            }
-            break;
-        }
-    }
-    return str;
+    var min = unitConverter(data.min, "℃", units);
+    var max = unitConverter(data.max, "℃", units);
+    var avg = unitConverter(data.avg, "℃", units);
+
+    return (
+      <>
+        <strong>{valueAsWords(data.avg, temperature)}</strong>
+        {(type == "day" && (data.max - data.min) > 10 ) && <>
+            {' '}with temperatures between {min[0]}{min[1]}
+            {' '}in the <strong>{timeToStr(data.min_time, type)}</strong> and {max[0]}{max[1]}
+            {' '}in the <strong>{timeToStr(data.max_time, type)}</strong>
+        </>}
+        {(type == "month" && (data.max - data.min) > 10 ) && <>
+            {' '}with temperatures between {min[0]}{min[1]}
+            {' '}on <strong>{timeToStr(data.min_day, type)}</strong> and {max[0]}{max[1]}
+            {' '}on <strong>{timeToStr(data.max_day, type)}</strong>
+        </>}
+        {(type !== "month" && type !== "day" ) && <> with an average temperature of {avg}</>}
+      </>
+    );
 };
 
-const humidityToStr = function( data, type, units ){
+export const humidityToStr = function( data, type, units ){
      
-    var str = "N/A";
-
     var humidity = {
         "low": [0,30],
         "medium": [30,50],
         "high": [51,100]
     };
-
-    for( var phrase in humidity ){
-        if( (data.min !== null && data.max !== null && data.avg !== null ) &&  data.avg <= humidity[phrase][1] ){
-            str = `<strong>${phrase}</strong>`;
-            if( type == "day"){
-                if(phrase == 'low')
-                    str += ` with a minimum of ${data.min.toFixed(0) || data.min}%`;
-                if(phrase == 'medium')
-                    str += ` at an average of ${data.avg.toFixed(0) || data.avg}%`;
-                if(phrase == 'high')
-                    str += ` with a maximum of ${data.max.toFixed(0) || data.max}%`;
-            }
-            if( type == "month"){
-                str += ` (${data.avg.toFixed(0) || data.avg}%)`;
-            }
-
-            break;
-        }
-    }
     
-    return str;
+    return (
+        <>
+          <strong>{valueAsWords(data.avg, humidity)}</strong>
+          {(type == "day" && valueAsWords(data.avg, humidity) === 'low' ) && <> with a minimum of {data.min.toFixed(0) || data.min}%</>}
+          {(type == "day" && valueAsWords(data.avg, humidity) === 'medium' ) && <> at an average of {data.avg.toFixed(0) || data.avg}%</>}
+          {(type == "day" && valueAsWords(data.avg, humidity) === 'high' ) && <> with a maximum of {data.max.toFixed(0) || data.max}%</>}
+          {(type == "month" ) && <> ({data.avg.toFixed(0) || data.avg}%)</>}
+        </>
+      );
 };
 
-const airqualityToStr = function( data, type, units ){
-     
-    var str = "N/A";
+export const airqualityToStr = function( data, type, units ){
 
-    var airquality = {
-        "good": [0,50],
-        "moderate": [51,100],
-        "unhealthy for sensitive groups": [101,150],
-        "unhealthy": [151,200],
-        "very unhealthy": [201,300],
-        "hazardous": [301, Infinity]
-    };
-
-    var avg = null
-    for( var phrase in airquality ){
-        if( data.avg !== null && data.avg <= airquality[phrase][1] ){
-            avg = phrase;
-            str = `<strong>${phrase}</strong>`;
-            break;
-        }
-    }
-
-    for( phrase in airquality ){
-        if( data.max !== null && data.max <= airquality[phrase][1] ){
-            if(  str != avg && type == "day")
-                str += ` reaching <strong>${phrase}</strong> levels in the ${timeToStr(data.max_time, type)}`;
-            else if(  str != avg && type == "month")
-                str += ` reaching <strong>${phrase}</strong> levels on ${timeToStr(data.max_day, type)}`;
-            break;
-        }
+    const airquality = {};
+    for (let item of aqi.items) {
+        airquality[item.title.toLowerCase()] = item.range; 
     }
     
-    return str;
+    return (
+        <>
+          <strong>{valueAsWords(data.avg, airquality)}</strong>
+          {(type == "day" ) && <> reaching <strong>{valueAsWords(data.max, airquality)}</strong> levels in the <strong>{timeToStr(data.max_time, type)}</strong></>}
+          {(type == "month" ) && <> reaching <strong>{valueAsWords(data.max, airquality)}</strong> levels on <strong>{data.max_day}</strong></>}
+        </>
+      );
 };
 
 export const almanacSummary = function( data, type, units ){
@@ -165,3 +155,12 @@ export const almanacSummary = function( data, type, units ){
 
     return str || "";
 };
+
+export function valueAsWords(value, description) {
+    for (let key in description) {
+        if (value >= description[key][0] && value < description[key][1]) {
+            return key;
+        }
+    }
+    return value;
+}
