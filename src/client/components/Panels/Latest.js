@@ -15,11 +15,13 @@ import { LabelGetUnit } from '../../helpers/label-format';
 
 export default function Latest(props) {
 
+  const [state] = useContext(SettingsContext);
+
   if(Array.isArray(props.rows) && props.rows.length >0)
     return (
       <Card className='card rounded-0 mt-4'>
         <Card.Body>
-          <a className='float-end bg-transparent border-0' href='/download/latest' title="Download Latest Observations">
+          <a className='float-end bg-transparent border-0' href={`/download/latest${state.units !=='metric'? `?units=${state.units}`: '' }`} title="Download Latest Observations">
             <i className='bi bi-download text-muted' />
           </a>
           <Card.Title className='text-info'>Latest Observations</Card.Title>

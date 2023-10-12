@@ -79,27 +79,45 @@ router.get('/:date', async (req, res) => {
                 ])
                 .then(rows => {
                     rows = rows.map( row => {
-                    for(let key in row){
-                        if(req.query.units && req.query.units === 'imperial'){
-                            let converted = unitConverter(row[key], key, 'i')
-                            let new_key = key.replace(/\[(C|hPa)\]/gi, function (x) {
-                                if(x.toLowerCase() === '[c]')
-                                    return '[F]'
-                                if(x.toLowerCase() === '[hpa]')
-                                    return '[inHg]'
-                                return x;
-                            });
-                            if(key !== new_key){
-                                row[new_key] = converted[0]
-                                delete row[key]
+                        for(let key in row){
+                            if(key == 'Time')
+                                continue;
+                            if(req.query.units && req.query.units === 'imperial'){
+                                let converted = unitConverter(row[key], key, 'imperial')
+                                let new_key = key.replace(/\[(C|hPa)\]/gi, function (x) {
+                                    if(x.toLowerCase() === '[c]')
+                                        return '[F]'
+                                    if(x.toLowerCase() === '[hpa]')
+                                        return '[inHg]'
+                                    return x;
+                                });
+                                if(key !== new_key){
+                                    row[new_key] = converted[0]
+                                    delete row[key]
+                                }
+                                else
+                                    row[key] = converted[0]
                             }
-                            else
-                                row[key] = converted[0]
+                            if(req.query.units && req.query.units === 'si'){
+                                let converted = unitConverter(row[key], key, 'si')
+                                let new_key = key.replace(/\[(C|hPa)\]/gi, function (x) {
+                                    if(x.toLowerCase() === '[c]')
+                                        return '[K]'
+                                    if(x.toLowerCase() === '[hpa]')
+                                        return '[Pa]'
+                                    return x;
+                                });
+                                if(key !== new_key){
+                                    row[new_key] = converted[0]
+                                    delete row[key]
+                                }
+                                else
+                                    row[key] = converted[0]
+                            }
                         }
                         row['Time'] = dayjs(row['Time']).tz(device_timezone).format();
                         return row;
-                    }
-                });
+                    });
                 let json2csv = new Parser();
                 let csv = rows.length == 0? "" : json2csv.parse(rows);
                 res.header('Content-Type', 'text/csv');

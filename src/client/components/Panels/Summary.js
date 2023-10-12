@@ -33,10 +33,12 @@ export default function Summary(props) {
 
 function SummaryTable(props) {
 
+  const [state] = useContext(SettingsContext);
+  
   const period = (props.period === 'now')? 'today' : `the period of a ${props.period}`
   const left = props.left || []
   const right =  props.right || []
-  const download =  `/download/${props.download}` || '#'
+  const download =  `/download/${props.download}${state.units !=='metric'? `?units=${state.units}`: '' }` || '#'
 
   return (
     <Card>

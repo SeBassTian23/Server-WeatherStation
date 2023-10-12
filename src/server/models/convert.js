@@ -1,20 +1,33 @@
-const _ = require('lodash');
+const {round} = require('lodash');
 
 // Convert units from metric into imperial
-var unitConverter = function( value, unit, format){
+var unitConverter = function( value, unit=null, format=null){
 
-  if( (format === undefined || format === null) && unit === undefined){
+  // if unit and format are not available
+  if( (unit === undefined || unit === null)){
     return [value, ""];
   }
-  if( (unit == "℃" || unit.match(/\[C\]/i) ) && format == "i" && value != "N/A" ){
-    return [ _.round(value * 1.8 + 32, 2), "℉" ];
+
+  // Convert temperature from Celsius to Fahrenheit or Kelvin
+  if( (unit == "℃" || unit.match(/\[C|℃\]/i) ) ){
+    if( ['imperial', 'i'].indexOf(format) > -1 )
+      return [ round(value * 1.8 + 32, 2), "℉" ];
+    if( ['si'].indexOf(format) > -1 )
+      return [ round(value + 273.15, 2), "K" ];
+    return [ round(value, 2), "℃" ];
   }
-  else if( (unit == "hPa" || unit.match(/\[hPa\]/i)) && format == "i" && value != "N/A" ){
-    return [ _.round(value * 0.02952998751 , 2), "inHg" ];
+  
+  // Convert pressure from hectopascals to inches Mercury or pascals
+  if( (unit == "hPa" || unit.match(/\[hPa\]/i) ) ){
+    if( ['imperial', 'i'].indexOf(format) > -1 )
+      return [ round(value * 0.02952998751 , 2), "inHg" ];
+    if( ['si'].indexOf(format) > -1 )
+      return [ round(value * 100, 2), "Pa" ];
+    return [ round(value, 2), "hPa" ];
   }
-  else{
-    return [value, unit];
-  }
+
+  return [round(value, 2), unit]
+
 };
 
 module.exports = unitConverter;
