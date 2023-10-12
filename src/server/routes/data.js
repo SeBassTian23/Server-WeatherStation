@@ -1,13 +1,20 @@
 var express = require('express');
 var router = express.Router();
 
-const {isInteger, isNumber} = require('lodash');
+const {isInteger, isNumber, cloneDeep, merge} = require('lodash');
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
 
+const DEVICE_ID = process.env.DEVICE_ID;
+
+const queryAppData = require('../db/queryAppData.js');
+const buildSideBarData = require('../models/buildSideBarData');
+
 const COLUMNS_TO_DISPLAY = require('../constants/db-cols.json');
+const PAGE_DATA_TEMPLATE = require('../models/page_data_template');
+
 
 /* Database */
 let db = require('../db/sqlite.js');
@@ -290,6 +297,38 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
         res.status(404).json({
             error: `No dataset for the query »${req.params.datum}« available.`            
         });
+    }
+});
+
+router.get('/status', (req, res) => {
+    if( req.query.token === undefined || req.query.token !== API_TOKEN){
+        res.status(403).json({
+            error: `Provide the correct token to get data.`            
+        });
+    }
+    else{
+        
+        var data = cloneDeep(PAGE_DATA_TEMPLATE);
+        var status = data.sidebar
+        
+        // Get the application data infro
+        const q1 = queryAppData(DEVICE_ID);
+        
+        Promise.all([q1]).then(function (values) {
+            status = merge(status, buildSideBarData(values[0]))
+            res.json({
+                message: `success`,
+                details: `status`,
+                body: status
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: `Query Error`,
+                errorMessage: String(err).replace(/Error:\s?/i,' ')
+            }); 
+        });
+
     }
 });
 

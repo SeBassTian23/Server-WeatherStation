@@ -23,7 +23,14 @@ export default function Past(props) {
       cachedData = localStorage.getItem('cachedData') || '{}';
       cachedData = JSON.parse(cachedData)
       if(cachedData[props.path] !== undefined ){
-        setData(cachedData[props.path]);
+        fetch('/data/status')
+        .then(res => res.json())
+        .then(obj => {
+          setData({...cachedData[props.path], ...obj.body});
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
         return
       }
     }
@@ -33,6 +40,7 @@ export default function Past(props) {
       .then(obj => {
         if(state.cache === 'on'){
           cachedData[props.path] = obj.body;
+          delete cachedData[props.path].sidebar
           localStorage.setItem('cachedData', JSON.stringify(cachedData))
         }
         setData(obj.body);
