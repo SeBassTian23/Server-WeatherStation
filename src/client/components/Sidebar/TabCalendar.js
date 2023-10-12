@@ -88,7 +88,6 @@ function CalendarCard(props) {
     return (
         <Card className='rounded-0 my-2'>
             <Card.Body id='calendar'>
-                {/* minDate={} onClick=(value) value={new Date()} selectRange={true} */}
                 <Calendar
                     calendarType={state.calendarType}
                     selectRange={false}

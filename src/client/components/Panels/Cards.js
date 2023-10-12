@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
@@ -7,20 +7,25 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 dayjs.extend(localizedFormat)
 
+import { SettingsContext } from '../../context/settingsContext';
+import { unitConverter } from '../../helpers/convert';
 import {LabelUnitStrip, LabelGetUnit} from '../../helpers/label-format'
 
 import {aqi,uvi,hi} from '../../constants/parameters'
 
 export default function Cards(props) {
 
+  const [state] = useContext(SettingsContext);
   const items = props.items || []
   
   return (
     <>
       {items.map( (card,idx) => {
         
+        const value = unitConverter(card.value, LabelGetUnit(card.label), state.units)
+        
         // Content for card title tag
-        let cardTitle = `${LabelUnitStrip(card.label)}: ${card.value} ${LabelGetUnit(card.label)||''}`
+        let cardTitle = `${LabelUnitStrip(card.label)}: ${value.join(" ")}`
         
         let icon = null;
 
@@ -90,16 +95,16 @@ export default function Cards(props) {
           icon = <i className='bi-sunrise-fill' />
 
         if(card.label === 'Sunset')
-          icon = <i className='bi-sunset-fill' />          
+          icon = <i className='bi-sunset-fill' />
 
         return (
           <Col className='text-center text-nowrap mb-2' key={idx}>
             <Card className={ card.size === 'sm' ? 'h-100 mini-card' : ''} title={cardTitle.trimEnd()}>
               <div className={`fw-light mt-2 mb-0 ${card.size === 'lg' ? 'fs-4' : 'fs-5'}`} data-field={card.field}>
                 {icon && <strong className='text-info indicator'>{icon}</strong>}
-                {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(card.value).format('LT') : card.value}
+                {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(card.value).format('LT') : value[0]}
                 {LabelGetUnit(card.label) &&
-                  <span className='text-muted unit'>{LabelGetUnit(card.label)}</span>
+                  <span className='text-muted unit'>{value[1]}</span>
                 }
               </div>
               <span className='mb-2 d-block text-muted smaller'>{LabelUnitStrip(card.label)}</span>

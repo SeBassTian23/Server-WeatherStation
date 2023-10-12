@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import Card from 'react-bootstrap/Card'
 import Row from 'react-bootstrap/Row'
@@ -8,7 +8,10 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 dayjs.extend(localizedFormat)
 
-import { LabelUnitFormat } from '../../helpers/label-format';
+import { SettingsContext } from '../../context/settingsContext';
+import { unitConverter } from '../../helpers/convert';
+import { LabelUnitStrip } from '../../helpers/label-format'; 
+import { LabelGetUnit } from '../../helpers/label-format';
 
 export default function Latest(props) {
 
@@ -29,8 +32,15 @@ export default function Latest(props) {
 
 const LatestContent = (props) => {
 
+  const [state] = useContext(SettingsContext);
+
   const header = props.columns || []
   const rows = props.rows || []
+
+  const formatHeader = (itm) => {
+    let unit = unitConverter(1, LabelGetUnit(itm), state.units)[1]
+    return `${LabelUnitStrip(itm)}${unit? ` [${unit}]`: '' }`
+  }
 
   if(header.length > 0 & rows.length >0){
     return (
@@ -39,7 +49,7 @@ const LatestContent = (props) => {
           <thead className='thead-light text-center small'>
             <tr>
               {header.map( (name,idx) => (
-                <td key={idx}>{LabelUnitFormat(name)}</td>
+                <td key={idx}>{formatHeader(name)}</td>
                 )
               )}
             </tr>
@@ -49,7 +59,7 @@ const LatestContent = (props) => {
                 <tr key={idx}>
                   {header.map( (name, idx) => (
                     <td key={idx}>{
-                        (name === 'Time')? dayjs(row[name]).format('LT'): row[name]
+                        (name === 'Time')? dayjs(row[name]).format('LT') : unitConverter(row[name], name, state.units)[0]
                       }</td>
                     )
                   )} 

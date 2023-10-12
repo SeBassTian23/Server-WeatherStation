@@ -12,11 +12,9 @@ export default function Almanac(props) {
     return <></>
 
   const period = periodToStr(props.type);
-  const temperature = temperatureToStr( props.params['Temperature [C]'] || {}, props.type);
+  const temperature = temperatureToStr( props.params['Temperature [C]'] || {}, props.type, props.units);
   const humidity = humidityToStr( props.params['rel. Humidity [%]'] || [], props.type);
   const airquality = airqualityToStr( props.params['AQI'] || [], props.type);
-
-  console.log(props.params)
 
   if(!props.params['Temperature [C]'].avg && !props.params['rel. Humidity [%]'].avg && !props.params['AQI'].avg)
     return <></>

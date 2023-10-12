@@ -2,6 +2,7 @@ export const aqi = {
   title: "Air Quality Index",
   source: "airnow.gov",
   url: "https://www.airnow.gov/aqi/aqi-basics/",
+  unit: null,
   items: [
     {
       color: "rgb(0,228,0)",
@@ -46,6 +47,7 @@ export const uvi = {
   title: "UV Index",
   source: "who.int",
   url: "https://www.who.int/news-room/q-a-detail/radiation-the-ultraviolet-(uv)-index",
+  unit: null,
   items: [
     {
       color: "rgb(61,164,44)",
@@ -69,7 +71,7 @@ export const uvi = {
       color: "rgb(215,46,15)",
       title: "Very High",
       label: "8-10",
-      range: [8-10]
+      range: [8,10]
     },
     {
       color: "rgb(178,102,161)",
@@ -84,6 +86,7 @@ export const hi = {
   title: "Heat Index",
   source: "weather.gov",
   url: "https://www.weather.gov/ama/heatindex",
+  unit: "[C]",
   items: [
     {
       color: "#fff300",

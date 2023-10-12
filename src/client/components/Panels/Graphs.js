@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 
 import { cloneDeep } from 'lodash';
 
@@ -6,6 +6,11 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+
+import { SettingsContext } from '../../context/settingsContext';
+import { unitConverter } from '../../helpers/convert';
+import { LabelUnitStrip } from '../../helpers/label-format'; 
+import { LabelGetUnit } from '../../helpers/label-format';
 
 import {
   Chart as ChartJS,
@@ -135,7 +140,8 @@ export default function Graphs( props ) {
   )
 }
   
-const GraphContainer = ( props ) => {
+const GraphContainer = ( props ) => {  
+  const [state] = useContext(SettingsContext);
 
   const data = props.data || []
   const options = props.options || []
@@ -145,7 +151,9 @@ const GraphContainer = ( props ) => {
       for(let key in plot.traces){
         traces.push({
           label: plot.traces[key].l,
-          data: data[key] || [],
+          data: data[key].map(itm=>{
+            return {...itm, ...{'y': unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0]} }
+           }) || [],
           backgroundColor: color(plot.traces[key].c || 'grey').alpha(0.2).rgbString(),
           borderColor: color(plot.traces[key].c || 'grey').rgbString(),
           type: 'line',
@@ -168,9 +176,10 @@ const GraphContainer = ( props ) => {
       output.options.plugins.sunriseset.sunset = props.sunset || null;
 
       // Set y-axis label
+      let unit = unitConverter(1, LabelGetUnit(plot.yaxis), state.units)[1]
       output.options.scales.y = {
         title: {
-            text: plot.yaxis,
+            text: `${LabelUnitStrip(plot.yaxis)}${unit? ` [${unit}]`: '' }`,
             display: true
         }
       }
@@ -194,7 +203,6 @@ const GraphContainer = ( props ) => {
 
 
 const GraphCanvas = ( props ) => {
-
   const [chart, setChart] = useState(null);  
   const onDoubleClick = () => {
     if (chart) {

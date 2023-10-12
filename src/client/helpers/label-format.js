@@ -39,7 +39,7 @@ export const LabelUnitFormat = (str) => {
 }
 
 export const LabelUnitStrip = (str) => {
-  return str.replace(/\s?\[(C|F|%|hPa|V|ug\/m3|um\s|KOhms|um\/0.1L)\]\s?/i, '');
+  return str.replace(/\s?\[(C|F|%|hPa|V|ug\/m3|um\s|KOhms|um\/0.1L|℃|℉|µg\/m³|kΩ|µm\/0.1L|a\.u\.)\]\s?/i, '');
 }
 
 export const LabelGetUnit = (str) => {

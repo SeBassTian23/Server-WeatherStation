@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -6,12 +6,15 @@ import Col from 'react-bootstrap/Col';
 import Cards from './Cards'
 import Almanac from '../Helpers/Almanac'
 
+import {SettingsContext} from '../../context/settingsContext'
+
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 dayjs.extend(localizedFormat)
 
-
 export default function SubHeader(props) {
+
+  const [state] = useContext(SettingsContext);
 
   const [data, setData] = useState({
     almanac: '',
@@ -25,7 +28,7 @@ export default function SubHeader(props) {
 
   let summary = ''
   if (data.almanac != '')
-    summary = <Almanac {...data.almanac} />
+    summary = <Almanac {...data.almanac} units={state.units} />
   
   if (data.cards && data.cards.length > 0)
     summary = (

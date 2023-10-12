@@ -1,4 +1,4 @@
-import React,{ useState, useEffect } from 'react'
+import React,{ useState, useEffect, useContext } from 'react'
 
 import { LabelUnitStrip } from '../../helpers/label-format';
 
@@ -8,8 +8,10 @@ import Card from 'react-bootstrap/Card';
 import Table from 'react-bootstrap/Table'
 
 import NoData from '../Helpers/NoData';
-
 import Cards from './Cards'
+
+import {SettingsContext} from '../../context/settingsContext'
+import {unitConverter} from '../../helpers/convert'
 
 export default function Summary(props) {
 
@@ -96,36 +98,40 @@ function TableBody ( props ) {
 }
 
 function TableRow ( props ) {
-
+  const [state] = useContext(SettingsContext);
   let unit = ""
-  if( props.unit && props.unit !== "" )
-    unit = <small className="text-muted">[{props.unit}]</small>
+  if( props.unit && props.unit !== "" ){
+    unit = <small className="text-muted">[{unitConverter(1, props.unit, state.units)[1]}]</small>
+  }
 
   return (
     <tr>
       <td className='text-start'>{LabelUnitStrip(props.header)} <small className='text-muted'>{unit}</small></td>
       <td className='text-center'>
-        <ValueFormat value={props.avg} title={props.title} />
+        <ValueFormat value={props.avg} title={props.title} unit={props.header} />
       </td>
       <td className='text-end'>
-        <ValueFormat value={props.min} title={props.title} />
+        <ValueFormat value={props.min} title={props.title} unit={props.header} />
       </td>
       <td className='text-center small text-muted'>→</td>
       <td className='text-start'>
-        <ValueFormat value={props.max} title={props.title} />
+        <ValueFormat value={props.max} title={props.title} unit={props.header} />
       </td>
     </tr>
   )
 }
 
 function ValueFormat(props) {
+  const [state] = useContext(SettingsContext);
   //(class=`index ${addClass}`) #{value}] #[small #[small.text-muted #{unit}]]
+  const value = unitConverter(props.value, props.unit, state.units)[0]
+
   if( props.addClass )
     return(
-      <span className={props.addClass} title={props.title ? props.title: null}>{props.value}</span>
+      <span className={props.addClass} title={props.title ? props.title: null}>{value}</span>
     )
   return (
-    props.value
+    value
   )
 }
     

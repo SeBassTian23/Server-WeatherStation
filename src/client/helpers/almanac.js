@@ -53,7 +53,7 @@ export const timeToStr = function( input, type ){
     return str;
 };
 
-export const temperatureToStr = function( data, type, units='i' ){
+export const temperatureToStr = function( data, type, units='metric' ){
 
     var str = "N/A";
 
@@ -70,21 +70,21 @@ export const temperatureToStr = function( data, type, units='i' ){
         "scorching": [41, Infinity]
     };
 
-    var min = unitConverter(data.min, "℃", units);
-    var max = unitConverter(data.max, "℃", units);
-    var avg = unitConverter(data.avg, "℃", units);
+    var min = unitConverter(data.min, "[C]", units);
+    var max = unitConverter(data.max, "[C]", units);
+    var avg = unitConverter(data.avg, "[C]", units);
 
     return (
       <>
         <strong>{valueAsWords(data.avg, temperature)}</strong>
         {(type == "day" && (data.max - data.min) > 10 ) && <>
-            {' '}with temperatures between {min[0]}{min[1]}
-            {' '}in the <strong>{timeToStr(data.min_time, type)}</strong> and {max[0]}{max[1]}
+            {' '}with temperatures between {min}
+            {' '}in the <strong>{timeToStr(data.min_time, type)}</strong> and {max}
             {' '}in the <strong>{timeToStr(data.max_time, type)}</strong>
         </>}
         {(type == "month" && (data.max - data.min) > 10 ) && <>
-            {' '}with temperatures between {min[0]}{min[1]}
-            {' '}on <strong>{timeToStr(data.min_day, type)}</strong> and {max[0]}{max[1]}
+            {' '}with temperatures between {min}
+            {' '}on <strong>{timeToStr(data.min_day, type)}</strong> and {max}
             {' '}on <strong>{timeToStr(data.max_day, type)}</strong>
         </>}
         {(type !== "month" && type !== "day" ) && <> with an average temperature of {avg}</>}
