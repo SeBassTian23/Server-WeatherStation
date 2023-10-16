@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
 import { cloneDeep } from 'lodash';
 
@@ -9,7 +9,7 @@ import Row from 'react-bootstrap/Row';
 
 import { SettingsContext } from '../../context/settingsContext';
 import { unitConverter } from '../../helpers/convert';
-import { LabelUnitStrip } from '../../helpers/label-format'; 
+import { LabelUnitStrip } from '../../helpers/label-format';
 import { LabelGetUnit } from '../../helpers/label-format';
 
 import {
@@ -47,43 +47,43 @@ import zoomPlugin from 'chartjs-plugin-zoom';
 
 import { Line } from 'react-chartjs-2';
 
-import {chartOptions} from '../../constants/graph'
+import { chartOptions } from '../../constants/graph'
 
 // const color = ChartJS.helpers.color;
 
 const sunRiseSetPlugin = {
-    id: 'sunriseset',
-    version: '1.0.0',
-    beforeDraw(chart, args, options) {
-        if(options.sunrise || options.sunset){
-            var ctx = chart.ctx;
-            var chartArea = chart.chartArea;
-    
-            var height = chartArea.bottom - chartArea.top;
-    
-            ctx.save();
-    
-            ctx.fillStyle = options.backgroundColor || 'rgba(235, 235, 235, 0.5)';
-            
-            // Sunrise
-            if(options.sunrise){
-                var riseWidth = chart.scales.x.getPixelForValue( chart.scales.x.parse(options.sunrise) ) - chartArea.left;
-                if(riseWidth > 0)
-                    ctx.fillRect(chartArea.left, chartArea.top, riseWidth, height); // Changed order
-    
-            }
-            // Sunset
-            if(options.sunset){
-                var setWidth = chartArea.right - chart.scales.x.getPixelForValue( chart.scales.x.parse(options.sunset) );
-                if(setWidth > 0)
-                    ctx.fillRect(chartArea.right-setWidth, chartArea.top, setWidth, height); // Changed order
-            }
-            ctx.restore();
-        }
-    }
-  };
+  id: 'sunriseset',
+  version: '1.0.0',
+  beforeDraw(chart, args, options) {
+    if (options.sunrise || options.sunset) {
+      var ctx = chart.ctx;
+      var chartArea = chart.chartArea;
 
-ChartJS.register(  ArcElement,
+      var height = chartArea.bottom - chartArea.top;
+
+      ctx.save();
+
+      ctx.fillStyle = options.backgroundColor || 'rgba(235, 235, 235, 0.5)';
+
+      // Sunrise
+      if (options.sunrise) {
+        var riseWidth = chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunrise)) - chartArea.left;
+        if (riseWidth > 0)
+          ctx.fillRect(chartArea.left, chartArea.top, riseWidth, height); // Changed order
+
+      }
+      // Sunset
+      if (options.sunset) {
+        var setWidth = chartArea.right - chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunset));
+        if (setWidth > 0)
+          ctx.fillRect(chartArea.right - setWidth, chartArea.top, setWidth, height); // Changed order
+      }
+      ctx.restore();
+    }
+  }
+};
+
+ChartJS.register(ArcElement,
   LineElement,
   BarElement,
   PointElement,
@@ -110,16 +110,16 @@ ChartJS.register(  ArcElement,
   zoomPlugin,
   sunRiseSetPlugin);
 
-export default function Graphs( props ) {
+export default function Graphs(props) {
 
   const [isGraphWidth, setGraphWidth] = useState("false");
   const ToggleGraphWidth = () => {
-    setGraphWidth(!isGraphWidth); 
+    setGraphWidth(!isGraphWidth);
   };
 
-  const period = (props.period === 'now')? 'today' : `over the period of a ${props.period}`
+  const period = (props.period === 'now') ? 'today' : `over the period of a ${props.period}`
 
-  if(props.data && Object.keys(props.data).length === 0)
+  if (props.data && Object.keys(props.data).length === 0)
     return (<></>)
 
   return (
@@ -139,76 +139,100 @@ export default function Graphs( props ) {
     </Card>
   )
 }
-  
-const GraphContainer = ( props ) => {  
+
+const GraphContainer = (props) => {
   const [state] = useContext(SettingsContext);
+
+  const [theme, setTheme] = useState(state.theme);
 
   const data = props.data || []
   const options = props.options || []
 
-  let graphSetup = options.map( (plot,idx) => {
-      let traces = []
-      for(let key in plot.traces){
-        traces.push({
-          label: plot.traces[key].l,
-          data: data[key].map(itm=>{
-            return {...itm, ...{'y': unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0]} }
-           }) || [],
-          backgroundColor: color(plot.traces[key].c || 'grey').alpha(0.2).rgbString(),
-          borderColor: color(plot.traces[key].c || 'grey').rgbString(),
-          type: 'line',
-          pointRadius: 0,
-          fill: false,
-          lineTension: 0,
-          borderWidth: 2
-        })
+  useEffect(() => {
+
+    setTheme(state.theme)
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      setTheme(theme)
+    })
+
+  }, [state.theme])
+
+  let graphSetup = options.map((plot, idx) => {
+    let traces = []
+    for (let key in plot.traces) {
+      traces.push({
+        label: plot.traces[key].l,
+        data: data[key].map(itm => {
+          return { ...itm, ...{ 'y': unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } }
+        }) || [],
+        backgroundColor: color(plot.traces[key].c || 'grey').alpha(0.2).rgbString(),
+        borderColor: color(plot.traces[key].c || 'grey').rgbString(),
+        type: 'line',
+        pointRadius: 0,
+        fill: false,
+        lineTension: 0,
+        borderWidth: 2
+      })
+    }
+
+    let output = {
+      options: cloneDeep(chartOptions),
+      data: {
+        datasets: traces
       }
+    }
 
-     let output = {
-        options: cloneDeep(chartOptions),
-        data: {
-          datasets: traces
-        }       
+    // Set sunrise/sunset
+    output.options.plugins.sunriseset.sunrise = props.sunrise || null;
+    output.options.plugins.sunriseset.sunset = props.sunset || null;
+
+    // Set y-axis label
+    let unit = unitConverter(1, LabelGetUnit(plot.yaxis), state.units)[1]
+    output.options.scales.y = {
+      title: {
+        text: `${LabelUnitStrip(plot.yaxis)}${unit ? ` [${unit}]` : ''}`,
+        display: true
       }
+    }
 
-      // Set sunrise/sunset
-      output.options.plugins.sunriseset.sunrise = props.sunrise || null; 
-      output.options.plugins.sunriseset.sunset = props.sunset || null;
+    if (theme === 'dark') {
+      output.options.scales.x.grid = { color: 'rgba(255, 255, 255, 0.15)' };
+      output.options.scales.y.grid = { color: 'rgba(255, 255, 255, 0.15)' };
+      output.options.scales.x.ticks = { color: 'rgb(222, 226, 230)' };
+      output.options.scales.y.ticks = { color: 'rgb(222, 226, 230)' };
+      output.options.scales.y.title['color'] = 'rgb(222, 226, 230)';
+      output.options.color = 'rgb(222, 226, 230)';
+    }
+    else {
+      output.options.color = ChartJS.defaults.color;
+    }
 
-      // Set y-axis label
-      let unit = unitConverter(1, LabelGetUnit(plot.yaxis), state.units)[1]
-      output.options.scales.y = {
-        title: {
-            text: `${LabelUnitStrip(plot.yaxis)}${unit? ` [${unit}]`: '' }`,
-            display: true
-        }
-      }
-
-      return output;
+    return output;
   })
 
-  if(graphSetup.length > 0){
+  if (graphSetup.length > 0) {
     return (
       <Row xs={1} className={props.className} id='graphs-container'>
-        {graphSetup.map( (g, idx) => (
-            <Col className='py-3' key={idx}>
-              <GraphCanvas {...g} idx={idx} />
-            </Col>
-          )
-        )}   
+        {graphSetup.map((g, idx) => (
+          <Col className='py-3' key={idx}>
+            <GraphCanvas {...g} idx={idx} />
+          </Col>
+        )
+        )}
       </Row>
     )
   }
 }
 
-
-const GraphCanvas = ( props ) => {
-  const [chart, setChart] = useState(null);  
+const GraphCanvas = (props) => {
+  const [chart, setChart] = useState(null);
   const onDoubleClick = () => {
     if (chart) {
       chart.resetZoom();
     }
   }
 
-  return <Line ref={setChart} width={400} height={175} id={`graph-${props.idx}`} options={ props.options } data={props.data} className="ratio ratio-21x9" onDoubleClick={(e) => onDoubleClick()} />
+  return <Line ref={setChart} width={400} height={175} id={`graph-${props.idx}`} options={props.options} data={props.data} className="ratio ratio-21x9" onDoubleClick={(e) => onDoubleClick()} />
 }
