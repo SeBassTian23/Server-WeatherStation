@@ -19,10 +19,10 @@ import '../../styles/calendar.css';
 export default function TabCalendar(props) {
 
     const [dates, setDates] = useState({
-        minDate: new Date(),
-        maxDate: new Date(),
-        currentDate: new Date(),
-        selectedDate: new Date()
+        minDate: new Date(props.minDate) || new Date(),
+        maxDate: new Date(props.maxDate) || new Date(),
+        currentDate: new Date(props.currentDate) || new Date(),
+        selectedDate: dayjs(props.selectedDate).isValid()? dayjs(props.selectedDate).toDate() : new Date()
     });
 
     useEffect(() => {
@@ -30,10 +30,9 @@ export default function TabCalendar(props) {
             minDate: new Date(props.minDate) || new Date(),
             maxDate: new Date(props.maxDate) || new Date(),
             currentDate: new Date(props.currentDate) || new Date(),
-            selectedDate: new Date(props.selectedDate) || new Date()
+            selectedDate: dayjs(props.selectedDate).isValid()? dayjs(props.selectedDate).toDate() : new Date()
         })
-    }, [props])
-
+    }, [props.selectedDate])
     return (
         <TabPane eventKey='calender'>
             <CalendarCard {...dates} />

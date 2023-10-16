@@ -19,7 +19,7 @@ export const apiStructure = {
           "minDate": new Date(),
           "maxDate": new Date(),
           "currentDate": new Date(),
-          "selectedDate": `${new Date().getFullYear()}-${new Date().getDate()}-${new Date().getDay()+1}`
+          "selectedDate": new Date()
       },
       "station": {
           "device": {

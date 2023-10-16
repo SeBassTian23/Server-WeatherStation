@@ -198,7 +198,7 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})/:day([0-9]{1,2})', function (req
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, selectedDate))
+    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, dayjs(selectedDate).format('YYYY-MM-DD')))
 
     res.json({
       message: `success`,
@@ -308,7 +308,7 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, selectedDate))
+    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, dayjs(selectedDate).format('YYYY-MM')))
 
     res.json({
       message: `success`,

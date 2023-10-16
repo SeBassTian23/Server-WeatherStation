@@ -25,14 +25,14 @@ function fileSizeSI(a, b, c, d, e) {
 }
 
 // Sidebar - Device Info
-const buildSideBarData = function (appdata, selectedDate = null) {
+const buildSideBarData = function (appdata, selectedDate = new Date()) {
 
   let active = dayjs(new Date()).diff(appdata.latest, 'minute');
   return {
     calendar: {
       minDate: appdata.start || new Date(),
       maxDate: appdata.latest || new Date(),
-      selectedDate: selectedDate || new Date(),
+      selectedDate: selectedDate,
       currentDate: new Date(),
     },
     station: {
