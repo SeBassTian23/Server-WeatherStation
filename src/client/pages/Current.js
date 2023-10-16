@@ -10,22 +10,36 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import useEventStream from '../hooks/useEventStream'
+// import useEventStream from '../hooks/useEventStream'
 import {apiStructure} from '../constants/api'
 
 export default function Current(props) {
 
   const [data, setData] = useState(apiStructure);
-  const [stream, setStream] = useState(null)
-
-  
-  // useEventStream('/data/stream', setStream);
 
   useEffect(() => {
-    const eventSource = new EventSource(`/data/stream`);
-    eventSource.onmessage = (e) => console.log(e.data);
+    const sse = new EventSource('/data/stream',
+      { withCredentials: true });
+    function getRealtimeData(data) {
+      // process the data here,
+      // then pass it to state to be rendered
+      console.log('Data udpated')
+      fetch('/api/')
+        .then(res => res.json())
+        .then(obj => {  
+          setData(obj.body);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
+    sse.onmessage = e => getRealtimeData(e.data);
+    sse.onerror = () => {
+      // error log here 
+      sse.close();
+    }
     return () => {
-      eventSource.close();
+      sse.close();
     };
   }, []);
 
@@ -38,7 +52,7 @@ export default function Current(props) {
       .catch((err) => {
         console.log(err.message);
       });
-  }, [props.path, stream]);
+  }, [props.path]);
 
   return (
     <main>

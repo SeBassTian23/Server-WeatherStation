@@ -27,20 +27,40 @@ const replaceInKeysWith = require('../helpers/replaceInKeysWith')
 const API_TOKEN = process.env.API_TOKEN;
 const DB_TYPE = process.env.SQLITE_FILE? "SQLITE" : process.env.MONGO_CONNECTION_STRING? "MONGODB" : null || "SQLITE"
 
-const EventEmitter = require('events');
-const Stream = new EventEmitter(); // my event emitter instance
+// Clients for streams
+let clients = []
+
+// Sent udpate notification to all clients
+function sendEventsToAll(newFact) {
+    clients.forEach(client => client.res.write(`data: ${JSON.stringify(newFact)}\n\n`))
+  }
 
 /* Stream triggered when a new datapoint is pushed */
 router.get('/stream', (req, res) => {
     res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive'
-  });
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        // "Access-Control-Allow-Origin": "*",
+        // "Access-Control-Allow-Headers":
+        // "Origin, X-Requested-With, Content-Type, Accept",
+    });
 
-  Stream.once("push", function(event, data) {
-    res.write(`data: ${data.msg}\n\n`);
-  });
+    const clientId = Date.now();
+
+    const newClient = {
+        id: clientId,
+        res
+      };
+    
+    clients.push(newClient);
+
+    // Close connection if client drops out
+    res.on('close', () => {
+        clients = clients.filter(client => client.id !== clientId);
+        console.log('Client dropped connection.');
+        res.end();
+    });
 });
 
 /* GET home page. */
@@ -352,7 +372,7 @@ router.post('/', (req, res) => {
             const entry = new Data(replaceInKeysWith(insert, '\\.', ','));
             entry.save()
             .then((savedEntry)=>{
-                Stream.emit("push", "data", { id: savedEntry._id, msg: 'New Data Point' });
+                sendEventsToAll({ id: savedEntry._id, msg:'New Datapoint Added', created_at: new Date().toISOString() });
                 res.json({
                     message: `success`,
                     details: `Dataset saved with ID »${savedEntry._id}«.`,
@@ -401,7 +421,7 @@ router.post('/', (req, res) => {
                                 error: `Database query failed.`
                             });
                         }
-                        Stream.emit("push", "data", { id: row.ID, msg: 'New Data Point' });
+                        sendEventsToAll({ id: row.ID, msg:'New Datapoint Added', created_at: new Date().toISOString() });
                         res.json({
                             message: `success`,
                             details: `Dataset saved with ID »${row.ID}«.`,
