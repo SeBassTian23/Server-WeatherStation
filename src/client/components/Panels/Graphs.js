@@ -49,8 +49,6 @@ import { Line } from 'react-chartjs-2';
 
 import { chartOptions } from '../../constants/graph'
 
-// const color = ChartJS.helpers.color;
-
 const sunRiseSetPlugin = {
   id: 'sunriseset',
   version: '1.0.0',
@@ -150,12 +148,14 @@ const GraphContainer = (props) => {
 
   useEffect(() => {
 
-    setTheme(state.theme)
+    if(state.theme === 'auto')
+      setTheme( window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' );
+    else
+      setTheme(state.theme);
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      setTheme(theme)
-    })
+      setTheme( window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' );
+    });
 
   }, [state.theme])
 
@@ -164,9 +164,9 @@ const GraphContainer = (props) => {
     for (let key in plot.traces) {
       traces.push({
         label: plot.traces[key].l,
-        data: data[key].map(itm => {
+        data: data[key]? data[key].map(itm => {
           return { ...itm, ...{ 'y': unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } }
-        }) || [],
+        }) : [],
         backgroundColor: color(plot.traces[key].c || 'grey').alpha(0.2).rgbString(),
         borderColor: color(plot.traces[key].c || 'grey').rgbString(),
         type: 'line',
@@ -198,15 +198,17 @@ const GraphContainer = (props) => {
     }
 
     if (theme === 'dark') {
-      output.options.scales.x.grid = { color: 'rgba(255, 255, 255, 0.15)' };
-      output.options.scales.y.grid = { color: 'rgba(255, 255, 255, 0.15)' };
+      output.options.scales.x.grid = { color: 'rgba(255, 255, 255, 0.05)' };
+      output.options.scales.y.grid = { color: 'rgba(255, 255, 255, 0.05)' };
       output.options.scales.x.ticks = { color: 'rgb(222, 226, 230)' };
       output.options.scales.y.ticks = { color: 'rgb(222, 226, 230)' };
       output.options.scales.y.title['color'] = 'rgb(222, 226, 230)';
+      output.options.plugins.sunriseset.backgroundColor = 'rgba(235, 235, 235, 0.1)'
       output.options.color = 'rgb(222, 226, 230)';
     }
     else {
       output.options.color = ChartJS.defaults.color;
+      output.options.plugins.sunriseset.backgroundColor = null;
     }
 
     return output;
