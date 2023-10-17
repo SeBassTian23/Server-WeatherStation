@@ -44,7 +44,7 @@ const PAGE_DATA_TEMPLATE = {
       },
       {
         yaxis: "Particle Count in 0.1 L",
-        traces: { ">0.3 um/0.1L": { "l": ">0.3", "c": colors.red }, ">0.5 um/0.1L": { "l": ">0.5", "c": colors.orange }, ">1.0 um/0.1L": { "l": ">1.0", "c": colors.yellow }, ">2.5 um/0.1L": { "l": ">2.5", "c": colors.green }, ">5.0 um/0.1L": { "l": ">5.0", "c": colors.blue }, ">10.0 um/0.1L": { "l": ">10.0", "c": colors.purple } }
+        traces: { ">0.3 [um/0.1L]": { "l": ">0.3", "c": colors.red }, ">0.5 [um/0.1L]": { "l": ">0.5", "c": colors.orange }, ">1.0 [um/0.1L]": { "l": ">1.0", "c": colors.yellow }, ">2.5 [um/0.1L]": { "l": ">2.5", "c": colors.green }, ">5.0 [um/0.1L]": { "l": ">5.0", "c": colors.blue }, ">10.0 [um/0.1L]": { "l": ">10.0", "c": colors.purple } }
       },
       {
         yaxis: "Index",
