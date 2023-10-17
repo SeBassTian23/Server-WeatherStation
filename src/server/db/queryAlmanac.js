@@ -1,11 +1,9 @@
-let db = require('./sqlite.js');
-const Data = require('./models/data');
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-const DB_TYPE = process.env.SQLITE_FILE? "SQLITE" : process.env.MONGO_CONNECTION_STRING? "MONGODB" : null || "SQLITE";
+const db = process.env.SQLITE_FILE? require('./sqlite.js') : null;
+const Data = process.env.MONGO_CONNECTION_STRING? require('./models/data') : null;
 
 const {min, max, mean } = require('lodash');
 
@@ -14,7 +12,7 @@ var queryAlmanac = function (device_id, start_time, end_time, header) {
 
   var query;
 
-  if(DB_TYPE === 'SQLITE'){
+  if(db){
     var h = header.map(function (x) {
       return `
       SELECT '${x}' as col, 'max' as type,  MAX(data.\`${x}\`) as value, created_at FROM data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}')
@@ -27,7 +25,7 @@ var queryAlmanac = function (device_id, start_time, end_time, header) {
     query = h.join("UNION");
   }
 
-  if(DB_TYPE === 'MONGODB')
+  if(Data)
     query = {
       device_id, 
       created_at: {
@@ -36,14 +34,14 @@ var queryAlmanac = function (device_id, start_time, end_time, header) {
       }
     }
 
-  if(DB_TYPE === 'SQLITE')
+  if(db)
     return new Promise(function (resolve, reject) {
       db.all(query, function (err, rows) {
         resolve(rows);
       });
     });
 
-  if(DB_TYPE === 'MONGODB')
+  if(Data)
     return Data.find(query, [...header, ...['created_at']].map(itm=>itm.replace(/\./g,','))).then((mongo) => {
       
       let data = {
@@ -90,7 +88,6 @@ var queryAlmanac = function (device_id, start_time, end_time, header) {
       }
       return output;
     });
-
 };
 
 module.exports = queryAlmanac;

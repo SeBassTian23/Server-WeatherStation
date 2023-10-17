@@ -15,17 +15,14 @@ const buildSideBarData = require('../models/buildSideBarData');
 const COLUMNS_TO_DISPLAY = require('../constants/db-cols.json');
 const PAGE_DATA_TEMPLATE = require('../models/page_data_template');
 
+const API_TOKEN = process.env.API_TOKEN;
 
 /* Database */
-let db = require('../db/sqlite.js');
+const db = process.env.SQLITE_FILE? require('../db/sqlite.js') : null;
+const Data = process.env.MONGO_CONNECTION_STRING? require('../db/models/data') : null;
+const Device = process.env.MONGO_CONNECTION_STRING? require('../db/models/device') : null;
 
-const Data = require('../db/models/data');
-const Device = require('../db/models/device');
-
-const replaceInKeysWith = require('../helpers/replaceInKeysWith')
-
-const API_TOKEN = process.env.API_TOKEN;
-const DB_TYPE = process.env.SQLITE_FILE? "SQLITE" : process.env.MONGO_CONNECTION_STRING? "MONGODB" : null || "SQLITE"
+const replaceInKeysWith = require('../helpers/replaceInKeysWith');
 
 // Clients for streams
 let clients = []
@@ -71,7 +68,7 @@ router.get('/', (req, res) => {
         });
     }
     else{
-        if(DB_TYPE == "MONGODB")
+        if(Data && Device)
             Device.findOne({default: true})
             .then(device => {
                 // Find all entries for the default device
@@ -107,7 +104,7 @@ router.get('/', (req, res) => {
                 }); 
             });
 
-        if(DB_TYPE == "SQLITE")
+        if(db)
             db.serialize(function(){
 
                 let device_id;
@@ -151,12 +148,12 @@ router.get('/vacuum', (req, res) => {
         });
     }
     else{
-        if(DB_TYPE == "MONGODB")
+        if(Data && Device)
             res.status(403).json({
                 error: `The Database doesn't support vacuuming.`
             });
 
-        if(DB_TYPE == "SQLITE")
+        if(db)
             db.get(`VACUUM;`, function(err, row){
                 if(err){
                     return res.status(500).json({
@@ -180,7 +177,7 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
     }
     else if(req.params.datum === "devices"){
 
-        if(DB_TYPE == "MONGODB")
+        if(Data && Device)
             Device.find({},{device: "$device_id", _id: 0}).then( rows => {
                 res.json({
                     message: `success`,
@@ -189,7 +186,7 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
                 });  
             });
 
-        if(DB_TYPE == "SQLITE")
+        if(db)
             db.serialize(function(){
                 db.all(`SELECT DISTINCT(data.device_id) AS device from data`, function(err, rows){
                     if(err){
@@ -207,7 +204,7 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
     }
     else if(req.params.datum === "latest"){
 
-        if(DB_TYPE == "MONGODB")
+        if(Data && Device)
             Device.findOne({default: true})
             .then(device => {
                 // Find all entries for the default device
@@ -243,7 +240,7 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
                 }); 
             });
         
-        if(DB_TYPE == "SQLITE")
+        if(db)
             db.serialize(function(){
 
                 let device_id;
@@ -278,7 +275,7 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
                 });
             });
     }
-    else if( isInteger(Number(req.params.datum)) && DB_TYPE == "SQLITE" ){
+    else if( isInteger(Number(req.params.datum)) && db ){
         // Only applies to SQLite Database
         db.serialize(function(){
             db.get(`SELECT data.* from data WHERE data.ID = ${Number(req.params.datum)} LIMIT 1`, function(err, row){
@@ -295,7 +292,7 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
             }); 
         });
     }
-    else if( req.params.datum.match(/^[0-9a-fA-F]{24}$/) && DB_TYPE == "MONGODB" ){
+    else if( req.params.datum.match(/^[0-9a-fA-F]{24}$/) && Data && Device ){
         // Only applies to MongoDB
         Data.findOne({_id: req.params.datum }, {__v: 0})
         .then( row => {
@@ -360,7 +357,7 @@ router.post('/', (req, res) => {
         });
     }
     else{
-        if(DB_TYPE == "MONGODB"){
+        if(Data && Device){
             var insert = {};
             var cols = [...COLUMNS_TO_DISPLAY]
             for(var i in cols){
@@ -387,7 +384,7 @@ router.post('/', (req, res) => {
             });
         }
 
-        if(DB_TYPE == "SQLITE")
+        if(db)
             db.serialize(function() {
                 var ins = [];
                 var cols = [...COLUMNS_TO_DISPLAY]

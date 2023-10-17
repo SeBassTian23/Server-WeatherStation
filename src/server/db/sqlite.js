@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const sqlite3 = require('sqlite3').verbose();
-const DBSOURCE = process.env.SQLITE_FILE || "./db.sqlite";
+const DBSOURCE = process.env.SQLITE_FILE || null;
 const DEVICE_ID = process.env.DEVICE_ID || "Placeholder";
 const DEVICE_DESCRIPTION = process.env.DEVICE_DESCRIPTION || "Greenwich, UK";
 const DEVICE_LATITUDE = process.env.DEVICE_LATITUDE || 51.4825766;
@@ -13,7 +13,7 @@ const DEVICE_LONGITUDE = process.env.DEVICE_LONGITUDE || 0;
 const DEVICE_ALTITUDE = process.env.DEVICE_ALTITUDE || 6;
 const DEVICE_TIMEZONE = process.env.DEVICE_TIMEZONE || "UTC";
 
-let db = new sqlite3.cached.Database(DBSOURCE, function(err){
+let db = !DBSOURCE? null : new sqlite3.cached.Database(DBSOURCE, function(err){
   if (err) {
     console.error( err.message );
     throw err;

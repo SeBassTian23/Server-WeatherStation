@@ -1,19 +1,17 @@
-let db = require('./sqlite.js');
-const Device = require('./models/device');
-const Data = require('./models/data');
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+const db = process.env.SQLITE_FILE? require('./sqlite.js') : null;
+const Data = process.env.MONGO_CONNECTION_STRING? require('./models/data') : null;
+const Device = process.env.MONGO_CONNECTION_STRING? require('./models/device') : null;
 
-const DB_TYPE = process.env.SQLITE_FILE ? "SQLITE" : process.env.MONGO_CONNECTION_STRING ? "MONGODB" : null || "SQLITE";
 const COLUMNS_TO_DISPLAY = require('../constants/db-cols.json');
 
 // Application Data
 var queryAppData = function (device_id) {
   var query;
 
-  if (DB_TYPE == 'SQLITE')
+  if (db)
     query = `SELECT 
       devices.device_id,
       devices.description,
@@ -38,7 +36,7 @@ var queryAppData = function (device_id) {
       LEFT JOIN data ON devices.device_id = data.device_id
       WHERE devices.device_id = "${device_id}"`
 
-  if (DB_TYPE == 'MONGODB')
+  if (Data && Device)
     query = [
       {
         $match: {
@@ -125,14 +123,14 @@ var queryAppData = function (device_id) {
     ]
 
 
-  if (DB_TYPE == 'SQLITE')
+  if (db)
     return new Promise(function (resolve, reject) {
       db.get(query, function (err, row) {
         resolve(row);
       });
     });
 
-  if (DB_TYPE == 'MONGODB'){
+  if (Data && Device){
     return Data.aggregate([
       {
         $collStats:

@@ -1,26 +1,23 @@
-let db = require('./sqlite.js');
-const Data = require('./models/data');
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+const db = process.env.SQLITE_FILE? require('./sqlite.js') : null;
+const Data = process.env.MONGO_CONNECTION_STRING? require('./models/data') : null;
 
 const replaceInKeysWith = require('../helpers/replaceInKeysWith');
-
-const DB_TYPE = process.env.SQLITE_FILE? "SQLITE" : process.env.MONGO_CONNECTION_STRING? "MONGODB" : null || "SQLITE";
 
 // Get Weather Data Summary
 var querySummary = function (device_id, start_time, end_time, header) {
 
   var query;
-  if(DB_TYPE == 'SQLITE'){
+  if(db){
     var h = header.map(function (x) {
       return `AVG("${x}") AS "AVG-${x}", MIN("${x}") AS "MIN-${x}", MAX("${x}") AS "MAX-${x}"`;
     });
     query = `SELECT "created_at" AS Time, ${h.join(",")} from data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}') ORDER BY ROWID DESC LIMIT 1`;
   }
 
-  if(DB_TYPE == 'MONGODB'){
+  if(Data){
     query = [
       {
         $match: {
@@ -59,18 +56,17 @@ var querySummary = function (device_id, start_time, end_time, header) {
     });
   }
 
-  if(DB_TYPE == 'SQLITE')
+  if(db)
     return new Promise(function (resolve, reject) {
       db.get(query, function (err, row) {
         resolve(row);
       });
     });
 
-  if(DB_TYPE == 'MONGODB')
+  if(Data)
     return Data.aggregate(query).then((mongo) => {
       return replaceInKeysWith(mongo[0], ",", ".");
     });
-
 };
 
 module.exports = querySummary;

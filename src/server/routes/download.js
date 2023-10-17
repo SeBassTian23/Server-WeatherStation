@@ -1,10 +1,6 @@
 var express = require('express');
 const { Parser } = require('@json2csv/plainjs');
-const db = require('../db/sqlite');
 var router = express.Router();
-
-const Data = require('../db/models/data');
-const Device = require('../db/models/device');
 
 var dayjs = require('dayjs');
 var timezone = require('dayjs/plugin/timezone');
@@ -16,6 +12,11 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
 
+/* Database */
+const db = process.env.SQLITE_FILE? require('../db/sqlite.js') : null;
+const Data = process.env.MONGO_CONNECTION_STRING? require('../db/models/data') : null;
+const Device = process.env.MONGO_CONNECTION_STRING? require('../db/models/device') : null;
+
 /* GET home page. */
 router.get('/', (req, res) => {
     res.status(400).send({
@@ -26,7 +27,6 @@ router.get('/', (req, res) => {
 
 const DEVICE_ID = process.env.DEVICE_ID;
 const DEVICE_TIMEZONE = process.env.DEVICE_TIMEZONE;
-const DB_TYPE = process.env.SQLITE_FILE? "SQLITE" : process.env.MONGO_CONNECTION_STRING? "MONGODB" : null || "SQLITE"
 
 const unitConverter = require('../models/convert.js');
 
@@ -60,7 +60,7 @@ router.get('/:date', async (req, res) => {
     
     var q = `SELECT * from data WHERE data.device_id = "${DEVICE_ID}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}') ORDER BY ROWID ASC`;
     
-    if(DB_TYPE == "MONGODB")
+    if(Data && Device)
         Device.findOne({default: true})
         .then(device => {
             // Find all entries for the default device
@@ -138,7 +138,7 @@ router.get('/:date', async (req, res) => {
             }); 
         });
 
-    if(DB_TYPE == "SQLITE")
+    if(db)
         db.all(q, function (err, rows) {
             if (err)
                 res.status(500).send();

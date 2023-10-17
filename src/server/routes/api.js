@@ -21,9 +21,6 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-/* Database */
-const DB_TYPE = process.env.SQLITE_FILE ? "SQLITE" : process.env.MONGO_CONNECTION_STRING ? "MONGODB" : null || "SQLITE"
-
 /* Constants */
 const DEVICE_ID = process.env.DEVICE_ID;
 const DEVICE_TIMEZONE = process.env.DEVICE_TIMEZONE;
@@ -57,17 +54,14 @@ router.get('/', function (req, res) {
   var start_time = dayjs().startOf('day').tz(DEVICE_TIMEZONE).toISOString();
   var end_time = dayjs().endOf('day').tz(DEVICE_TIMEZONE).toISOString();
 
-  var query;
-
-  if (DB_TYPE == "SQLITE")
-    query = `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" FROM data WHERE device_id = "${DEVICE_ID}" AND datetime(created_at) >= datetime('${start_time}') ORDER BY ROWID DESC`;
-
-  if (DB_TYPE == "MONGODB")
-    query = [
+  var query = {
+    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" FROM data WHERE device_id = "${DEVICE_ID}" AND datetime(created_at) >= datetime('${start_time}') ORDER BY ROWID DESC`,
+    "MONGODB": [
       { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_time) } } },
       { $addFields: { Time: '$created_at' } },
       { $project: { created_at: 0, _id: 0, __v: 0 } }
-    ];
+    ]
+  };
 
   // Get data
   const q1 = queryData(query);
@@ -153,17 +147,14 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})/:day([0-9]{1,2})', function (req
   var end_time = dayjs(selectedDate).endOf('day').tz(DEVICE_TIMEZONE).toISOString();
 
   // Data Queries
-  var query;
-
-  if (DB_TYPE == "SQLITE")
-    query = `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" from data WHERE data.device_id = "${DEVICE_ID}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}') ORDER BY ROWID DESC`;
-
-  if (DB_TYPE == "MONGODB")
-    query = [
+  var query = {
+    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" from data WHERE data.device_id = "${DEVICE_ID}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}') ORDER BY ROWID DESC`,
+    "MONGODB": [
       { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_time), $lte: new Date(end_time) } } },
       { $addFields: { Time: '$created_at' } },
       { $project: { created_at: 0, _id: 0, __v: 0 } }
-    ];
+    ]
+  };
 
   // Get data
   const q1 = queryData(query);
@@ -223,19 +214,15 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
   var end_day = dayjs(selectedDate).endOf('month').tz(DEVICE_TIMEZONE).toISOString();
 
   /* Queries */
-  var query;
-
-  if (DB_TYPE == "SQLITE")
-    query = `SELECT strftime('%Y-%m-%dT%H:00:00Z', datetime(data.created_at)) AS Time,
+  var query = {
+    "SQLITE": `SELECT strftime('%Y-%m-%dT%H:00:00Z', datetime(data.created_at)) AS Time,
       ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
       FROM data  
       WHERE data.device_id = "${DEVICE_ID}" AND
       datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
       GROUP BY Time
-      ORDER BY Time ASC`;
-
-  if (DB_TYPE == "MONGODB") {
-    query = [
+      ORDER BY Time ASC`,
+    "MONGODB": [
       { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_day), $lte: new Date(end_day) } } },
       {
         $group: {
@@ -266,13 +253,13 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
         }
       }
     ]
-
-    COLUMNS_TO_DISPLAY.forEach(el => {
-      el = el.replace(/\./g, ",")
-      query[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
-      query[2]['$project'][el] = `$avg${el}`
-    });
   }
+
+  COLUMNS_TO_DISPLAY.forEach(el => {
+    el = el.replace(/\./g, ",")
+    query.MONGODB[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
+    query.MONGODB[2]['$project'][el] = `$avg${el}`
+  });
 
   // Get data
   const q1 = queryData(query);
@@ -330,19 +317,15 @@ router.get('/:year([0-9]{4})', function (req, res) {
   var end_day = dayjs(selectedDate).endOf('year').tz(DEVICE_TIMEZONE).toISOString();
 
   /* Queries */
-  var query;
-
-  if (DB_TYPE == "SQLITE")
-    query = `SELECT strftime('%Y-%m-%dT00:00:00Z',datetime(data.created_at)) as Time,
+  var query = {
+    "SQLITE": `SELECT strftime('%Y-%m-%dT00:00:00Z',datetime(data.created_at)) as Time,
       ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
-    FROM data  
-    WHERE data.device_id = "${DEVICE_ID}" AND
-    datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
-    GROUP BY Time
-    ORDER BY Time ASC`;
-
-  if (DB_TYPE == "MONGODB") {
-    query = [
+      FROM data  
+      WHERE data.device_id = "${DEVICE_ID}" AND
+      datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
+      GROUP BY Time
+      ORDER BY Time ASC`,
+    "MONGODB": [
       { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_day), $lte: new Date(end_day) } } },
       {
         $group: {
@@ -373,13 +356,13 @@ router.get('/:year([0-9]{4})', function (req, res) {
         }
       }
     ]
-
-    COLUMNS_TO_DISPLAY.forEach(el => {
-      el = el.replace(/\./g, ",")
-      query[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
-      query[2]['$project'][el] = `$avg${el}`
-    });
   }
+
+  COLUMNS_TO_DISPLAY.forEach(el => {
+    el = el.replace(/\./g, ",")
+    query.MONGODB[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
+    query.MONGODB[2]['$project'][el] = `$avg${el}`
+  });
 
   // Get data
   const q1 = queryData(query);
@@ -435,23 +418,19 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
   var start_day = dayjs(range[0]).startOf('day').tz(DEVICE_TIMEZONE).toISOString();
   var end_day = dayjs(range[1]).endOf('day').tz(DEVICE_TIMEZONE).toISOString();
 
-  var query;
-
   let groupBy = '%Y-%m-%dT%H:00:00Z';
   if( dayjs(end_day).diff(dayjs(start_day), 'day') > 60 )
     groupBy = '%Y-%m-%dT00:00:00Z';
 
-  if (DB_TYPE == 'SQLITE')
-    query = `SELECT strftime('${groupBy}', datetime(data.created_at)) as Time,
+  var query = {
+    "SQLITE": `SELECT strftime('${groupBy}', datetime(data.created_at)) as Time,
       ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
-    FROM data  
-    WHERE data.device_id = "${DEVICE_ID}" AND
-    datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
-    GROUP BY Time
-    ORDER BY Time ASC`;
-
-  if (DB_TYPE == 'MONGODB') {
-    query = [
+      FROM data  
+      WHERE data.device_id = "${DEVICE_ID}" AND
+      datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
+      GROUP BY Time
+      ORDER BY Time ASC`,
+    "MONGODB": [
       { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_day), $lte: new Date(end_day) } } },
       {
         $group: {
@@ -482,13 +461,13 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
         }
       }
     ]
-
-    COLUMNS_TO_DISPLAY.forEach(el => {
-      el = el.replace(/\./g, ",")
-      query[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
-      query[2]['$project'][el] = `$avg${el}`
-    });
   }
+
+  COLUMNS_TO_DISPLAY.forEach(el => {
+    el = el.replace(/\./g, ",")
+    query.MONGODB[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
+    query.MONGODB[2]['$project'][el] = `$avg${el}`
+  });
 
   // Get Data
   const q1 = queryData(query);
