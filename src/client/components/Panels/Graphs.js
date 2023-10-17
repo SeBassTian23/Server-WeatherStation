@@ -183,7 +183,16 @@ const GraphContainer = (props) => {
       aqi.items.forEach(itm=>{
         if(itm.range[0]/yAxis.max <= 1 && inRange(itm.range[0], yAxis.min, yAxis.max) || inRange(itm.range[1], yAxis.min, yAxis.max)){
           gradient.addColorStop( itm.range[0]/yAxis.max, itm.color )
-        }     
+          return
+        }
+        if( inRange(yAxis.min, itm.range[0], itm.range[1]) || inRange(yAxis.max, itm.range[0], itm.range[1]) ){
+          gradient.addColorStop( itm.range[0]/yAxis.max, itm.color )
+          return
+        }
+        if( inRange(yAxis.min, itm.range[0], itm.range[1]) && inRange(yAxis.max, itm.range[0], itm.range[1]) ){
+          gradient.addColorStop( 1, itm.color )
+          return
+        }
       })
     }
 
