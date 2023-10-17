@@ -450,7 +450,7 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
     GROUP BY Time
     ORDER BY Time ASC`;
 
-  if (DB_TYPE == 'SQLITE') {
+  if (DB_TYPE == 'MONGODB') {
     query = [
       { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_day), $lte: new Date(end_day) } } },
       {
