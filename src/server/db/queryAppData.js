@@ -7,6 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const DB_TYPE = process.env.SQLITE_FILE ? "SQLITE" : process.env.MONGO_CONNECTION_STRING ? "MONGODB" : null || "SQLITE";
+const COLUMNS_TO_DISPLAY = require('../constants/db-cols.json');
 
 // Application Data
 var queryAppData = function (device_id) {
@@ -29,28 +30,7 @@ var queryAppData = function (device_id) {
         length("ID") +
         length("device_id") +
         length("created_at") +
-        length("Battery [V]") +
-        length("Temperature [C]") +
-        length("rel. Humidity [%]") +
-        length("Pressure [hPa]") +
-        length("Pressure (PMSL) [hPa]") +
-        length("Air [KOhms]") +
-        length("Light (visible)") +
-        length("Light (IR)") +
-        length("Light (UV)") +
-        length("UV-Index") +
-        length("PM1.0 [ug/m3]") +
-        length("PM2.5 [ug/m3]") +
-        length("PM10.0 [ug/m3]") +
-        length(">0.3 [um/0.1L]") +
-        length(">0.5 [um/0.1L]") +
-        length(">1.0 [um/0.1L]") +
-        length(">2.5 [um/0.1L]") +
-        length(">5.0 [um/0.1L]") +
-        length(">10.0 [um/0.1L]") +
-        length("Heat Index [C]") +
-        length("Dew Point [C]") +
-        length("AQI")
+        ${COLUMNS_TO_DISPLAY.map(itm => `length("${itm}")` ).join(' +\n')}
       ) AS subset_size_bytes
         FROM data
         WHERE data.device_id = "${device_id}") as dbsize

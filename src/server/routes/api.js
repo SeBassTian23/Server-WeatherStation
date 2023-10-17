@@ -290,7 +290,7 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
 
   Promise.all([q1, q2, q3, q4]).then(function (values) {
 
-    var rows = values[0].map(itm => replaceInKeysWith(itm, ",", ".")) || values[0];
+    var rows = values[0]? values[0].map(itm => replaceInKeysWith(itm, ",", ".")) : values[0];
     var summary = replaceInKeysWith(values[1], ",", ".") || values[1];
     var appdata = values[2];
     var almanac = values[3];
