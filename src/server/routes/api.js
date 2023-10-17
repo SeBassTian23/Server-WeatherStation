@@ -517,12 +517,7 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, range[1]))
-
-    data.selectedDate = `${range[1]}`
-    data.range = `${dayjs(range[0]).format('LL')} - ${dayjs(range[1]).format('LL')}`;
-    data.graphs.rangeDiff = dayjs(range[1]).diff(dayjs(range[0]), 'day')
-    data.summary.rangeDiff = dayjs(range[1]).diff(dayjs(range[0]), 'day')
+    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, range))
 
     res.json({
       message: `success`,

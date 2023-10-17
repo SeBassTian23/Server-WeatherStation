@@ -10,7 +10,11 @@ import {SettingsContext} from '../../context/settingsContext'
 
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import duration from 'dayjs/plugin/duration'
+import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(localizedFormat)
+dayjs.extend(duration)
+dayjs.extend(relativeTime)
 
 export default function SubHeader(props) {
 
@@ -19,6 +23,7 @@ export default function SubHeader(props) {
   const [data, setData] = useState({
     almanac: '',
     cards: [],
+    period: null,
     selectedDate: new Date()
   });
 
@@ -52,6 +57,10 @@ export default function SubHeader(props) {
     if(data.period === 'year'){
       header = dayjs(data.selectedDate).format('YYYY')
       subheader = dayjs(data.selectedDate).format('MMMM, YYYY')
+    }
+    if(data.period === 'range'){
+      header = dayjs.duration( dayjs(data.selectedDate[1]).diff(dayjs(data.selectedDate[0]), 'day') , "days").humanize();
+      subheader = `${dayjs(data.selectedDate[0]).format('MMMM D, YYYY')} - ${dayjs(data.selectedDate[1]).format('MMMM D, YYYY')}`
     }
 
   return (

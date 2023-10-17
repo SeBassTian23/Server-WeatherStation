@@ -14,6 +14,15 @@ import {SettingsContext} from '../../context/settingsContext'
 import {unitConverter} from '../../helpers/convert'
 
 import downloadLink from '../../helpers/download-link';
+
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import duration from 'dayjs/plugin/duration'
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(localizedFormat)
+dayjs.extend(duration)
+dayjs.extend(relativeTime)
+
 export default function Summary(props) {
 
   const [summary, setSummary] = useState(null);
@@ -27,7 +36,7 @@ export default function Summary(props) {
       {(summary && summary.cards && summary.cards.length > 0) && <Row className='row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 mb-3'>
             <Cards items={summary.cards || []} />
           </Row>}
-      {(summary && summary.table) && <SummaryTable {...summary.table} period={summary.period} download={summary.download} />}
+      {(summary && summary.table) && <SummaryTable {...summary.table} period={summary.period} selectedDate={summary.selectedDate} />}
     </>
   );
 }
@@ -36,7 +45,7 @@ function SummaryTable(props) {
 
   const [state] = useContext(SettingsContext);
   
-  const period = (props.period === 'now')? 'today' : `the period of a ${props.period}`
+  const period = (props.period === 'now')? 'today' : `the period of ${ (props.period === 'range')? dayjs.duration( dayjs(props.selectedDate[1]).diff(dayjs(props.selectedDate[0]), 'day') , "days").humanize() : `a ${props.period}`}`
   const left = props.left || []
   const right =  props.right || []
   const download = downloadLink(props.period, props.selectedDate, state.units) || '#'

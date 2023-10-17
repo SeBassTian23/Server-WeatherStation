@@ -7,6 +7,14 @@ import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import duration from 'dayjs/plugin/duration'
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(localizedFormat)
+dayjs.extend(duration)
+dayjs.extend(relativeTime)
+
 import { SettingsContext } from '../../context/settingsContext';
 import { unitConverter } from '../../helpers/convert';
 import { LabelUnitStrip } from '../../helpers/label-format';
@@ -115,7 +123,7 @@ export default function Graphs(props) {
     setGraphWidth(!isGraphWidth);
   };
 
-  const period = (props.period === 'now') ? 'today' : `over the period of a ${props.period}`
+  const period = (props.period === 'now')? 'today' : `the period of ${ (props.period === 'range')? dayjs.duration( dayjs(props.selectedDate[1]).diff(dayjs(props.selectedDate[0]), 'day') , "days").humanize() : `a ${props.period}`}`
 
   if (props.data && Object.keys(props.data).length === 0)
     return (<></>)

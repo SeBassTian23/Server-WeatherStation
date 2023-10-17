@@ -56,7 +56,7 @@ export default function Past(props) {
         <SubHeader {...data.subheader} {...data.sidebar.calendar} period={data.summary.period || 'now'} />
         <Row className='align-items-top pb-4'>
           <Col sm>
-            <Summary {...data.summary} />
+            <Summary {...data.summary} selectedDate={data.sidebar.calendar.selectedDate} />
           </Col>
           <Col as='aside' sm='4' className='pt-4 pt-sm-0 d-print-none'>
             <Sidebar {...data.sidebar} />
@@ -64,7 +64,7 @@ export default function Past(props) {
         </Row>
       </Container>
       <Container>
-        <Graphs {...data.graphs}/>
+        <Graphs {...data.graphs} selectedDate={data.sidebar.calendar.selectedDate}/>
       </Container>
     </main>
   )

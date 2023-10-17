@@ -16,13 +16,23 @@ import {SettingsContext} from '../../context/settingsContext'
 
 import '../../styles/calendar.css';
 
+function selectedDateFormat( selectedDate ){
+    if(Array.isArray(selectedDate)){
+        return [
+            dayjs(selectedDate[0]).isValid()? dayjs(selectedDate[0]).toDate() : new Date(),
+            dayjs(selectedDate[1]).isValid()? dayjs(selectedDate[1]).toDate() : new Date()
+        ]
+    }
+    return dayjs(selectedDate).isValid()? dayjs(selectedDate).toDate() : new Date()
+}
+
 export default function TabCalendar(props) {
 
     const [dates, setDates] = useState({
         minDate: new Date(props.minDate) || new Date(),
         maxDate: new Date(props.maxDate) || new Date(),
         currentDate: new Date(props.currentDate) || new Date(),
-        selectedDate: dayjs(props.selectedDate).isValid()? dayjs(props.selectedDate).toDate() : new Date()
+        selectedDate: selectedDateFormat(props.selectedDate)
     });
 
     useEffect(() => {
@@ -30,7 +40,7 @@ export default function TabCalendar(props) {
             minDate: new Date(props.minDate) || new Date(),
             maxDate: new Date(props.maxDate) || new Date(),
             currentDate: new Date(props.currentDate) || new Date(),
-            selectedDate: dayjs(props.selectedDate).isValid()? dayjs(props.selectedDate).toDate() : new Date()
+            selectedDate: selectedDateFormat(props.selectedDate)
         })
     }, [props.selectedDate])
     return (
