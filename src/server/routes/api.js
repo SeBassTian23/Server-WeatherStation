@@ -437,8 +437,12 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
 
   var query;
 
+  let groupBy = '%Y-%m-%dT%H:00:00Z';
+  if( dayjs(end_day).diff(dayjs(start_day), 'day') > 60 )
+    groupBy = '%Y-%m-%dT00:00:00Z';
+
   if (DB_TYPE == 'SQLITE')
-    query = `SELECT strftime('%Y-%m-%dT00:00:00Z',datetime(data.created_at)) as Time,
+    query = `SELECT strftime('${groupBy}', datetime(data.created_at)) as Time,
       ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
     FROM data  
     WHERE data.device_id = "${DEVICE_ID}" AND
