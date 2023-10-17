@@ -1,11 +1,20 @@
 var express = require('express');
 var router = express.Router();
 
+const DB_TYPE = process.env.SQLITE_FILE ? "SQLITE" : process.env.MONGO_CONNECTION_STRING ? "MONGODB" : null
+
 /* GET home page. */
 router.get(/^(?!\/(data|api|download|db)\/).+$/, function (req, res) {
-  console.log(req.url.slice(1).split('/').join('-'))
 
   const titleAdd = req.url.slice(1).split('/').join('-') || null
+
+  if(!DB_TYPE){
+    res.render('error', {
+      error: 'Database Issue',
+      errormsg: 'No database connection has been defined. Use SQLITE or MongoDB to store your weather Data.'
+    });
+    return 
+  }
 
   res.render('index', {
     "locale": "en_US",

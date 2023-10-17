@@ -1,6 +1,26 @@
-//- extends layout
+doctype html
+html(lang='en')
+  block head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="ie=edge,chrome=1")
+    meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 
-block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+    //- Favicon Links
+    link(rel="icon", href="/favicon.ico", sizes="any")
+    link(rel="icon", href="/icon.svg", type="image/svg+xml")
+    link(rel="apple-touch-icon", href="/apple-touch-icon.png")
+    link(rel="manifest", href="/site.webmanifest")
+
+    //- Theme
+    meta(name="theme-color" content="#212529")
+    
+    //- Page meta information
+    link(rel="canonical" href=url)
+    meta( name="robots" content="index, nofollow")
+
+    title Weather Station | Error
+
+  body(data-bs-theme="light")
+    h1 Error
+    h2 #{error}
+    p #{errormsg}
