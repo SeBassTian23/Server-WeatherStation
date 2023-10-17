@@ -121,7 +121,6 @@ router.get('/', function (req, res) {
     data.summary.cards = cards
 
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.download = 'latest'
     data.summary.period = "now"
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)
@@ -193,7 +192,6 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})/:day([0-9]{1,2})', function (req
     data.subheader.almanac = buildAlmanac(almanac, "day")
 
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.download = dayjs(selectedDate).format('YYYY-MM-DD')
     data.summary.period = "day"
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)
@@ -303,7 +301,6 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
     data.subheader.almanac = buildAlmanac(almanac, "month")
 
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.download = dayjs(selectedDate).format('YYYY-MM')
     data.summary.period = "month"
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)
@@ -411,7 +408,6 @@ router.get('/:year([0-9]{4})', function (req, res) {
     data.subheader.almanac = buildAlmanac(almanac, "year")
 
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.download = dayjs(selectedDate).format('YYYY')
     data.summary.period = "year"
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)
@@ -517,7 +513,6 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
     data.subheader.almanac = buildAlmanac(almanac, "range")
 
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.download = range.join(',')
     data.summary.period = "range"
     data.summary.table.left = summaryTable.splice(0, 11)
     data.summary.table.right = summaryTable.splice(0, 11)

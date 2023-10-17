@@ -13,6 +13,7 @@ import Cards from './Cards'
 import {SettingsContext} from '../../context/settingsContext'
 import {unitConverter} from '../../helpers/convert'
 
+import downloadLink from '../../helpers/download-link';
 export default function Summary(props) {
 
   const [summary, setSummary] = useState(null);
@@ -38,7 +39,7 @@ function SummaryTable(props) {
   const period = (props.period === 'now')? 'today' : `the period of a ${props.period}`
   const left = props.left || []
   const right =  props.right || []
-  const download =  `/download/${props.download}${state.units !=='metric'? `?units=${state.units}`: '' }` || '#'
+  const download = downloadLink(props.period, props.selectedDate, state.units) || '#'
 
   return (
     <Card>

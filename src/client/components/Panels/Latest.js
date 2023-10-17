@@ -12,6 +12,7 @@ import { SettingsContext } from '../../context/settingsContext';
 import { unitConverter } from '../../helpers/convert';
 import { LabelUnitStrip } from '../../helpers/label-format'; 
 import { LabelGetUnit } from '../../helpers/label-format';
+import downloadLink from '../../helpers/download-link';
 
 export default function Latest(props) {
 
@@ -21,7 +22,7 @@ export default function Latest(props) {
     return (
       <Card className='card rounded-0 mt-4'>
         <Card.Body>
-          <a className='float-end bg-transparent border-0' href={`/download/latest${state.units !=='metric'? `?units=${state.units}`: '' }`} title="Download Latest Observations">
+          <a className='float-end bg-transparent border-0' href={downloadLink('now', new Date(), state.units)} title="Download Latest Observations">
             <i className='bi bi-download text-muted' />
           </a>
           <Card.Title className='text-info'>Latest Observations</Card.Title>
