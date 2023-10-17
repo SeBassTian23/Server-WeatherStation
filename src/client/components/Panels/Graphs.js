@@ -20,6 +20,8 @@ import { unitConverter } from '../../helpers/convert';
 import { LabelUnitStrip } from '../../helpers/label-format';
 import { LabelGetUnit } from '../../helpers/label-format';
 
+import { aqi } from '../../constants/parameters'
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -167,6 +169,36 @@ const GraphContainer = (props) => {
 
   }, [state.theme])
 
+  let width, height, gradient;
+  function getGradient(ctx, chartArea) {
+    const chartWidth = chartArea.right - chartArea.left;
+    const chartHeight = chartArea.bottom - chartArea.top;
+    if (!gradient || width !== chartWidth || height !== chartHeight) {
+      // Create the gradient because this is either the first render
+      // or the size of the chart has changed
+      width = chartWidth;
+      height = chartHeight;
+      gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+
+      aqi.items.forEach(itm=>{
+        gradient.addColorStop(itm.range[0]/301, itm.color)
+      })
+    }
+
+    return gradient;
+  }
+
+  function borderColor(context){
+    const chart = context.chart;
+    const {ctx, chartArea} = chart;
+
+    if (!chartArea) {
+      // This case happens on initial chart load
+      return;
+    }
+    return getGradient(ctx, chartArea);
+  }
+
   let graphSetup = options.map((plot, idx) => {
     let traces = []
     for (let key in plot.traces) {
@@ -175,8 +207,7 @@ const GraphContainer = (props) => {
         data: data[key]? data[key].map(itm => {
           return { ...itm, ...{ 'y': unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } }
         }) : [],
-        backgroundColor: color(plot.traces[key].c || 'grey').alpha(0.2).rgbString(),
-        borderColor: color(plot.traces[key].c || 'grey').rgbString(),
+        borderColor: (key === 'AQI')? borderColor : color(plot.traces[key].c || 'grey').rgbString(),
         type: 'line',
         pointRadius: 0,
         fill: false,
