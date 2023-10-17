@@ -1,6 +1,6 @@
 
 export const LabelUnitFormat = (str) => {
-  if( typeof label === 'string' ){
+  if( typeof str === 'string' ){
     return str.replace(/\[C\]/i, '[℃]')
               .replace(/\[F\]/i, '[℉]')
               .replace(/\[(micro\s?|u)g\/m3\]/i, '[µg/m³]')
