@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 
-import { cloneDeep } from 'lodash';
+import { cloneDeep, inRange } from 'lodash';
 
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
@@ -170,7 +170,7 @@ const GraphContainer = (props) => {
   }, [state.theme])
 
   let width, height, gradient;
-  function getGradient(ctx, chartArea) {
+  function getGradient(ctx, chartArea, yAxis) {
     const chartWidth = chartArea.right - chartArea.left;
     const chartHeight = chartArea.bottom - chartArea.top;
     if (!gradient || width !== chartWidth || height !== chartHeight) {
@@ -181,7 +181,9 @@ const GraphContainer = (props) => {
       gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
 
       aqi.items.forEach(itm=>{
-        gradient.addColorStop(itm.range[0]/301, itm.color)
+        if(itm.range[0]/yAxis.max <= 1 && inRange(itm.range[0], yAxis.min, yAxis.max) || inRange(itm.range[1], yAxis.min, yAxis.max)){
+          gradient.addColorStop( itm.range[0]/yAxis.max, itm.color )
+        }     
       })
     }
 
@@ -196,7 +198,7 @@ const GraphContainer = (props) => {
       // This case happens on initial chart load
       return;
     }
-    return getGradient(ctx, chartArea);
+    return getGradient(ctx, chartArea, chart.scales.y);
   }
 
   let graphSetup = options.map((plot, idx) => {
