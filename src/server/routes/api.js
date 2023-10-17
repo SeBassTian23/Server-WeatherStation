@@ -468,7 +468,7 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
           _id: 0,
           Time: {
             $dateToString: {
-              format: "%Y-%m-%dT%H:00:00Z",
+              format: groupBy,
               date: {
                 $dateFromParts: {
                   year: "$_id.year",
