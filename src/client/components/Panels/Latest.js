@@ -14,6 +14,8 @@ import { LabelUnitStrip } from '../../helpers/label-format';
 import { LabelGetUnit } from '../../helpers/label-format';
 import downloadLink from '../../helpers/download-link';
 
+import timezoneAdjust from '../../helpers/timezone-adjust'
+
 export default function Latest(props) {
 
   const [state] = useContext(SettingsContext);
@@ -62,7 +64,7 @@ const LatestContent = (props) => {
                 <tr key={idx}>
                   {header.map( (name, idx) => (
                     <td key={idx}>{
-                        (name === 'Time')? dayjs(row[name]).format('LT') : unitConverter(row[name], name, state.units)[0]
+                        (name === 'Time')? dayjs(timezoneAdjust(row[name],props.timezone)).format('LT') : unitConverter(row[name], name, state.units)[0]
                       }</td>
                     )
                   )} 

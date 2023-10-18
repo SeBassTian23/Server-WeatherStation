@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import SubHeader from '../components/Panels/SubHeader'
 import Summary from '../components/Panels/Summary'
@@ -9,7 +9,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import {apiStructure} from '../constants/api'
+import { apiStructure } from '../constants/api'
 import { SettingsContext } from '../context/settingsContext'
 
 export default function Past(props) {
@@ -19,18 +19,18 @@ export default function Past(props) {
 
   useEffect(() => {
     var cachedData = {};
-    if(state.cache === 'on'){
+    if (state.cache === 'on') {
       cachedData = localStorage.getItem('cachedData') || '{}';
       cachedData = JSON.parse(cachedData)
-      if(cachedData[props.path] !== undefined ){
+      if (cachedData[props.path] !== undefined) {
         fetch('/data/status')
-        .then(res => res.json())
-        .then(obj => {
-          setData({...cachedData[props.path], ...obj.body});
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
+          .then(res => res.json())
+          .then(obj => {
+            setData({ ...cachedData[props.path], ...obj.body });
+          })
+          .catch((err) => {
+            console.log(err.message);
+          });
         return
       }
     }
@@ -38,7 +38,7 @@ export default function Past(props) {
     fetch('/api' + props.path)
       .then(res => res.json())
       .then(obj => {
-        if(state.cache === 'on'){
+        if (state.cache === 'on') {
           cachedData[props.path] = obj.body;
           delete cachedData[props.path].sidebar
           localStorage.setItem('cachedData', JSON.stringify(cachedData))
@@ -64,7 +64,7 @@ export default function Past(props) {
         </Row>
       </Container>
       <Container>
-        <Graphs {...data.graphs} selectedDate={data.sidebar.calendar.selectedDate}/>
+        <Graphs {...data.graphs} selectedDate={data.sidebar.calendar.selectedDate} timezone={data.sidebar.station.device.location.timezone} />
       </Container>
     </main>
   )

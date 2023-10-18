@@ -20,6 +20,8 @@ import { unitConverter } from '../../helpers/convert';
 import { LabelUnitStrip } from '../../helpers/label-format';
 import { LabelGetUnit } from '../../helpers/label-format';
 
+import timezoneAdjust from '../../helpers/timezone-adjust'
+
 import { aqi } from '../../constants/parameters'
 
 import {
@@ -119,7 +121,6 @@ ChartJS.register(ArcElement,
   sunRiseSetPlugin);
 
 export default function Graphs(props) {
-
   const [isGraphWidth, setGraphWidth] = useState("false");
   const ToggleGraphWidth = () => {
     setGraphWidth(!isGraphWidth);
@@ -216,7 +217,7 @@ const GraphContainer = (props) => {
       traces.push({
         label: plot.traces[key].l,
         data: data[key]? data[key].map(itm => {
-          return { ...itm, ...{ 'y': unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } }
+          return { ...itm, ...{ x: timezoneAdjust(itm.x, props.timezone), y: unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } }
         }) : [],
         borderColor: (key === 'AQI')? borderColor : color(plot.traces[key].c || 'grey').rgbString(),
         type: 'line',
@@ -235,8 +236,8 @@ const GraphContainer = (props) => {
     }
 
     // Set sunrise/sunset
-    output.options.plugins.sunriseset.sunrise = props.sunrise || null;
-    output.options.plugins.sunriseset.sunset = props.sunset || null;
+    output.options.plugins.sunriseset.sunrise = timezoneAdjust(props.sunrise, props.timezone) || null;
+    output.options.plugins.sunriseset.sunset = timezoneAdjust(props.sunset, props.timezone) || null;
 
     // Set y-axis label
     let unit = unitConverter(1, LabelGetUnit(plot.yaxis), state.units)[1]

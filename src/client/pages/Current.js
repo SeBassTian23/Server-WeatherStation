@@ -68,10 +68,10 @@ export default function Current(props) {
         </Row>
       </Container>
       <Container>
-        <Graphs {...data.graphs}/>
+        <Graphs {...data.graphs} selectedDate={data.sidebar.calendar.selectedDate} timezone={data.sidebar.station.device.location.timezone} />
       </Container>
       <Container>
-        <Latest {...data.table} />
+        <Latest {...data.table} timezone={data.sidebar.station.device.location.timezone} />
       </Container>
     </main>
   )
