@@ -115,7 +115,7 @@ var queryAppData = function (device_id) {
           measurements: { $arrayElemAt: ['$data.measurements', 0] },
           latest: { $arrayElemAt: ['$data.latest', 0] },
           start: { $arrayElemAt: ['$data.start', 0] },
-          days: { $size: { $arrayElemAt: ['$data.days', 0] } },
+          days: { $size: { "$ifNull": [ { $arrayElemAt: ['$data.days', 0] }, [] ] } },
           battery: { $arrayElemAt: ['$data.battery', 0] },
           dbsize: null
         }
