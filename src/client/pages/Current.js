@@ -57,7 +57,7 @@ export default function Current(props) {
   return (
     <main>
       <Container>
-        <SubHeader {...data.subheader} {...data.sidebar.calendar} period={data.summary.period || 'now'} />
+        <SubHeader {...data.subheader} {...data.sidebar.calendar} period={data.summary.period || 'now'} timezone={data.sidebar.station.device.location.timezone} />
         <Row className='align-items-top pb-4'>
           <Col sm>
             <Summary {...data.summary} />
