@@ -5,8 +5,7 @@ const DataSchema = new Schema({
   device_id: {
     type: String,
     required: true,
-    index: true,
-    unique: true
+    index: true
   },
 	created_at: {
     type: Date,

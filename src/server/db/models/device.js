@@ -5,7 +5,8 @@ const DeviceSchema = new Schema({
   device_id: { 
     type: String,
     bsonType: 'string', 
-    required: true
+    required: true,
+    unique: true
   },
   description: { 
     type: String,
