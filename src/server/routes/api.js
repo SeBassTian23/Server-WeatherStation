@@ -74,7 +74,7 @@ router.get('/', function (req, res) {
 
   Promise.all([q1, q2, q3]).then(function (values) {
 
-    var rows = values[0];
+    var rows = values[0].map(itm => replaceInKeysWith(itm, ",", ".")) || values[0];
     var summary = values[1];
     var appdata = values[2];
 
