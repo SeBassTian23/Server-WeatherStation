@@ -100,14 +100,14 @@ router.get('/', function (req, res) {
       "field": 'Sunrise',
       'size': 'sm',
       'value': data.graphs.sunrise,
-      'unit': null,
+      'unit': DEVICE_TIMEZONE,
       'label': 'Sunrise'
     })
     cards.push({
       "field": 'Sunset',
       'size': 'sm',
       'value': data.graphs.sunset,
-      'unit': null,
+      'unit': DEVICE_TIMEZONE,
       'label': 'Sunset'
     })
 

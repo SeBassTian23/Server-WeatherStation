@@ -12,6 +12,7 @@ import { unitConverter } from '../../helpers/convert';
 import {LabelUnitStrip, LabelGetUnit} from '../../helpers/label-format'
 
 import {aqi,uvi,hi} from '../../constants/parameters'
+import timezoneAdjust from '../../helpers/timezone-adjust';
 
 export default function Cards(props) {
 
@@ -102,7 +103,7 @@ export default function Cards(props) {
             <Card className={ card.size === 'sm' ? 'h-100 mini-card' : ''} title={cardTitle.trimEnd()}>
               <div className={`fw-light mt-2 mb-0 ${card.size === 'lg' ? 'fs-4' : 'fs-5'}`} data-field={card.field}>
                 {icon && <strong className='text-info indicator'>{icon}</strong>}
-                {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(card.value).format('LT') : value[0]}
+                {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT') : value[0]}
                 {LabelGetUnit(card.label) &&
                   <span className='text-muted unit'>{value[1]}</span>
                 }
