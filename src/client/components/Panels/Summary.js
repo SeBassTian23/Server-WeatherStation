@@ -89,7 +89,7 @@ function TableBody ( props ) {
   const rows = props.rows || []
 
   return (
-    <Table className='table-sm ws-obs-tbl'>
+    <Table className='table-sm ws-obs-tbl' striped >
       <thead className='thead-light small text-center'>
         <tr>
           <th className='text-start' style={{width: '45%'}}>Parameter</th>
