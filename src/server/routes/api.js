@@ -78,7 +78,7 @@ router.get('/', function (req, res) {
     var summary = values[1];
     var appdata = values[2];
 
-    data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows.slice(0, 30))
+    data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows)
 
     // Determine Sunrise and Sunset
     data.graphs.sunrise = getSunriseDateTimeUtc(new Date(), appdata.latitude, appdata.longitude)
