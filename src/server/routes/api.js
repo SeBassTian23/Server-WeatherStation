@@ -51,13 +51,14 @@ router.get('/', function (req, res) {
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_time = dayjs().startOf('day').tz(DEVICE_TIMEZONE).toISOString();
-  var end_time = dayjs().endOf('day').tz(DEVICE_TIMEZONE).toISOString();
+  var offset = dayjs().tz(DEVICE_TIMEZONE).utcOffset();
+  var start_time = dayjs().startOf('day').add(offset, 'minutes').toDate();
+  var end_time = dayjs().endOf('day').add(offset, 'minutes').toDate();
 
   var query = {
     "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" FROM data WHERE device_id = "${DEVICE_ID}" AND datetime(created_at) >= datetime('${start_time}') ORDER BY ROWID DESC`,
     "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_time) } } },
+      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_time } } },
       { $addFields: { Time: '$created_at' } },
       { $project: { created_at: 0, _id: 0, __v: 0 } }
     ]
@@ -145,6 +146,8 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})/:day([0-9]{1,2})', function (req
 
   var start_time = dayjs(selectedDate).startOf('day').tz(DEVICE_TIMEZONE).toISOString();
   var end_time = dayjs(selectedDate).endOf('day').tz(DEVICE_TIMEZONE).toISOString();
+
+  console.log(start_time, end_time)
 
   // Data Queries
   var query = {
