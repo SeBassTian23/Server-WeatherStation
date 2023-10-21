@@ -51,7 +51,7 @@ export default function TabCalendar(props) {
                     <Card.Title className='text-info mb-2'>
                         Shortcuts
                     </Card.Title>
-                    <Row className='row-cols-1 row-cols-md-2' id="shortcutlinks">
+                    <Row className='row-cols-2' id="shortcutlinks">
                         <Col>
                             <Link className="small" id="calendar-today" to="/" title="Show today's data"><i className="bi bi-calendar-event-fill"></i> Today</Link>
                         </Col>

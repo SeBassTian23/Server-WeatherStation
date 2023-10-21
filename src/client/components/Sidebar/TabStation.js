@@ -62,7 +62,7 @@ export default function TabStation(props) {
                 <Card.Body>
                     <Card.Title className='text-info'>Station Information</Card.Title>
                     <Card.Subtitle className='fw-light'>{device.description}</Card.Subtitle>
-                    <Row sm={2} className='mt-3 small'>
+                    <Row xs={2} className='mt-3 small'>
                         <Col>
                             <strong>Data Sets</strong>
                             <p className='fw-ligher'>{statistics.measurements}</p>
