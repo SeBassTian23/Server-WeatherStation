@@ -11,11 +11,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 // import useEventStream from '../hooks/useEventStream'
-import {apiStructure} from '../constants/api'
 
 export default function Current(props) {
 
-  const [data, setData] = useState(apiStructure);
+  const [data, setData] = useState({});
 
   useEffect(() => {
     const sse = new EventSource('/data/stream',
@@ -26,7 +25,11 @@ export default function Current(props) {
       console.log('Data udpated')
       fetch('/api/')
         .then(res => res.json())
-        .then(obj => {  
+        .then(obj => {
+          obj.body.selectedDate = obj.body.sidebar.calendar.selectedDate
+          obj.body.timezone = obj.body.sidebar.station.device.location.timezone
+          obj.body.period = obj.body.summary.period
+          obj.body.calendar = obj.body.sidebar.calendar
           setData(obj.body);
         })
         .catch((err) => {
@@ -57,7 +60,7 @@ export default function Current(props) {
   return (
     <main>
       <Container>
-        <SubHeader {...data.subheader} {...data.sidebar.calendar} period={data.summary.period || 'now'} timezone={data.sidebar.station.device.location.timezone} />
+        <SubHeader {...data.subheader} {...data.calendar} period={ 'now' } timezone={ data.timezone } />
         <Row className='align-items-top pb-4'>
           <Col sm>
             <Summary {...data.summary} />
@@ -68,10 +71,10 @@ export default function Current(props) {
         </Row>
       </Container>
       <Container>
-        <Graphs {...data.graphs} selectedDate={data.sidebar.calendar.selectedDate} timezone={data.sidebar.station.device.location.timezone} />
+        <Graphs {...data.graphs} selectedDate={ data.selectedDate } timezone={data.timezone} />
       </Container>
       <Container>
-        <Latest {...data.table} timezone={data.sidebar.station.device.location.timezone} />
+        <Latest {...data.table} timezone={data.timezone} />
       </Container>
     </main>
   )

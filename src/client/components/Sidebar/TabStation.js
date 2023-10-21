@@ -13,21 +13,36 @@ import {LabelGetUnit} from '../../helpers/label-format'
 
 import { MapContainer, TileLayer, Circle } from 'react-leaflet'
 
-import {apiStructure} from '../../constants/api'
-
-
 export default function TabStation(props) {
 
-    const [device, setDevice] = useState(apiStructure.sidebar.station.device);
-    const [statistics, setStatistics] = useState(apiStructure.sidebar.station.statistics);
+    const [device, setDevice] = useState({
+        device_id: "N/A",
+        description: "N/A",
+        location: {
+            lat: 0,
+            lng: 0,
+            alt: 0,
+            elevation_unit: "Altitude [m]",
+            timezone: "UTC"
+        },
+        voltage: "N/A",
+        active: false
+    });
+    const [statistics, setStatistics] = useState({
+        measurements: "N/A",
+        days: "N/A",
+        latest: "N/A",
+        start: "N/A",
+        size: "N/A"
+    });
     const [battery, setBattery] = useState('');
 
     useEffect( ()=> {
-        setStatistics(props.statistics)
+        setStatistics( statistics => {return {...statistics, ...props.statistics}} )
     }, [props.statistics] )
 
     useEffect( ()=> {
-        setDevice(props.device)
+        setDevice( device => {return {...device, ...props.device}})
         if(device.voltage === 'N/A' || !device.active){
             setBattery( <><i className='bi bi-battery' /> N/A</>  );
         }

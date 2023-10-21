@@ -35,7 +35,9 @@ export default function SubHeader(props) {
   });
 
   useEffect( () => {
-    setData(props);
+    setData(data => {
+      return {...data,...props}
+    });
   }, [props])
 
   let summary = ''

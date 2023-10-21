@@ -36,11 +36,13 @@ export default function TabCalendar(props) {
     });
 
     useEffect(() => {
-        setDates({
-            minDate: new Date(props.minDate) || new Date(),
-            maxDate: new Date(props.maxDate) || new Date(),
-            currentDate: new Date(props.currentDate) || new Date(),
-            selectedDate: selectedDateFormat(props.selectedDate)
+        setDates(dates => {return {...dates, ...{
+                    minDate: new Date(props.minDate) || new Date(),
+                    maxDate: new Date(props.maxDate) || new Date(),
+                    currentDate: new Date(props.currentDate) || new Date(),
+                    selectedDate: selectedDateFormat(props.selectedDate)
+                } 
+            } 
         })
     }, [props.selectedDate])
     return (

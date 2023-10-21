@@ -28,7 +28,9 @@ export default function Summary(props) {
   const [summary, setSummary] = useState(null);
 
   useEffect( () => {
-    setSummary(props)
+    setSummary(summary => {
+      return {...summary, ...props}
+    });
   }, [props] )
 
   return (
