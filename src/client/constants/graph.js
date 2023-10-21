@@ -7,8 +7,16 @@ export const chartOptions = {
   scales: {
       x: {
           type: 'time',
+          time: {
+            unit: 'hour',
+            displayFormats: {
+                hour: 'HH:mm a',
+                day: 'MMM DD, HH:mm a',
+                month: 'MMM DD, HH:mm a'
+            }
+          },
           distribution: 'linear',
-          // offset: true,
+          offset: false,
           ticks: {
               major: {
                   enabled: true,

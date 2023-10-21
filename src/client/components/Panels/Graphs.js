@@ -239,6 +239,9 @@ const GraphContainer = (props) => {
     output.options.plugins.sunriseset.sunrise = timezoneAdjust(props.sunrise, props.timezone) || null;
     output.options.plugins.sunriseset.sunset = timezoneAdjust(props.sunset, props.timezone) || null;
 
+    // Set x-axis label format
+    output.options.scales.x.time.unit = [null, 'now', 'day'].indexOf(props.period) > -1? 'hour' : 'day'
+    
     // Set y-axis label
     let unit = unitConverter(1, LabelGetUnit(plot.yaxis), state.units)[1]
     output.options.scales.y = {
