@@ -20,7 +20,7 @@ import { unitConverter } from '../../helpers/convert';
 import { LabelUnitStrip } from '../../helpers/label-format';
 import { LabelGetUnit } from '../../helpers/label-format';
 
-import timezoneAdjust from '../../helpers/timezone-adjust'
+import timezoneAdjust, {timezoneGetOffset} from '../../helpers/timezone-adjust'
 
 import { aqi } from '../../constants/parameters'
 
@@ -214,10 +214,11 @@ const GraphContainer = (props) => {
   let graphSetup = options.map((plot, idx) => {
     let traces = []
     for (let key in plot.traces) {
+      const tzoffset = timezoneGetOffset(data[key][0].x, props.timezone);
       traces.push({
         label: plot.traces[key].l,
         data: data[key]? data[key].map(itm => {
-          return { ...itm, ...{ x: timezoneAdjust(itm.x, props.timezone), y: unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } }
+          return { ...itm, ...{ x: dayjs(itm.x).subtract(tzoffset, 'minutes'), y: unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } } //x: timezoneAdjust(itm.x, props.timezone),
         }) : [],
         borderColor: (key === 'AQI')? borderColor : color(plot.traces[key].c || 'grey').rgbString(),
         type: 'line',

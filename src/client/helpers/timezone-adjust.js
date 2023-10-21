@@ -13,4 +13,12 @@ const timezoneAdjust = (timestamp, timezone='UTC') => {
   return dayjs.utc(timestamp).subtract(diff, 'minutes').format();
 }
 
+export const timezoneGetOffset = (timestamp, timezone='UTC') => {
+  const userTZ = dayjs.tz.guess();
+  const dataTime = dayjs(timestamp).utc();
+  const localtime = dataTime.tz(timezone);
+  const usertime = dataTime.tz(userTZ);
+  return (usertime.utcOffset() - localtime.utcOffset() ) || 0
+}
+
 export default timezoneAdjust;
