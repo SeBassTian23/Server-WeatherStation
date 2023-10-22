@@ -215,7 +215,6 @@ ul#pills-tab li:nth-child(n+2) {
 ul#pills-tab button.active {
   border-bottom: 2px solid #0d6efd;
   color: #fff;
-  border-radius: 0px;
 }
 
 /* // #summary-cards-lg div:nth-child(n+2) div {
@@ -253,4 +252,13 @@ ul#pills-tab button.active {
 
 [data-bs-theme="dark"] #img-404 {
   filter: invert(1) opacity(0.75);
+}
+
+/* Sidebar Tabs Layout */
+.nav-item:hover {
+  background-color: var(--bs-secondary-bg);
+}
+.nav-item > button {
+  border-radius: 0px !important;
+  border: 0px !important;
 }
