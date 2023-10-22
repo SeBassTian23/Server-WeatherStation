@@ -252,6 +252,10 @@ const GraphContainer = (props) => {
       }
     }
 
+    // Set min/max for y axis
+    output.options.scales.y.min = plot.min;
+    output.options.scales.y.max = plot.max;
+
     if (theme === 'dark') {
       output.options.scales.x.grid = { color: 'rgba(255, 255, 255, 0.05)' };
       output.options.scales.y.grid = { color: 'rgba(255, 255, 255, 0.05)' };
