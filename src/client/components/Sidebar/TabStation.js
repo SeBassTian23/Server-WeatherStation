@@ -69,7 +69,7 @@ export default function TabStation(props) {
                     </Card.Subtitle>
                 </Card.Body>
                 <MapContainer center={[device.location.lat,device.location.lng]} zoom={12} scrollWheelZoom={false} id='mapid' style={{width:"100%", height:"200px", position: "relative", outline: "none" }}>
-                    <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" detectRetina={true} crossOrigin={true} />
                     <Circle center={[device.location.lat,device.location.lng]} radius={500} pathOptions={{color:'red', weight: 1, fillColor: '#f03', fillOpacity: 0.5}} />
                 </MapContainer>
             </Card>
