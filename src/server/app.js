@@ -35,6 +35,7 @@ if (process.env.NODE_ENV === "production"){
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       "script-src": ["'self'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "'unsafe-inline'"],
+      "img-src": ["'self'", "*.tile.openstreetmap.org", "data:"]
     },
   }));
 }
