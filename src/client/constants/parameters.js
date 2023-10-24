@@ -11,7 +11,7 @@ export const aqi = {
       range: [0,50]
     },
     {
-      color: "rgb(255,255,0)",
+      color: "rgb(255,243,0)",
       title: "Moderate",
       label: "51-100",
       range: [51,100]

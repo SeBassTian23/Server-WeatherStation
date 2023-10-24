@@ -100,8 +100,8 @@ export default function Cards(props) {
 
         return (
           <Col className='text-center text-nowrap mb-2' key={idx}>
-            <Card className={ card.size === 'sm' ? 'h-100 mini-card' : ''} title={cardTitle.trimEnd()}>
-              <div className={`fw-light mt-2 mb-0 ${card.size === 'lg' ? 'fs-4' : 'fs-5'}`} data-field={card.field}>
+            <Card className={ 'bg-light-subtle'} title={cardTitle.trimEnd()}>
+              <div className={`mt-2 mb-0 ${card.size === 'lg' ? 'fs-4' : 'fs-5 fw-light'}`} data-field={card.field}>
                 {icon && <strong className='text-info indicator'>{icon}</strong>}
                 {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT') : value[0]}
                 {LabelGetUnit(card.label) &&

@@ -12,12 +12,12 @@ export default function HeaderContainer(props) {
         <Container>
           <Row>
             <Col sm className='ps-sm-0 ps-lg-5'>
-              <h2 className='text-light'>
+              <h1 className='fs-2 text-light'>
                 Weather Station
-                <small className='text-secondary fs-5'> {/*font-size: 0.5em; */}
+                <small className='text-muted fs-5 ms-2'>
                   {props.locationName}
                 </small>
-              </h2>
+              </h1>
             </Col>
           </Row>
         </Container>

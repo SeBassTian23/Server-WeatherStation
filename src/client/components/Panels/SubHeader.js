@@ -84,7 +84,7 @@ export default function SubHeader(props) {
       </Col>
       <Col sm={{span:4, order:2}} className='order-1 pb-4 pb-sm-0'>
         <Col className='text-center'>
-          <h1 className='fw-light text-info'>{header}</h1>
+          <span className='fs-1 fw-light text-info d-block'>{header}</span>
           {subheader}
         </Col>
       </Col>

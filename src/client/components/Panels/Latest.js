@@ -24,7 +24,7 @@ export default function Latest(props) {
     return (
       <Card className='card rounded-0 mt-4'>
         <Card.Body>
-          <a className='float-end bg-transparent border-0' href={downloadLink('now', new Date(), state.units)} title="Download Latest Observations">
+          <a className='float-end bg-transparent border-0' href={downloadLink('now', new Date(), state.units)} title="Download Latest Observations" aria-label="Download Latest Observations as CSV">
             <i className='bi bi-download text-muted' />
           </a>
           <Card.Title className='text-info'>Latest Observations</Card.Title>
@@ -54,7 +54,7 @@ const LatestContent = (props) => {
           <thead className='thead-light text-center small'>
             <tr>
               {header.map( (name,idx) => (
-                <td key={idx}>{formatHeader(name)}</td>
+                <th key={idx}>{formatHeader(name)}</th>
                 )
               )}
             </tr>

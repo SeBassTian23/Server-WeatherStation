@@ -55,7 +55,7 @@ function SummaryTable(props) {
   return (
     <Card>
       <Card.Body>
-        <a className='float-end me-2' href={download}><i className='bi bi-download text-muted' /> </a>
+        <a className='float-end me-2' href={download} aria-label="Download Latest Observations as CSV"><i className='bi bi-download text-muted' /> </a>
         <Card.Title className='text-info'>Summary</Card.Title>
         <Card.Subtitle className='text-muted mb-4 fw-light'>Data summarized for {period}.</Card.Subtitle>
         <SummaryTableContent left={left} right={right} />
