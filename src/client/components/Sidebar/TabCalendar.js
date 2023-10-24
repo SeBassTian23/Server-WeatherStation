@@ -70,7 +70,7 @@ export default function TabCalendar(props) {
                             <Link className="small" id="calendar-month" to={dayjs().format('/YYYY/MM')}><i className="bi bi-calendar-month-fill" title="Show data for this month"></i> This Month</Link>
                         </Col>
                         <Col>
-                            <Link className="small" id="calendar-month" to={dayjs().format('/YYYY')} title="Show data for this year"><i className="bi bi-calendar3-fill"></i> This Year</Link>
+                            <Link className="small" id="calendar-year" to={dayjs().format('/YYYY')} title="Show data for this year"><i className="bi bi-calendar3-fill"></i> This Year</Link>
                         </Col>
                     </Row>
                 </Card.Body>
