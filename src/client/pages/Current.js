@@ -49,7 +49,11 @@ export default function Current(props) {
   useEffect(() => {
     fetch('/api/')
       .then(res => res.json())
-      .then(obj => {  
+      .then(obj => {
+        obj.body.selectedDate = obj.body.sidebar.calendar.selectedDate
+        obj.body.timezone = obj.body.sidebar.station.device.location.timezone
+        obj.body.period = obj.body.summary.period
+        obj.body.calendar = obj.body.sidebar.calendar
         setData(obj.body);
       })
       .catch((err) => {
