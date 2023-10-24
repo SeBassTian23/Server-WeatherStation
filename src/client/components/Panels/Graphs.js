@@ -256,6 +256,11 @@ const GraphContainer = (props) => {
     output.options.scales.y.min = plot.min;
     output.options.scales.y.max = plot.max;
 
+    // Set min/max for x axis (timescale)
+    if(props.period === 'now'){
+      output.options.scales.x.max = dayjs().endOf('day').format();
+    }
+
     if (theme === 'dark') {
       output.options.scales.x.grid = { color: 'rgba(255, 255, 255, 0.05)' };
       output.options.scales.y.grid = { color: 'rgba(255, 255, 255, 0.05)' };
