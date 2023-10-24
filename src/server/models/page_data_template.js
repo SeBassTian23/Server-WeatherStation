@@ -48,7 +48,7 @@ const PAGE_DATA_TEMPLATE = {
       },
       {
         yaxis: "Particles [μg/m³]",
-        traces: { "PM10.0 [ug/m3]": { "l": "PM 10", "c": colors.green }, "PM2.5 [ug/m3]": { "l": "PM 2.5", "c": colors.purple }, "PM1.0 [ug/m3]": { "l": "PM 1", "c": colors.grey } },
+        traces: { "PM10.0 [ug/m3]": { "l": "PM10", "c": colors.green }, "PM2.5 [ug/m3]": { "l": "PM2.5", "c": colors.purple }, "PM1.0 [ug/m3]": { "l": "PM1.0", "c": colors.grey } },
         min: null,
         max: null
       },
@@ -59,14 +59,14 @@ const PAGE_DATA_TEMPLATE = {
         max: null
       },
       {
-        yaxis: "Index",
+        yaxis: "UV Index",
         traces: { "UV-Index": { "l": "UV Index", "c": colors.yellow } },
-        min: null,
-        max: null
+        min: 0,
+        max: 12
       },
       {
-        yaxis: "Index",
-        traces: { "AQI": { "l": "Air Quality Index", "c": colors.grey } },
+        yaxis: "Air Quality Index",
+        traces: { "AQI": { "l": "PM2.5 & PM10", "c": colors.grey } },
         min: null,
         max: null
       },
