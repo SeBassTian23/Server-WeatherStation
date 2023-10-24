@@ -75,19 +75,32 @@ const sunRiseSetPlugin = {
 
       ctx.fillStyle = options.backgroundColor || 'rgba(235, 235, 235, 0.5)';
 
-      // Sunrise
-      if (options.sunrise) {
-        var riseWidth = chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunrise)) - chartArea.left;
-        if (riseWidth > 0)
-          ctx.fillRect(chartArea.left, chartArea.top, riseWidth, height); // Changed order
+      if(options.inverse === true){
+        // Sunrise
+        if (options.sunrise && options.sunset) {
+          var riseStart = chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunrise));
+          var dayWidth = chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunset)) - riseStart;
+          if (dayWidth > 0)
+            ctx.fillRect(riseStart, chartArea.top, dayWidth, height); // Changed order
+        }
+      }
+      else {
+        // Sunrise
+        if (options.sunrise) {
+          var riseWidth = chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunrise)) - chartArea.left;
+          if (riseWidth > 0)
+            ctx.fillRect(chartArea.left, chartArea.top, riseWidth, height); // Changed order
 
+        }
+        // Sunset
+        if (options.sunset) {
+          var setWidth = chartArea.right - chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunset));
+          if (setWidth > 0)
+            ctx.fillRect(chartArea.right - setWidth, chartArea.top, setWidth, height); // Changed order
+        } 
       }
-      // Sunset
-      if (options.sunset) {
-        var setWidth = chartArea.right - chart.scales.x.getPixelForValue(chart.scales.x.parse(options.sunset));
-        if (setWidth > 0)
-          ctx.fillRect(chartArea.right - setWidth, chartArea.top, setWidth, height); // Changed order
-      }
+
+
       ctx.restore();
     }
   }
@@ -268,7 +281,8 @@ const GraphContainer = (props) => {
       output.options.scales.y.ticks = { color: 'rgb(222, 226, 230)' };
       output.options.scales.y.title['color'] = 'rgb(222, 226, 230)';
       output.options.plugins.sunriseset.backgroundColor = 'rgba(235, 235, 235, 0.1)'
-      output.options.color = 'rgb(222, 226, 230)';
+      output.options.plugins.sunriseset.inverse = true
+      output.options.color = 'rgb(222, 226, 230)'; 
     }
     else {
       output.options.color = ChartJS.defaults.color;
