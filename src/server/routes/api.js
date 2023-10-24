@@ -51,14 +51,13 @@ router.get('/', function (req, res) {
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var offset = dayjs().tz(DEVICE_TIMEZONE).utcOffset();
-  var start_time = dayjs().startOf('day').add(offset, 'minutes').toDate();
-  var end_time = dayjs().endOf('day').add(offset, 'minutes').toDate();
+  var start_time = dayjs.tz(dayjs(), DEVICE_TIMEZONE).startOf('day') //.add(offset, 'minute');
+  var end_time = start_time.add(1, 'day');
 
   var query = {
     "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" FROM data WHERE device_id = "${DEVICE_ID}" AND datetime(created_at) >= datetime('${start_time}') ORDER BY ROWID DESC`,
     "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_time } } },
+      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_time.toDate() } } },
       { $addFields: { Time: '$created_at' } },
       { $project: { created_at: 0, _id: 0, __v: 0 } }
     ]
@@ -144,16 +143,14 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})/:day([0-9]{1,2})', function (req
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_time = dayjs(selectedDate).startOf('day').tz(DEVICE_TIMEZONE).toISOString();
-  var end_time = dayjs(selectedDate).endOf('day').tz(DEVICE_TIMEZONE).toISOString();
-
-  console.log(start_time, end_time)
+  var start_time = dayjs.tz(dayjs(selectedDate).startOf('day').toISOString(), DEVICE_TIMEZONE);
+  var end_time = dayjs.tz(dayjs(selectedDate).endOf('day').toISOString(), DEVICE_TIMEZONE);
 
   // Data Queries
   var query = {
-    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" from data WHERE data.device_id = "${DEVICE_ID}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}') ORDER BY ROWID DESC`,
+    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" from data WHERE data.device_id = "${DEVICE_ID}" AND datetime(created_at) BETWEEN datetime('${start_time.toISOString()}') AND datetime('${end_time.toISOString()}') ORDER BY ROWID DESC`,
     "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_time), $lte: new Date(end_time) } } },
+      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_time.toDate(), $lte: end_time.toDate() } } },
       { $addFields: { Time: '$created_at' } },
       { $project: { created_at: 0, _id: 0, __v: 0 } }
     ]
@@ -213,8 +210,8 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_day = dayjs(selectedDate).startOf('month').tz(DEVICE_TIMEZONE).toISOString();
-  var end_day = dayjs(selectedDate).endOf('month').tz(DEVICE_TIMEZONE).toISOString();
+  var start_day = dayjs.tz(dayjs(selectedDate).startOf('month').toISOString(), DEVICE_TIMEZONE);
+  var end_day = dayjs.tz(dayjs(selectedDate).endOf('month').toISOString(), DEVICE_TIMEZONE);
 
   /* Queries */
   var query = {
@@ -222,11 +219,11 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
       ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
       FROM data  
       WHERE data.device_id = "${DEVICE_ID}" AND
-      datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
+      datetime(created_at) BETWEEN datetime('${start_day.toISOString()}') AND datetime('${end_day.toISOString()}') 
       GROUP BY Time
       ORDER BY Time ASC`,
     "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_day), $lte: new Date(end_day) } } },
+      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_day.toDate(), $lte: end_day.toDate() } } },
       {
         $group: {
           _id: {
@@ -316,8 +313,8 @@ router.get('/:year([0-9]{4})', function (req, res) {
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_day = dayjs(selectedDate).startOf('year').tz(DEVICE_TIMEZONE).toISOString();
-  var end_day = dayjs(selectedDate).endOf('year').tz(DEVICE_TIMEZONE).toISOString();
+  var start_day = dayjs.tz(dayjs(selectedDate).startOf('year').toISOString(), DEVICE_TIMEZONE);
+  var end_day = dayjs.tz(dayjs(selectedDate).endOf('year').toISOString(), DEVICE_TIMEZONE);
 
   /* Queries */
   var query = {
@@ -325,11 +322,11 @@ router.get('/:year([0-9]{4})', function (req, res) {
       ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
       FROM data  
       WHERE data.device_id = "${DEVICE_ID}" AND
-      datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
+      datetime(created_at) BETWEEN datetime('${start_day.toISOString()}') AND datetime('${end_day.toISOString()}') 
       GROUP BY Time
       ORDER BY Time ASC`,
     "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_day), $lte: new Date(end_day) } } },
+      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_day.toDate(), $lte: end_day.toDate() } } },
       {
         $group: {
           _id: {
@@ -418,8 +415,8 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_day = dayjs(range[0]).startOf('day').tz(DEVICE_TIMEZONE).toISOString();
-  var end_day = dayjs(range[1]).endOf('day').tz(DEVICE_TIMEZONE).toISOString();
+  var start_day = dayjs.tz(dayjs(range[0]).startOf('day').toISOString(), DEVICE_TIMEZONE);
+  var end_day = dayjs.tz(dayjs(range[1]).endOf('day').toISOString(), DEVICE_TIMEZONE);
 
   let groupBy = '%Y-%m-%dT%H:00:00Z';
   if( dayjs(end_day).diff(dayjs(start_day), 'day') > 60 )
@@ -430,11 +427,11 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
       ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
       FROM data  
       WHERE data.device_id = "${DEVICE_ID}" AND
-      datetime(created_at) BETWEEN datetime('${start_day}') AND datetime('${end_day}') 
+      datetime(created_at) BETWEEN datetime('${start_day.toISOString()}') AND datetime('${end_day.toISOString()}') 
       GROUP BY Time
       ORDER BY Time ASC`,
     "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: new Date(start_day), $lte: new Date(end_day) } } },
+      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_day.toDate(), $lte: end_day.toDate() } } },
       {
         $group: {
           _id: {

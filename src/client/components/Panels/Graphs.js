@@ -214,7 +214,7 @@ const GraphContainer = (props) => {
   let graphSetup = options.map((plot, idx) => {
     let traces = []
     for (let key in plot.traces) {
-      const tzoffset = timezoneGetOffset(data[key][0].x, props.timezone);
+      const tzoffset = timezoneGetOffset(data[key]? data[key][0].x : 0, props.timezone);
       traces.push({
         label: plot.traces[key].l,
         data: data[key]? data[key].map(itm => {

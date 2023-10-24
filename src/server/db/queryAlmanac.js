@@ -15,11 +15,11 @@ var queryAlmanac = function (device_id, start_time, end_time, header) {
   if(db){
     var h = header.map(function (x) {
       return `
-      SELECT '${x}' as col, 'max' as type,  MAX(data.\`${x}\`) as value, created_at FROM data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}')
+      SELECT '${x}' as col, 'max' as type,  MAX(data.\`${x}\`) as value, created_at FROM data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time.toISOString()}') AND datetime('${end_time.toISOString()}')
       UNION
-      SELECT '${x}' as col, 'min' as type,  MIN(data.\`${x}\`) as value, created_at FROM data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}')
+      SELECT '${x}' as col, 'min' as type,  MIN(data.\`${x}\`) as value, created_at FROM data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time.toISOString()}') AND datetime('${end_time.toISOString()}')
       UNION
-      SELECT '${x}' as col, 'avg' as type,  AVG(data.\`${x}\`) as value, NULL FROM data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}')
+      SELECT '${x}' as col, 'avg' as type,  AVG(data.\`${x}\`) as value, NULL FROM data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time.toISOString()}') AND datetime('${end_time.toISOString()}')
       `;
     });
     query = h.join("UNION");
@@ -29,8 +29,8 @@ var queryAlmanac = function (device_id, start_time, end_time, header) {
     query = {
       device_id, 
       created_at: {
-        $gte: new Date(start_time),
-        $lt: new Date(end_time)
+        $gte: start_time.toDate(),
+        $lt: end_time.toDate()
       }
     }
 

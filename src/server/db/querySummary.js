@@ -14,7 +14,7 @@ var querySummary = function (device_id, start_time, end_time, header) {
     var h = header.map(function (x) {
       return `AVG("${x}") AS "AVG-${x}", MIN("${x}") AS "MIN-${x}", MAX("${x}") AS "MAX-${x}"`;
     });
-    query = `SELECT "created_at" AS Time, ${h.join(",")} from data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time}') AND datetime('${end_time}') ORDER BY ROWID DESC LIMIT 1`;
+    query = `SELECT "created_at" AS Time, ${h.join(",")} from data WHERE data.device_id = "${device_id}" AND datetime(created_at) BETWEEN datetime('${start_time.toISOString()}') AND datetime('${end_time.toISOString()}') ORDER BY ROWID DESC LIMIT 1`;
   }
 
   if(Data){
@@ -23,8 +23,8 @@ var querySummary = function (device_id, start_time, end_time, header) {
         $match: {
           device_id: device_id,
           created_at: {
-            $gte: new Date(start_time), 
-            $lt: new Date(end_time)
+            $gte: start_time.toDate(), 
+            $lt: end_time.toDate()
           }
         }
       },

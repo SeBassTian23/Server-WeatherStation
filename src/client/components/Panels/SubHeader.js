@@ -52,7 +52,7 @@ export default function SubHeader(props) {
       )
 
     let headerFormat = 'dddd'
-    let subheaderFormat = 'MMMM D, YYYY | hh:mm a'
+    let subheaderFormat = 'MMMM D, YYYY | hh:mm a (z)'
 
     if(data.period === 'day'){
       subheaderFormat = 'MMMM D, YYYY'
@@ -66,11 +66,12 @@ export default function SubHeader(props) {
       subheaderFormat = 'MMMM, YYYY'
     }
 
-    let header = dayjs(timezoneAdjust(data.selectedDate, data.timezone)).format(headerFormat)
-    let subheader = dayjs(timezoneAdjust(data.selectedDate, data.timezone)).format(subheaderFormat)
+    let header, subheader;
 
-    if(data.period === 'now')
-      subheader += ` ${dayjs.utc().tz(data.timezone).format('(z)')}`
+    if(data.period !== 'range'){
+      header = dayjs(data.selectedDate).format(headerFormat)
+      subheader = dayjs.tz(dayjs(data.selectedDate), data.timezone).format(subheaderFormat)
+    }
 
     if(data.period === 'range'){
       header = dayjs.duration( dayjs(data.selectedDate[1]).diff(dayjs(data.selectedDate[0]), 'day') , "days").humanize();
