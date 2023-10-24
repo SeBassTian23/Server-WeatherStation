@@ -238,7 +238,7 @@ ul#pills-tab button.active {
 }
 
 #shortcutlinks a:hover {
-  filter:brightness(.7)
+  filter:brightness(.7);
 }
 
 #shortcutlinks a i {
@@ -248,6 +248,14 @@ ul#pills-tab button.active {
 
 #mapid .leaflet-tile-pane {
   filter: grayscale(1);
+}
+
+#mapid .leaflet-control-attribution {
+  filter: grayscale(1);
+}
+
+[data-bs-theme="dark"] #mapid .leaflet-tile-pane {
+  filter: grayscale(1) brightness(.9);
 }
 
 [data-bs-theme="dark"] #img-404 {
