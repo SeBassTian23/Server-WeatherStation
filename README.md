@@ -2,7 +2,7 @@
 
 > Simple Web App to display and save data from a Personal Weather Station (PWS)
 
-There are numerous projects for IoT devices ([Wikipedia](https://en.wikipedia.org/wiki/Internet_of_things)) out there to record and display their data. This is a very simple application for a single personal weather station. It is based on the popular [express.js](https://github.com/expressjs) and [React](https://react.dev/) and is using a [SQLite](https://sqlite.org) database, since there are not very frequent write statements to be expected (~ every 5 min) and it is easy to maintain. The API and the data format are kept simple intentionally.
+There are numerous projects for IoT devices ([Wikipedia](https://en.wikipedia.org/wiki/Internet_of_things)) out there to record and display their data. This is a very simple application for a single personal weather station. It is based on the popular [express.js](https://github.com/expressjs) and [React](https://react.dev/) and is using a [SQLite](https://sqlite.org) database, since there are not very frequent write statements to be expected (~ every 5 min) and it is easy to maintain. Alternatively you can use a [MongoDB](https://www.mongodb.com/) database. The API and the data format are kept simple intentionally.
 
 As of now, data for multiple devices can be recorded, but the view is set to one device only, but it is possible to implement changes for the view for multiple in the future.
 

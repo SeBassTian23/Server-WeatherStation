@@ -73,6 +73,11 @@ export default function TabCalendar(props) {
                             <Link className="small" id="calendar-year" to={dayjs().format('/YYYY')} title="Show data for this year"><i className="bi bi-calendar3-fill"></i> This Year</Link>
                         </Col>
                     </Row>
+                    <Row>
+                        <Col className="text-muted fw-light mt-2" style={{fontSize: '0.7rem'}}>
+                            Hold down the shift key (⇧) to select a range between the current and the selected date.
+                        </Col>
+                    </Row>
                 </Card.Body>
             </Card>
         </TabPane>
@@ -81,11 +86,33 @@ export default function TabCalendar(props) {
 
 function CalendarCard(props) {
     let navigate = useNavigate();
-    const onClickDay = (e) => {
-        if( dayjs(e).format('/YYYY/MM/DD') == dayjs().format('/YYYY/MM/DD') )
-            navigate('/')
-        else
-            navigate(dayjs(e).format('/YYYY/MM/DD'))
+    const onClickDay = (e, event) => {
+        if(event.shiftKey){
+            let start = props.selectedDate
+            let end = e
+            // Make sure the range is okay, if dates are selected
+            // in reverse order
+            if(!Array.isArray(props.selectedDate)){
+                if(dayjs(end).isBefore(start)){
+                    start = e
+                    end = props.selectedDate
+                }
+            }
+            else{
+                start = start[0] // select the first element as the start day
+                if(dayjs(end).isBefore(start)){
+                    start = e
+                    end = props.selectedDate[0]
+                }
+            }
+            navigate( `/${dayjs(start).format('YYYY-MM-DD')},${dayjs(end).format('YYYY-MM-DD')}`)
+        }
+        else{
+            if( dayjs(e).format('/YYYY/MM/DD') == dayjs().format('/YYYY/MM/DD') )
+                navigate('/')
+            else
+                navigate(dayjs(e).format('/YYYY/MM/DD'))
+        }
     }
     const onClickMonth = (e) => {
         navigate(dayjs(e).format('/YYYY/MM'))
