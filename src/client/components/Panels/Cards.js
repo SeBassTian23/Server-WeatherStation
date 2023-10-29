@@ -92,11 +92,15 @@ export default function Cards(props) {
         if(card.label === "Pressure (PMSL) [hPa]")
           icon = <i className={`bi-speedometer`} />
 
-        if(card.label === 'Sunrise')
+        if(card.label === 'Sunrise'){
           icon = <i className='bi-sunrise-fill' />
+          cardTitle = 'Sunrise (local time): ' + dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT')
+        }
 
-        if(card.label === 'Sunset')
+        if(card.label === 'Sunset'){
           icon = <i className='bi-sunset-fill' />
+          cardTitle = 'Sunset (local time): ' + dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT')
+        }
 
         return (
           <Col className='text-center text-nowrap mb-2' key={idx}>

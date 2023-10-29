@@ -81,8 +81,8 @@ router.get('/', function (req, res) {
     data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows)
 
     // Determine Sunrise and Sunset
-    data.graphs.sunrise = getSunriseDateTimeUtc(new Date(), appdata.latitude, appdata.longitude)
-    data.graphs.sunset = getSunsetDateTimeUtc(new Date(), appdata.latitude, appdata.longitude)
+    data.graphs.sunrise = getSunriseDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
+    data.graphs.sunset = getSunsetDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
     data.graphs.period = "now"
 
     let observations = buildObservationTable(rows, SITE_OBSERVATIONS_MAX)
