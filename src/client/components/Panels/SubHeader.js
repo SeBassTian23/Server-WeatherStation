@@ -51,32 +51,32 @@ export default function SubHeader(props) {
       </Row>
       )
 
-    let headerFormat = 'dddd'
-    let subheaderFormat = 'MMMM D, YYYY | hh:mm a (z)'
+  let headerFormat = 'dddd'
+  let subheaderFormat = 'MMMM D, YYYY | hh:mm a (z)'
 
-    if(data.period === 'day'){
-      subheaderFormat = 'MMMM D, YYYY'
-    }
-    if(data.period === 'month'){
-      headerFormat = 'MMMM'
-      subheaderFormat = 'YYYY'
-    }
-    if(data.period === 'year'){
-      headerFormat = 'YYYY'
-      subheaderFormat = 'MMMM, YYYY'
-    }
+  if(data.period === 'day'){
+    subheaderFormat = 'MMMM D, YYYY'
+  }
+  if(data.period === 'month'){
+    headerFormat = 'MMMM'
+    subheaderFormat = 'YYYY'
+  }
+  if(data.period === 'year'){
+    headerFormat = 'YYYY'
+    subheaderFormat = 'MMMM, YYYY'
+  }
 
-    let header, subheader;
+  let header, subheader;
 
-    if(data.period !== 'range'){
-      header = dayjs(data.selectedDate).format(headerFormat)
-      subheader = dayjs.tz(dayjs(data.selectedDate), data.timezone).format(subheaderFormat)
-    }
+  if(data.period !== 'range'){
+    header = dayjs(data.selectedDate).format(headerFormat)
+    subheader = dayjs.tz(dayjs(data.selectedDate), data.timezone).format(subheaderFormat)
+  }
 
-    if(data.period === 'range'){
-      header = dayjs.duration( dayjs(data.selectedDate[1]).diff(dayjs(data.selectedDate[0]), 'day') , "days").humanize();
-      subheader = `${dayjs(timezoneAdjust(data.selectedDate[0], data.timezone)).format('MMMM D, YYYY')} - ${dayjs(timezoneAdjust(data.selectedDate[1], data.timezone)).format('MMMM D, YYYY')}`
-    }
+  if(data.period === 'range'){
+    header = dayjs.duration( dayjs(data.selectedDate[1]).diff(dayjs(data.selectedDate[0]), 'day') , "days").humanize();
+    subheader = `${dayjs(timezoneAdjust(data.selectedDate[0], data.timezone)).format('MMMM D, YYYY')} - ${dayjs(timezoneAdjust(data.selectedDate[1], data.timezone)).format('MMMM D, YYYY')}`
+  }
 
   return (
     <Row className='align-items-center pb-3'>
@@ -85,7 +85,7 @@ export default function SubHeader(props) {
       </Col>
       <Col sm={{span:4, order:2}} className='order-1 pb-4 pb-sm-0'>
         <Col className='text-center'>
-          <span className='fs-1 fw-light text-info d-block'>{header}</span>
+          <span className='fs-1 fw-bold text-info d-block'>{header}</span>
           {subheader}
         </Col>
       </Col>
