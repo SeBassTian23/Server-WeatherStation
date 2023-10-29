@@ -100,7 +100,6 @@ const sunRiseSetPlugin = {
         } 
       }
 
-
       ctx.restore();
     }
   }
@@ -183,8 +182,8 @@ const GraphContainer = (props) => {
 
   }, [state.theme])
 
-  let width, height, gradient;
-  function getGradient(ctx, chartArea, yAxis) {
+  function generateGradient(ctx, chartArea, yAxis, alpha=1) {
+    let width, height, gradient;
     const chartWidth = chartArea.right - chartArea.left;
     const chartHeight = chartArea.bottom - chartArea.top;
     if (!gradient || width !== chartWidth || height !== chartHeight) {
@@ -196,24 +195,23 @@ const GraphContainer = (props) => {
 
       aqi.items.forEach(itm=>{
         if(itm.range[0]/yAxis.max <= 1 && inRange(itm.range[0], yAxis.min, yAxis.max) || inRange(itm.range[1], yAxis.min, yAxis.max)){
-          gradient.addColorStop( itm.range[0]/yAxis.max, itm.color )
+          gradient.addColorStop( itm.range[0]/yAxis.max, color(itm.color).alpha(alpha).rgbString() )
           return
         }
         if( inRange(yAxis.min, itm.range[0], itm.range[1]) || inRange(yAxis.max, itm.range[0], itm.range[1]) ){
-          gradient.addColorStop( itm.range[0]/yAxis.max, itm.color )
+          gradient.addColorStop( itm.range[0]/yAxis.max, color(itm.color).alpha(alpha).rgbString() )
           return
         }
         if( inRange(yAxis.min, itm.range[0], itm.range[1]) && inRange(yAxis.max, itm.range[0], itm.range[1]) ){
-          gradient.addColorStop( 1, itm.color )
+          gradient.addColorStop( 1, color(itm.color).alpha(alpha).rgbString() )
           return
         }
       })
     }
-
     return gradient;
   }
 
-  function borderColor(context){
+  function lineColor(context){
     const chart = context.chart;
     const {ctx, chartArea} = chart;
 
@@ -221,7 +219,23 @@ const GraphContainer = (props) => {
       // This case happens on initial chart load
       return;
     }
-    return getGradient(ctx, chartArea, chart.scales.y);
+    return generateGradient(ctx, chartArea, chart.scales.y);
+  }
+
+  function fillColor(context){
+    const chart = context.chart;
+    const {ctx, chartArea} = chart;
+
+    if (!chartArea) {
+      // This case happens on initial chart load
+      return;
+    }
+
+    var gradientFill = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0.6)");
+    gradientFill.addColorStop(1, "rgba(244, 144, 128, 0.6)");
+
+    return generateGradient(ctx, chartArea, chart.scales.y, 0.1);
   }
 
   let graphSetup = options.map((plot, idx) => {
@@ -233,12 +247,18 @@ const GraphContainer = (props) => {
         data: data[key]? data[key].map(itm => {
           return { ...itm, ...{ x: dayjs(itm.x).subtract(tzoffset, 'minutes'), y: unitConverter(itm.y, LabelGetUnit(plot.yaxis), state.units)[0] } } //x: timezoneAdjust(itm.x, props.timezone),
         }) : [],
-        borderColor: (key === 'AQI')? borderColor : color(plot.traces[key].c || 'grey').rgbString(),
+        borderColor: (key === 'AQI')? lineColor : color(plot.traces[key].c || 'grey').rgbString(),
+        pointBorderColor: (key === 'AQI')? lineColor : color(plot.traces[key].c || 'grey').rgbString(),
+        pointBackgroundColor: (key === 'AQI')? lineColor : color(plot.traces[key].c || 'grey').rgbString(),
+        pointHoverBackgroundColor: (key === 'AQI')? lineColor : color(plot.traces[key].c || 'grey').rgbString(),
+        pointHoverBorderColor: (key === 'AQI')? lineColor : color(plot.traces[key].c || 'grey').rgbString(),
+        backgroundColor: (key === 'AQI')? fillColor : color(plot.traces[key].c || 'grey').alpha(0.1).rgbString(),
         type: 'line',
         pointRadius: 0,
         fill: false,
         lineTension: 0,
-        borderWidth: 2
+        borderWidth: 2,
+        fill: plot.traces[key].fill || false
       })
     }
 

@@ -24,61 +24,83 @@ const PAGE_DATA_TEMPLATE = {
     "options": [
       {
         yaxis: "Temperature [℃]",
-        traces: { "Temperature [C]": { "l": "Temperature", "c": colors.red }, "Dew Point [C]": { "l": "Dew Point", "c": colors.green }, "Heat Index [C]": { "l": "Heat Index", "c": colors.orange } },
+        traces: {
+          "Temperature [C]": { "l": "Temperature", "c": colors.red, fill: true },
+          "Dew Point [C]": { "l": "Dew Point", "c": colors.green, fill: false },
+          "Heat Index [C]": { "l": "Heat Index", "c": colors.orange, fill: false }
+        },
         min: null,
         max: null
       },
       {
         yaxis: "rel. Humidity [%]",
-        traces: { "rel. Humidity [%]": { "l": "rel. Humidity", "c": colors.blue } },
+        traces: { "rel. Humidity [%]": { "l": "rel. Humidity", "c": colors.blue, fill: true } },
         min: 0,
         max: 100
       },
       {
         yaxis: "Pressure [hPa]",
-        traces: { "Pressure (PMSL) [hPa]": { "l": "Pressure (PMSL)", "c": colors.green } },
+        traces: { "Pressure (PMSL) [hPa]": { "l": "Pressure (PMSL)", "c": colors.green, fill: true } },
         min: null,
         max: null
       },
       {
         yaxis: "Light Intensity [a.u.]",
-        traces: { "Light (UV)": { "l": "UV", "c": colors.indigo }, "Light (visible)": { "l": "Visible", "c": colors.yellow }, "Light (IR)": { "l": "IR", "c": colors.red } },
+        traces: {
+          "Light (UV)": { "l": "UV", "c": colors.indigo, fill: false },
+          "Light (visible)": { "l": "Visible", "c": colors.yellow, fill: false },
+          "Light (IR)": { "l": "IR", "c": colors.red, fill: false }
+        },
         min: null,
         max: null
       },
       {
         yaxis: "Particles [μg/m³]",
-        traces: { "PM10.0 [ug/m3]": { "l": "PM10", "c": colors.green }, "PM2.5 [ug/m3]": { "l": "PM2.5", "c": colors.purple }, "PM1.0 [ug/m3]": { "l": "PM1.0", "c": colors.grey } },
+        traces: {
+          "PM10.0 [ug/m3]": { "l": "PM10", "c": colors.green, fill: false },
+          "PM2.5 [ug/m3]": { "l": "PM2.5", "c": colors.purple, fill: false },
+          "PM1.0 [ug/m3]": { "l": "PM1.0", "c": colors.grey, fill: false }
+        },
         min: null,
         max: null
       },
       {
         yaxis: "Particle Count in 0.1 L",
-        traces: { ">0.3 [um/0.1L]": { "l": ">0.3", "c": colors.red }, ">0.5 [um/0.1L]": { "l": ">0.5", "c": colors.orange }, ">1.0 [um/0.1L]": { "l": ">1.0", "c": colors.yellow }, ">2.5 [um/0.1L]": { "l": ">2.5", "c": colors.green }, ">5.0 [um/0.1L]": { "l": ">5.0", "c": colors.blue }, ">10.0 [um/0.1L]": { "l": ">10.0", "c": colors.purple } },
+        traces: {
+          ">0.3 [um/0.1L]": { "l": ">0.3", "c": colors.red, fill: false },
+          ">0.5 [um/0.1L]": { "l": ">0.5", "c": colors.orange, fill: false },
+          ">1.0 [um/0.1L]": { "l": ">1.0", "c": colors.yellow, fill: false },
+          ">2.5 [um/0.1L]": { "l": ">2.5", "c": colors.green, fill: false },
+          ">5.0 [um/0.1L]": { "l": ">5.0", "c": colors.blue, fill: false },
+          ">10.0 [um/0.1L]": { "l": ">10.0", "c": colors.purple, fill: false }
+        },
         min: null,
         max: null
       },
       {
         yaxis: "UV Index",
-        traces: { "UV-Index": { "l": "UV Index", "c": colors.yellow } },
+        traces: { "UV-Index": { "l": "UV Index", "c": colors.yellow, fill: true } },
         min: 0,
         max: 12
       },
       {
         yaxis: "Air Quality Index",
-        traces: { "AQI": { "l": "PM2.5 & PM10", "c": colors.grey } },
-        min: null,
+        traces: {
+          "AQI": { "l": "PM2.5 & PM10", "c": colors.grey, fill: true },
+          "IAQ": { "l": "VOC", "c": colors.blue, fill: false }
+        },
+        min: 0,
         max: null
       },
       {
         yaxis: "Resistance [kΩ]",
-        traces: { "Air [KOhms]": { "l": "Air [kΩ]", "c": colors.teal } },
-        min: null,
+        traces: { "Air [KOhms]": { "l": "Air [kΩ]", "c": colors.teal, fill: true } },
+        min: 0,
         max: null
       },
       {
         yaxis: "Voltage",
-        traces: { "Battery [V]": { "l": "Battery", "c": colors.grey } },
+        traces: { "Battery [V]": { "l": "Battery", "c": colors.grey, fill: true } },
         min: 3.5,
         max: 4.5
       }
