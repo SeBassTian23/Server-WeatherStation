@@ -120,7 +120,7 @@ export const airqualityToStr = function( data, type, units ){
     
     return (
         <>
-          <strong>{valueAsWords(data.avg, airquality)}</strong>
+          <strong>{valueAsWords(data.avg? data.avg.toFixed(0) : data.avg, airquality)}</strong>
           {(type == "day" && valueAsWords(data.max, airquality) !== valueAsWords(data.avg, airquality) ) && <> reaching <strong>{valueAsWords(data.max, airquality)}</strong> levels in the <strong>{timeToStr(data.max_time, type)}</strong></>}
           {(type == "month" ) && <> reaching <strong>{valueAsWords(data.max, airquality)}</strong> levels on <strong>{data.max_day}</strong></>}
         </>
