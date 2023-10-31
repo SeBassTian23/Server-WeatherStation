@@ -29,17 +29,15 @@ function selectedDateFormat( selectedDate ){
 export default function TabCalendar(props) {
 
     const [dates, setDates] = useState({
-        minDate: new Date(props.minDate) || new Date(),
-        maxDate: new Date(props.maxDate) || new Date(),
-        currentDate: new Date(props.currentDate) || new Date(),
+        minDate: props.minDate? new Date(props.minDate) : new Date(),
+        maxDate: props.maxDate? new Date(props.maxDate) : new Date(),
         selectedDate: selectedDateFormat(props.selectedDate)
     });
 
     useEffect(() => {
         setDates(dates => {return {...dates, ...{
-                    minDate: new Date(props.minDate) || new Date(),
-                    maxDate: new Date(props.maxDate) || new Date(),
-                    currentDate: new Date(props.currentDate) || new Date(),
+                    minDate: props.minDate? new Date(props.minDate) : new Date(),
+                    maxDate: props.maxDate? new Date(props.maxDate) : new Date(),
                     selectedDate: selectedDateFormat(props.selectedDate)
                 } 
             } 

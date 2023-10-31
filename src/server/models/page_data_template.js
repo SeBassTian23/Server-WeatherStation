@@ -127,7 +127,6 @@ const PAGE_DATA_TEMPLATE = {
     "calendar": {
       "minDate": null,
       "maxDate": null,
-      "currentDate": null,
       "selectedDate": null
     },
     "station": {
