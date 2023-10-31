@@ -115,7 +115,6 @@ const PAGE_DATA_TEMPLATE = {
     "cards": []
   },
   "summary": {
-    "download": "latest",
     "period": "now",
     "table": {
       "left": [],
