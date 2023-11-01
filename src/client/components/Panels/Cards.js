@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
+import Placeholder from 'react-bootstrap/Placeholder';
 
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -22,6 +23,17 @@ export default function Cards(props) {
   return (
     <>
       {items.map( (card,idx) => {
+        if(card === undefined)
+          return (<Col className="text-center text-nowrap mb-2" key={idx}>
+            <Card className="bg-light-subtle">
+              <Placeholder animation='wave'>
+                <div className={`mt-2 mb-0 fs-3`}>
+                  <Placeholder xs={5} />
+                </div>
+                <span className="mb-2 d-block text-muted smaller"><Placeholder xs={8} /></span>
+              </Placeholder>
+            </Card>
+          </Col>)
         
         const value = unitConverter(card.value, LabelGetUnit(card.label), state.units)
         
@@ -92,20 +104,10 @@ export default function Cards(props) {
         if(card.label === "Pressure (PMSL) [hPa]")
           icon = <i className={`bi-speedometer`} />
 
-        if(card.label === 'Sunrise'){
-          icon = <i className='bi-sunrise-fill' />
-          cardTitle = 'Sunrise (local time): ' + dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT')
-        }
-
-        if(card.label === 'Sunset'){
-          icon = <i className='bi-sunset-fill' />
-          cardTitle = 'Sunset (local time): ' + dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT')
-        }
-
         return (
           <Col className='text-center text-nowrap mb-2' key={idx}>
             <Card className={ 'bg-light-subtle'} title={cardTitle.trimEnd()}>
-              <div className={`mt-2 mb-0 ${card.size === 'lg' ? 'fs-4' : 'fs-5 fw-light'}`} data-field={card.field}>
+              <div className={`mt-2 mb-0 fs-4`} data-field={card.field}>
                 {icon && <strong className='text-info indicator'>{icon}</strong>}
                 {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT') : value[0]}
                 {LabelGetUnit(card.label) &&

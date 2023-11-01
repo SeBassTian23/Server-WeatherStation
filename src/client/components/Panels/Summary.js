@@ -8,7 +8,7 @@ import Card from 'react-bootstrap/Card';
 import Table from 'react-bootstrap/Table'
 
 import NoData from '../Helpers/NoData';
-import Cards from './Cards'
+import Placeholder from 'react-bootstrap/Placeholder';
 
 import {SettingsContext} from '../../context/settingsContext'
 import {unitConverter} from '../../helpers/convert'
@@ -23,9 +23,11 @@ dayjs.extend(localizedFormat)
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
 
+import timezoneAdjust from '../../helpers/timezone-adjust';
+
 export default function Summary(props) {
 
-  const [summary, setSummary] = useState(null);
+  const [summary, setSummary] = useState({});
 
   useEffect( () => {
     setSummary(summary => {
@@ -33,23 +35,44 @@ export default function Summary(props) {
     });
   }, [props] )
 
-  return (
-    <>
-      {(summary && summary.cards && summary.cards.length > 0) && <Row className='row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 mb-3'>
-            <Cards items={summary.cards || []} />
-          </Row>}
-      {(summary && summary.table) && <SummaryTable {...summary.table} period={summary.period} selectedDate={summary.selectedDate} />}
+  if(props.isLoading){
+    return <>
+      <Card>
+        <Card.Body>
+          <Card.Title className='text-info'>Summary</Card.Title>
+          <Placeholder animation='glow'>
+            <Placeholder sm={5} className='mb-4 fw-light' />
+            <Row xs={{cols: 1}} xl={{cols: 2}} >
+              <Col>
+                <TableBody period={props.period} />
+                {[...new Array(12)].map( (e, idx) => {
+                  return <Placeholder sm={12} key={idx} bg={ idx % 2 ? 'secondary' : null} size={'lg'} className='mb-2' />
+                  })
+                }
+              </Col>
+              <Col>
+                <TableBody period={props.period} />
+                {[...new Array(12)].map( (e, idx) => {
+                  return <Placeholder sm={12} key={idx} bg={ idx % 2 ? 'secondary' : null} size={'lg'} className='mb-2' />
+                  })
+                }
+              </Col>
+            </Row>
+          </Placeholder>
+        </Card.Body>
+      </Card>
     </>
-  );
+  }
+
+  return (<SummaryTable {...summary} period={summary.period} selectedDate={summary.selectedDate} sunrise={summary.sunrise} sunset={summary.sunset} timezone={summary.timezone} />);
 }
 
 function SummaryTable(props) {
 
   const [state] = useContext(SettingsContext);
-  
-  const period = (props.period === 'now')? 'today' : `the period of ${ (props.period === 'range')? dayjs.duration( dayjs(props.selectedDate[1]).diff(dayjs(props.selectedDate[0]), 'day') , "days").humanize() : `a ${props.period}`}`
-  const left = props.left || []
-  const right =  props.right || []
+  const period = (props.period === 'now')? 'today' : `the period of ${ (props.period === 'range' && props.selectedDate)? dayjs.duration( dayjs(props.selectedDate[1]).diff(dayjs(props.selectedDate[0]), 'day') , "days").humanize() : `a ${props.period}`}`
+  const left = props.tableLeft || []
+  const right =  props.tableRight || []
   const download = downloadLink(props.period, props.selectedDate, state.units) || '#'
 
   return (
@@ -58,7 +81,12 @@ function SummaryTable(props) {
         <a className='float-end me-2' href={download} aria-label="Download Latest Observations as CSV"><i className='bi bi-download text-muted' /> </a>
         <Card.Title className='text-info'>Summary</Card.Title>
         <Card.Subtitle className='text-muted mb-4 fw-light'>Data summarized for {period}.</Card.Subtitle>
-        <SummaryTableContent left={left} right={right} />
+        <SummaryTableContent left={left} right={right} period={props.period} />
+        {(props.sunrise) &&
+        <ul className='list-inline mb-0 text-muted fw-light'>
+          <li className='list-inline-item me-2'><i className='bi-sunrise-fill text-info' /> Sunrise: {dayjs(timezoneAdjust(props.sunrise, props.timezone || 'UTC')).format('LT')} (local)</li>
+          <li className='list-inline-item'><i className='bi-sunset-fill text-info' /> Sunset: {dayjs(timezoneAdjust(props.sunset, props.timezone || 'UTC')).format('LT')} (local)</li>
+        </ul>}
       </Card.Body>
     </Card>
   )
@@ -71,10 +99,10 @@ function SummaryTableContent(props) {
     return (
       <Row xs={{cols: 1}} xl={{cols: 2}} >
         <Col>
-          <TableBody rows={left} />
+          <TableBody rows={left} period={props.period} />
         </Col>
         <Col>
-          <TableBody rows={right} />
+          <TableBody rows={right} period={props.period} />
         </Col>
       </Row>
     )
@@ -95,7 +123,7 @@ function TableBody ( props ) {
       <thead className='thead-light small text-center'>
         <tr>
           <th className='text-start' style={{width: '45%'}}>Parameter</th>
-          <th className='text-center'>Average</th>
+          <th className='text-center'>{props.period === 'now'? 'Current' : 'Average'}</th>
           <th className='text-end'>Low</th>
           <th className='text-center'><small>→</small></th>
           <th className='text-start'>High</th>
@@ -122,7 +150,8 @@ function TableRow ( props ) {
     <tr>
       <td className='text-start'>{LabelUnitStrip(props.header)} <small className='text-muted'>{unit}</small></td>
       <td className='text-center'>
-        <ValueFormat value={props.avg} title={props.title} unit={props.header} />
+      {props.trend && <><small className='text-info'>{props.trend}</small> {' '}</> }
+        <ValueFormat value={props.latest? props.latest : props.avg} title={props.title} unit={props.header} />
       </td>
       <td className='text-end'>
         <ValueFormat value={props.min} title={props.title} unit={props.header} />

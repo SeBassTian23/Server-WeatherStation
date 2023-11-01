@@ -1,18 +1,17 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, useParams, useLocation } from 'react-router-dom';
 
-import Current from './pages/Current';
-import Past from './pages/Past';
+import View from './pages/View';
 import NotFound from './pages/NotFound';
 
 export default function RenderRoutes(props) {
   return (
     <Suspense fallback={<h1>Loading Content...</h1>}> 
       <Routes>
-        <Route path='/' exact element={<Current path='/' />}></Route>
-        <Route path='/:year/:month/:day' element={< ValidatePath />}></Route>
-        <Route path='/:year/:month' element={< ValidatePath />}></Route>
-        <Route path='/:year' element={< ValidatePath />}></Route>
+        <Route path='/' exact element={< ValidatePath period='now' />}></Route>
+        <Route path='/:year/:month/:day' element={< ValidatePath period='day' />}></Route>
+        <Route path='/:year/:month' element={< ValidatePath period='month' />}></Route>
+        <Route path='/:year' element={< ValidatePath period='year' />}></Route>
         <Route path='*' element={<NotFound />}></Route>
       </Routes>      
     </Suspense>
@@ -22,6 +21,7 @@ export default function RenderRoutes(props) {
 function ValidatePath(props) {
   const params = useParams();
   const location = useLocation();
+  let period = props.period;
 
   // Validation Here
   let valid = true 
@@ -31,7 +31,13 @@ function ValidatePath(props) {
     valid = false
   if(params.day && !params.day.match(/^[0-9]{1,2}$/))
     valid = false
+  if(params.day === '')
+    valid = true
+
+  if( params.year && params.year.match(/^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},?){2}$/) )
+    period = 'range'
+
   if(valid)
-    return <Past path={location.pathname} />
+    return <View path={location.pathname} period={period} />
   return <NotFound />
 }

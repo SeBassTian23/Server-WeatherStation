@@ -6,6 +6,7 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Placeholder from 'react-bootstrap/Placeholder';
 
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -138,7 +139,7 @@ export default function Graphs(props) {
     setGraphWidth(!isGraphWidth);
   };
 
-  const period = (props.period === 'now')? 'today' : `the period of ${ (props.period === 'range')? dayjs.duration( dayjs(props.selectedDate[1]).diff(dayjs(props.selectedDate[0]), 'day') , "days").humanize() : `a ${props.period}`}`
+  const period = (props.period === 'now')? 'today' : `the period of ${ (props.period === 'range' && props.selectedDate)? dayjs.duration( dayjs(props.selectedDate[1]).diff(dayjs(props.selectedDate[0]), 'day') , "days").humanize() : `a ${props.period}`}`
 
   if (props.data && Object.keys(props.data).length === 0)
     return (<></>)
@@ -150,7 +151,12 @@ export default function Graphs(props) {
           <i className={`bi ${isGraphWidth ? "bi-fullscreen" : "bi-fullscreen-exit"} text-muted`} />
         </Button>
         <Card.Title className='text-info'>Observation History</Card.Title>
-        <Card.Subtitle className='mb-2 text-muted fw-light'>Graphing of data collected {period}.</Card.Subtitle>
+        {
+          props.isLoading ? <Placeholder animation='glow'>
+            <Placeholder sm={3} className='mb-1 fw-light' />
+          </Placeholder> : 
+          <Card.Subtitle className='mb-2 text-muted fw-light'>Graphing of data collected {period}.</Card.Subtitle>
+        }
 
         <GraphContainer {...props} className={isGraphWidth ? "row-cols-md-2" : null} />
         <div className="small text-muted fw-light text-end">
@@ -316,8 +322,8 @@ const GraphContainer = (props) => {
     return (
       <Row xs={1} className={props.className} id='graphs-container'>
         {graphSetup.map((g, idx) => (
-          <Col className='py-3' key={idx}>
-            <GraphCanvas {...g} idx={idx} />
+          <Col className={props.isLoading? 'py-3 GraphLoadingOverlay' : 'py-3'} key={idx}>
+            <GraphCanvas {...g} isLoading={props.isLoading} idx={idx} />
           </Col>
         )
         )}

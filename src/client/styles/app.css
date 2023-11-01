@@ -270,3 +270,22 @@ ul#pills-tab button.active {
   border-radius: 0px !important;
   border: 0px !important;
 }
+
+.GraphLoadingOverlay {
+  position: relative;
+}
+
+.GraphLoadingOverlay::before {
+  content: 'Loading…';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--bs-body-bg);
+  z-index: 2;
+  filter: opacity(0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top:0;
+  left:0;
+}

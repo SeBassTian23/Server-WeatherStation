@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from 'react'
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Placeholder from 'react-bootstrap/Placeholder';
 
 import Cards from './Cards'
 import Almanac from '../Helpers/Almanac'
@@ -27,9 +28,9 @@ export default function SubHeader(props) {
   const [state] = useContext(SettingsContext);
 
   const [data, setData] = useState({
-    almanac: '',
-    cards: [],
-    period: null,
+    almanac: {},
+    cards: [...new Array(4)],
+    period: props.period || null,
     selectedDate: new Date(),
     timezone: 'UTC'
   });
@@ -38,18 +39,19 @@ export default function SubHeader(props) {
     setData(data => {
       return {...data,...props}
     });
-  }, [props])
+  }, [props.selectedDate])
 
   let summary = ''
-  if (data.almanac != '')
-    summary = <Almanac {...data.almanac} units={state.units} />
-  
-  if (data.cards && data.cards.length > 0)
+  if (data.period === 'now' && !props.isLoading ){
     summary = (
       <Row id='summary-cards-lg' xs='2' sm='2' lg='4'>
-        <Cards items={data.cards || []} size='lg' />
+        <Cards isLoading={props.isLoading} items={data.cards} size='lg' />
       </Row>
       )
+  }
+  else {    
+    summary = <Almanac isLoading={props.isLoading} {...data.almanac} units={state.units} />
+  }
 
   let headerFormat = 'dddd'
   let subheaderFormat = 'MMMM D, YYYY | hh:mm a (z)'
@@ -68,12 +70,12 @@ export default function SubHeader(props) {
 
   let header, subheader;
 
-  if(data.period !== 'range'){
+  if(data.period !== 'range' && !props.isLoading){
     header = dayjs(data.selectedDate).format(headerFormat)
     subheader = dayjs.tz(dayjs(data.selectedDate), data.timezone).format(subheaderFormat)
   }
 
-  if(data.period === 'range'){
+  if(data.period === 'range' && !props.isLoading){
     header = dayjs.duration( dayjs(data.selectedDate[1]).diff(dayjs(data.selectedDate[0]), 'day') , "days").humanize();
     subheader = `${dayjs(timezoneAdjust(data.selectedDate[0], data.timezone)).format('MMMM D, YYYY')} - ${dayjs(timezoneAdjust(data.selectedDate[1], data.timezone)).format('MMMM D, YYYY')}`
   }
@@ -85,8 +87,15 @@ export default function SubHeader(props) {
       </Col>
       <Col sm={{span:4, order:2}} className='order-1 pb-4 pb-sm-0'>
         <Col className='text-center'>
-          <span className='fs-1 fw-bold text-info d-block'>{header}</span>
-          {subheader}
+          {props.isLoading? <>
+            <Placeholder animation='glow'>
+              <span className='fs-1 fw-bold text-info d-block'><Placeholder xs={5} /></span>
+              <Placeholder xs={8} />
+            </Placeholder>
+          </> : <>
+            <span className='fs-1 fw-bold text-info d-block'>{header}</span>
+            {subheader}
+          </>}
         </Col>
       </Col>
     </Row>
