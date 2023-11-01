@@ -76,11 +76,8 @@ export default function View(props) {
           delete cachedData[props.path].sidebar
           localStorage.setItem('cachedData', JSON.stringify(cachedData))
         }
-        setTimeout(() => {
-          console.log(obj.body)
-          setData(obj.body);
-          setLoading(false);
-        }, 2000);
+        setData(obj.body);
+        setLoading(false);
       })
       .catch((err) => {
         setLoading(false);
