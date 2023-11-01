@@ -35,7 +35,7 @@ export default function Summary(props) {
     });
   }, [props] )
 
-  if(props.isLoading){
+  if(props.isLoading || !summary.selectedDate){
     return <>
       <Card>
         <Card.Body>
@@ -82,7 +82,7 @@ function SummaryTable(props) {
         <Card.Title className='text-info'>Summary</Card.Title>
         <Card.Subtitle className='text-muted mb-4 fw-light'>Data summarized for {period}.</Card.Subtitle>
         <SummaryTableContent left={left} right={right} period={props.period} />
-        {(props.sunrise) &&
+        {(props.sunrise && left.length > 0) &&
         <ul className='list-inline mb-0 text-muted fw-light'>
           <li className='list-inline-item me-2'><i className='bi-sunrise-fill text-info' /> Sunrise: {dayjs(timezoneAdjust(props.sunrise, props.timezone || 'UTC')).format('LT')} (local)</li>
           <li className='list-inline-item'><i className='bi-sunset-fill text-info' /> Sunset: {dayjs(timezoneAdjust(props.sunset, props.timezone || 'UTC')).format('LT')} (local)</li>
