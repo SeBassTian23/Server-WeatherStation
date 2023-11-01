@@ -32,8 +32,7 @@ const buildSideBarData = function (appdata, selectedDate = new Date()) {
     calendar: {
       minDate: appdata.start || new Date(),
       maxDate: appdata.latest || new Date(),
-      selectedDate: selectedDate,
-      currentDate: new Date(),
+      selectedDate: selectedDate
     },
     station: {
       device: {
@@ -56,6 +55,10 @@ const buildSideBarData = function (appdata, selectedDate = new Date()) {
         start: appdata.start || 'N/A',
         size: fileSizeSI(appdata.dbsize)
       }
+    },
+    datetime: {
+      timezone: appdata.timezone,
+      selectedDate: selectedDate
     }
   }
 }

@@ -105,51 +105,48 @@ const PAGE_DATA_TEMPLATE = {
         max: 4.5
       }
     ],
-    "data": [],
-    "sunrise": null,
-    "sunset": null,
-    "period": "now"
+    "data": []
   },
   "subheader": {
-    "almanac": "",
+    "almanac": {},
     "cards": []
   },
   "summary": {
-    "period": "now",
-    "table": {
-      "left": [],
-      "right": []
-    },
-    "cards": []
+    "tableLeft": [],
+    "tableRight": []
   },
-  "sidebar": {
-    "calendar": {
-      "minDate": null,
-      "maxDate": null,
-      "selectedDate": null
-    },
-    "station": {
-      "device": {
-        "device_id": DEVICE_ID,
-        "description": "N/A",
-        "location": {
-          "lat": null,
-          "lng": null,
-          "alt": null,
-          "elevation_unit": "Altitude [m]",
-          "timezone": null
-        },
-        "voltage": "N/A",
-        "active": false
+  "calendar": {
+    "minDate": null,
+    "maxDate": null,
+    "selectedDate": null
+  },
+  "station": {
+    "device": {
+      "device_id": DEVICE_ID,
+      "description": "N/A",
+      "location": {
+        "lat": null,
+        "lng": null,
+        "alt": null,
+        "elevation_unit": "Altitude [m]",
+        "timezone": null
       },
-      "statistics": {
-        "measurements": "N/A",
-        "days": "N/A",
-        "latest": "N/A",
-        "start": "N/A",
-        "size": "N/A"
-      }
+      "voltage": "N/A",
+      "active": false
+    },
+    "statistics": {
+      "measurements": "N/A",
+      "days": "N/A",
+      "latest": "N/A",
+      "start": "N/A",
+      "size": "N/A"
     }
+  },
+  "datetime": {
+    "period": "now",
+    "timezone": "UTC",
+    "sunrise": null,
+    "sunset": null,
   }
 };
 

@@ -22,18 +22,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /* Constants */
-const DEVICE_ID = process.env.DEVICE_ID;
 const DEVICE_TIMEZONE = process.env.DEVICE_TIMEZONE;
 const SITE_OBSERVATIONS_MAX = process.env.SITE_OBSERVATIONS_MAX;
 
 const PAGE_DATA_TEMPLATE = require('../models/page_data_template');
 const COLUMNS_TO_DISPLAY = require('../constants/db-cols.json');
-
-/* Queries */
-const querySummary = require('../db/querySummary.js');
-const queryAlmanac = require('../db/queryAlmanac.js');
-const queryAppData = require('../db/queryAppData.js');
-const queryData = require('../db/queryData.js');
 
 /* Compile Data for Views */
 const buildCurrent = require('../models/buildCurrent');
@@ -45,81 +38,60 @@ const buildSideBarData = require('../models/buildSideBarData');
 
 const replaceInKeysWith = require('../helpers/replaceInKeysWith');
 
+/* Requests */
+const requestCurrent = require('../helpers/requestCurrent')
+const requestDay = require('../helpers/requestDay')
+const requestMonth = require('../helpers/requestMonth')
+const requestYear = require('../helpers/requestYear')
+const requestRange = require('../helpers/requestRange')
+
 /* GET home page. */
 router.get('/', function (req, res) {
+
+  var start_time = dayjs.tz(dayjs(), DEVICE_TIMEZONE).startOf('day');
 
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_time = dayjs.tz(dayjs(), DEVICE_TIMEZONE).startOf('day') //.add(offset, 'minute');
-  var end_time = start_time.add(1, 'day');
-
-  var query = {
-    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" FROM data WHERE device_id = "${DEVICE_ID}" AND datetime(created_at) >= datetime('${start_time}') ORDER BY ROWID DESC`,
-    "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_time.toDate() } } },
-      { $addFields: { Time: '$created_at' } },
-      { $project: { created_at: 0, _id: 0, __v: 0 } }
-    ]
-  };
-
-  // Get data
-  const q1 = queryData(query);
-
-  // Get the weather data summary
-  const q2 = querySummary(DEVICE_ID, start_time, end_time, COLUMNS_TO_DISPLAY);
-
-  // Get the application data infro
-  const q3 = queryAppData(DEVICE_ID);
-
-  Promise.all([q1, q2, q3]).then(function (values) {
+  Promise.all( requestCurrent(req) ).then(function (values) {
 
     var rows = values[0].map(itm => replaceInKeysWith(itm, ",", ".")) || values[0];
     var summary = values[1];
     var appdata = values[2];
 
-    data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows)
+    // Graph Data
+    data.graphs.data = buildGraphs([...COLUMNS_TO_DISPLAY, 'IAQ'], rows)
 
-    // Determine Sunrise and Sunset
-    data.graphs.sunrise = getSunriseDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
-    data.graphs.sunset = getSunsetDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
-    data.graphs.period = "now"
+    // Date And Time
+    data.datetime.sunrise = getSunriseDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
+    data.datetime.sunset = getSunsetDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
+    data.datetime.period = "now"
 
+    // Observation Table
     let observations = buildObservationTable(rows, SITE_OBSERVATIONS_MAX)
     for(let i in observations)
       observations[i] = replaceInKeysWith(observations[i] , ",", ".");
     data.table = {
-      // columns: Object.keys(observations[0] || []),
-      columns: ["Time", ...COLUMNS_TO_DISPLAY],
+      columns: ["Time", ...COLUMNS_TO_DISPLAY, 'IAQ'],
       rows: observations
     }
 
+    // Summary
     var cards = buildCurrent(COLUMNS_TO_DISPLAY, rows) || []
-
-    cards.push({
-      "field": 'Sunrise',
-      'size': 'sm',
-      'value': data.graphs.sunrise,
-      'unit': DEVICE_TIMEZONE,
-      'label': 'Sunrise'
-    })
-    cards.push({
-      "field": 'Sunset',
-      'size': 'sm',
-      'value': data.graphs.sunset,
-      'unit': DEVICE_TIMEZONE,
-      'label': 'Sunset'
-    })
-
-    data.subheader.cards = cards.splice(0, 4).map(item => { item.size = 'lg'; return item })
-    data.summary.cards = cards
-
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.period = "now"
-    data.summary.table.left = summaryTable.splice(0, 11)
-    data.summary.table.right = summaryTable.splice(0, 11)
+    for(let i in cards){
+      let idx = summaryTable.findIndex( itm => itm.header === cards[i].label )
+      if(idx > -1){
+        summaryTable[idx].trend = cards[i].trend
+        summaryTable[idx].latest = cards[i].value
+      }
+    }
+    data.subheader.cards = cards.splice(0, 4).map(item => { item.size = 'lg'; return item })
+    data.summary.tableLeft = summaryTable.splice(0, 11)
+    data.summary.tableRight = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata))
+    // Sidebar
+    data = merge(data, buildSideBarData(appdata))
 
     res.json({
       message: `success`,
@@ -134,60 +106,39 @@ router.get('/', function (req, res) {
 /* GET past day */
 router.get('/:year([0-9]{4})/:month([0-9]{1,2})/:day([0-9]{1,2})', function (req, res) {
 
-  var year = parseInt(req.params.year);
-  var month = parseInt(req.params.month);
-  var day = parseInt(req.params.day);
-
-  var selectedDate = `${year}-${month}-${day}`;
-
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_time = dayjs.tz(dayjs(selectedDate).startOf('day').toISOString(), DEVICE_TIMEZONE);
-  var end_time = dayjs.tz(dayjs(selectedDate).endOf('day').toISOString(), DEVICE_TIMEZONE);
+  var year = parseInt(req.params.year);
+  var month = parseInt(req.params.month);
+  var day = parseInt(req.params.day);
+  var selectedDate = `${year}-${month}-${day}`;
 
-  // Data Queries
-  var query = {
-    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" from data WHERE data.device_id = "${DEVICE_ID}" AND datetime(created_at) BETWEEN datetime('${start_time.toISOString()}') AND datetime('${end_time.toISOString()}') ORDER BY ROWID DESC`,
-    "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_time.toDate(), $lte: end_time.toDate() } } },
-      { $addFields: { Time: '$created_at' } },
-      { $project: { created_at: 0, _id: 0, __v: 0 } }
-    ]
-  };
-
-  // Get data
-  const q1 = queryData(query);
-
-  // Get the weather data summary
-  const q2 = querySummary(DEVICE_ID, start_time, end_time, COLUMNS_TO_DISPLAY);
-
-  // Get the application data infro
-  const q3 = queryAppData(DEVICE_ID);
-
-  // Get the almanac summary
-  const q4 = queryAlmanac(DEVICE_ID, start_time, end_time, ['Temperature [C]', 'rel. Humidity [%]', 'AQI'])
-
-  Promise.all([q1, q2, q3, q4]).then(function (values) {
+  Promise.all( requestDay(req) ).then(function (values) {
 
     var rows = values[0].map(itm => replaceInKeysWith(itm, ",", ".")) || values[0];
     var summary = replaceInKeysWith(values[1], ",", ".") || values[1];
     var appdata = values[2];
     var almanac = values[3];
 
-    data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows)
-    data.graphs.sunrise = getSunriseDateTimeUtc(new Date(year, month - 1, day), appdata.latitude, appdata.longitude)
-    data.graphs.sunset = getSunsetDateTimeUtc(new Date(year, month - 1, day), appdata.latitude, appdata.longitude)
-    data.graphs.period = "day"
+    // Graph Data
+    data.graphs.data = buildGraphs([...COLUMNS_TO_DISPLAY, 'IAQ'], rows)
+    
+    // Date and Time
+    data.datetime.sunrise = getSunriseDateTimeUtc(new Date(year, month - 1, day), appdata.latitude, appdata.longitude)
+    data.datetime.sunset = getSunsetDateTimeUtc(new Date(year, month - 1, day), appdata.latitude, appdata.longitude)
+    data.datetime.period = "day"
 
+    // Subheader
     data.subheader.almanac = buildAlmanac(almanac, "day")
 
+    // Sumary
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.period = "day"
-    data.summary.table.left = summaryTable.splice(0, 11)
-    data.summary.table.right = summaryTable.splice(0, 11)
+    data.summary.tableLeft = summaryTable.splice(0, 11)
+    data.summary.tableRight = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, dayjs(selectedDate).format('YYYY-MM-DD')))
+    // Sidebar
+    data = merge(data, buildSideBarData(appdata, dayjs(selectedDate).format('YYYY-MM-DD')))
 
     res.json({
       message: `success`,
@@ -210,89 +161,28 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})', function (req, res) {
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_day = dayjs.tz(dayjs(selectedDate).startOf('month').toISOString(), DEVICE_TIMEZONE);
-  var end_day = dayjs.tz(dayjs(selectedDate).endOf('month').toISOString(), DEVICE_TIMEZONE);
-
-  /* Queries */
-  var query = {
-    "SQLITE": `SELECT strftime('%Y-%m-%dT%H:00:00Z', datetime(data.created_at)) AS Time,
-      ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
-      FROM data  
-      WHERE data.device_id = "${DEVICE_ID}" AND
-      datetime(created_at) BETWEEN datetime('${start_day.toISOString()}') AND datetime('${end_day.toISOString()}') 
-      GROUP BY Time
-      ORDER BY Time ASC`,
-    "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_day.toDate(), $lte: end_day.toDate() } } },
-      {
-        $group: {
-          _id: {
-            year: { $year: "$created_at" },
-            month: { $month: "$created_at" },
-            day: { $dayOfMonth: "$created_at" },
-            hour: { $hour: "$created_at" }
-          }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          Time: {
-            $dateToString: {
-              format: "%Y-%m-%dT%H:00:00Z",
-              date: {
-                $dateFromParts: {
-                  year: "$_id.year",
-                  month: "$_id.month",
-                  day: "$_id.day",
-                  hour: "$_id.hour"
-                }
-              }
-            }
-          }
-        }
-      }
-    ]
-  }
-
-  COLUMNS_TO_DISPLAY.forEach(el => {
-    el = el.replace(/\./g, ",")
-    query.MONGODB[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
-    query.MONGODB[2]['$project'][el] = `$avg${el}`
-  });
-
-  // Get data
-  const q1 = queryData(query);
-
-  // Get the weather data summary
-  const q2 = querySummary(DEVICE_ID, start_day, end_day, COLUMNS_TO_DISPLAY);
-
-  // Get the application data infro
-  const q3 = queryAppData(DEVICE_ID);
-
-  // Get the almanac summary
-  const q4 = queryAlmanac(DEVICE_ID, start_day, end_day, ['Temperature [C]', 'rel. Humidity [%]', 'AQI'])
-
-  Promise.all([q1, q2, q3, q4]).then(function (values) {
+  Promise.all( requestMonth(req) ).then(function (values) {
 
     var rows = values[0]? values[0].map(itm => replaceInKeysWith(itm, ",", ".")) : values[0];
     var summary = replaceInKeysWith(values[1], ",", ".") || values[1];
     var appdata = values[2];
     var almanac = values[3];
 
-    data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows)
-    data.graphs.sunrise = null
-    data.graphs.sunset = null
-    data.graphs.period = "month"
+    // Graph Data
+    data.graphs.data = buildGraphs([...COLUMNS_TO_DISPLAY, 'IAQ'], rows)
+    
+    // Date and Time
+    data.datetime.period = "month"
 
+    // Subheader
     data.subheader.almanac = buildAlmanac(almanac, "month")
 
+    //
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.period = "month"
-    data.summary.table.left = summaryTable.splice(0, 11)
-    data.summary.table.right = summaryTable.splice(0, 11)
+    data.summary.tableLeft = summaryTable.splice(0, 11)
+    data.summary.tableRight = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, dayjs(selectedDate).format('YYYY-MM')))
+    data = merge(data, buildSideBarData(appdata, dayjs(selectedDate).format('YYYY-MM')))
 
     res.json({
       message: `success`,
@@ -313,89 +203,23 @@ router.get('/:year([0-9]{4})', function (req, res) {
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_day = dayjs.tz(dayjs(selectedDate).startOf('year').toISOString(), DEVICE_TIMEZONE);
-  var end_day = dayjs.tz(dayjs(selectedDate).endOf('year').toISOString(), DEVICE_TIMEZONE);
-
-  /* Queries */
-  var query = {
-    "SQLITE": `SELECT strftime('%Y-%m-%dT00:00:00Z',datetime(data.created_at)) as Time,
-      ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
-      FROM data  
-      WHERE data.device_id = "${DEVICE_ID}" AND
-      datetime(created_at) BETWEEN datetime('${start_day.toISOString()}') AND datetime('${end_day.toISOString()}') 
-      GROUP BY Time
-      ORDER BY Time ASC`,
-    "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_day.toDate(), $lte: end_day.toDate() } } },
-      {
-        $group: {
-          _id: {
-            year: { $year: "$created_at" },
-            month: { $month: "$created_at" },
-            day: { $dayOfMonth: "$created_at" },
-            // hour: { $hour: "$created_at" }
-          }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          Time: {
-            $dateToString: {
-              format: "%Y-%m-%dT00:00:00Z",
-              date: {
-                $dateFromParts: {
-                  year: "$_id.year",
-                  month: "$_id.month",
-                  day: "$_id.day",
-                  // hour: "$_id.hour"
-                }
-              }
-            }
-          }
-        }
-      }
-    ]
-  }
-
-  COLUMNS_TO_DISPLAY.forEach(el => {
-    el = el.replace(/\./g, ",")
-    query.MONGODB[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
-    query.MONGODB[2]['$project'][el] = `$avg${el}`
-  });
-
-  // Get data
-  const q1 = queryData(query);
-
-  // Get the weather data summary
-  const q2 = querySummary(DEVICE_ID, start_day, end_day, COLUMNS_TO_DISPLAY);
-
-  // Get the application data infro
-  const q3 = queryAppData(DEVICE_ID);
-
-  // Get the almanac summary
-  const q4 = queryAlmanac(DEVICE_ID, start_day, end_day, ['Temperature [C]', 'rel. Humidity [%]', 'AQI'])
-
-  Promise.all([q1, q2, q3, q4]).then(function (values) {
+  Promise.all( requestYear(req) ).then(function (values) {
 
     var rows = values[0].map(itm => replaceInKeysWith(itm, ",", ".")) || values[0];
     var summary = values[1];
     var appdata = values[2];
     var almanac = values[3];
 
-    data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows)
-    data.graphs.sunrise = null
-    data.graphs.sunset = null
-    data.graphs.period = "year"
+    data.graphs.data = buildGraphs([...COLUMNS_TO_DISPLAY, 'IAQ'], rows)
+    data.datetime.period = "year"
 
     data.subheader.almanac = buildAlmanac(almanac, "year")
 
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.period = "year"
-    data.summary.table.left = summaryTable.splice(0, 11)
-    data.summary.table.right = summaryTable.splice(0, 11)
+    data.summary.tableLeft = summaryTable.splice(0, 11)
+    data.summary.tableRight = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, selectedDate))
+    data = merge(data, buildSideBarData(appdata, selectedDate))
 
     res.json({
       message: `success`,
@@ -415,92 +239,23 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
   // clone data element
   var data = cloneDeep(PAGE_DATA_TEMPLATE);
 
-  var start_day = dayjs.tz(dayjs(range[0]).startOf('day').toISOString(), DEVICE_TIMEZONE);
-  var end_day = dayjs.tz(dayjs(range[1]).endOf('day').toISOString(), DEVICE_TIMEZONE);
-
-  let groupBy = '%Y-%m-%dT%H:00:00Z';
-  if( dayjs(end_day).diff(dayjs(start_day), 'day') > 60 )
-    groupBy = '%Y-%m-%dT00:00:00Z';
-
-  var query = {
-    "SQLITE": `SELECT strftime('${groupBy}', datetime(data.created_at)) as Time,
-      ${COLUMNS_TO_DISPLAY.map(function (x) { return `AVG( data.'${x}' ) as '${x}'`; }).join(",")}
-      FROM data  
-      WHERE data.device_id = "${DEVICE_ID}" AND
-      datetime(created_at) BETWEEN datetime('${start_day.toISOString()}') AND datetime('${end_day.toISOString()}') 
-      GROUP BY Time
-      ORDER BY Time ASC`,
-    "MONGODB": [
-      { $match: { device_id: DEVICE_ID, created_at: { $gte: start_day.toDate(), $lte: end_day.toDate() } } },
-      {
-        $group: {
-          _id: {
-            year: { $year: "$created_at" },
-            month: { $month: "$created_at" },
-            day: { $dayOfMonth: "$created_at" },
-            hour: { $hour: "$created_at" }
-          }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          Time: {
-            $dateToString: {
-              format: groupBy,
-              date: {
-                $dateFromParts: {
-                  year: "$_id.year",
-                  month: "$_id.month",
-                  day: "$_id.day",
-                  hour: "$_id.hour"
-                }
-              }
-            }
-          }
-        }
-      }
-    ]
-  }
-
-  COLUMNS_TO_DISPLAY.forEach(el => {
-    el = el.replace(/\./g, ",")
-    query.MONGODB[1]['$group'][`avg${el}`] = { $avg: `$${el}` }
-    query.MONGODB[2]['$project'][el] = `$avg${el}`
-  });
-
-  // Get Data
-  const q1 = queryData(query);
-
-  // Get the weather data summary
-  const q2 = querySummary(DEVICE_ID, start_day, end_day, COLUMNS_TO_DISPLAY);
-
-  // Get the application data infro
-  const q3 = queryAppData(DEVICE_ID);
-
-  // Get the almanac summary
-  const q4 = queryAlmanac(DEVICE_ID, start_day, end_day, ['Temperature [C]', 'rel. Humidity [%]', 'AQI'])
-
-  Promise.all([q1, q2, q3, q4]).then(function (values) {
+  Promise.all( requestRange(req) ).then(function (values) {
 
     var rows = values[0].map(itm => replaceInKeysWith(itm, ",", ".")) || values[0];
     var summary = values[1];
     var appdata = values[2];
     var almanac = values[3];
 
-    data.graphs.data = buildGraphs(COLUMNS_TO_DISPLAY, rows)
-    data.graphs.sunrise = null
-    data.graphs.sunset = null
-    data.graphs.period = "range"
+    data.graphs.data = buildGraphs([...COLUMNS_TO_DISPLAY, 'IAQ'], rows)
+    data.datetime.period = "range"
 
     data.subheader.almanac = buildAlmanac(almanac, "range")
 
     let summaryTable = buildSummary(COLUMNS_TO_DISPLAY, summary)
-    data.summary.period = "range"
-    data.summary.table.left = summaryTable.splice(0, 11)
-    data.summary.table.right = summaryTable.splice(0, 11)
+    data.summary.tableLeft = summaryTable.splice(0, 11)
+    data.summary.tableRight = summaryTable.splice(0, 11)
 
-    data.sidebar = merge(data.sidebar, buildSideBarData(appdata, range))
+    data = merge(data, buildSideBarData(appdata, range))
 
     res.json({
       message: `success`,
