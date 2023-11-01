@@ -12,8 +12,6 @@ import Col from 'react-bootstrap/Col';
 
 import { SettingsContext } from '../context/settingsContext'
 
-// import useEventStream from '../hooks/useEventStream'
-
 export default function View(props) {
 
   const [state] = useContext(SettingsContext);
@@ -21,31 +19,31 @@ export default function View(props) {
   const [loading, setLoading] = useState(true)
 
   // On start connect to server for stream
-  // useEffect(() => {
-  //   const sse = new EventSource('/data/stream',
-  //     { withCredentials: true });
-  //   function getRealtimeData(data) {
-  //     // process the data here,
-  //     // then pass it to state to be rendered
-  //     console.log('Data udpated')
-  //     fetch('/api/')
-  //       .then(res => res.json())
-  //       .then(obj => {
-  //         setData(obj.body);
-  //       })
-  //       .catch((err) => {
-  //         console.log(err.message);
-  //       });
-  //   }
-  //   sse.onmessage = e => getRealtimeData(e.data);
-  //   sse.onerror = () => {
-  //     // error log here 
-  //     sse.close();
-  //   }
-  //   return () => {
-  //     sse.close();
-  //   };
-  // }, []);
+  useEffect(() => {
+    const sse = new EventSource('/data/stream',
+      { withCredentials: true });
+    function getRealtimeData(data) {
+      // process the data here,
+      // then pass it to state to be rendered
+      console.log('Data udpated')
+      fetch('/api/')
+        .then(res => res.json())
+        .then(obj => {
+          setData(obj.body);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
+    sse.onmessage = e => getRealtimeData(e.data);
+    sse.onerror = () => {
+      // error log here 
+      sse.close();
+    }
+    return () => {
+      sse.close();
+    };
+  }, []);
 
   // On props change fetch new data
   useEffect(() => {
@@ -58,8 +56,8 @@ export default function View(props) {
         fetch('/data/status')
           .then(res => res.json())
           .then(obj => {
+            setData({ ...cachedData[props.path], ...{station: obj.body.station} });
             setLoading(false);
-            setData({ ...cachedData[props.path], ...obj.body });
           })
           .catch((err) => {
             console.log(err.message);
@@ -73,7 +71,7 @@ export default function View(props) {
       .then(obj => {
         if (state.cache === 'on' && props.path !== '/') {
           cachedData[props.path] = obj.body;
-          delete cachedData[props.path].sidebar
+          delete cachedData[props.path].station
           localStorage.setItem('cachedData', JSON.stringify(cachedData))
         }
         setData(obj.body);

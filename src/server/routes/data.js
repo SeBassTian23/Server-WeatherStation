@@ -318,12 +318,12 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
 });
 
 router.get('/status', (req, res) => {
-    if( req.query.token === undefined || req.query.token !== API_TOKEN){
-        res.status(403).json({
-            error: `Provide the correct token to get data.`            
-        });
-    }
-    else{
+    // if( req.query.token === undefined || req.query.token !== API_TOKEN){
+    //     res.status(403).json({
+    //         error: `Provide the correct token to get data.`            
+    //     });
+    // }
+    // else{
         
         var data = cloneDeep(PAGE_DATA_TEMPLATE);
         var status = data.sidebar
@@ -346,7 +346,7 @@ router.get('/status', (req, res) => {
             }); 
         });
 
-    }
+    // }
 });
 
 /* Save dataset to DB */
