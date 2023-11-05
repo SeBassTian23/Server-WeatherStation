@@ -72,12 +72,11 @@ export default function TabStation(props) {
                     <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" detectRetina={true} crossOrigin={true} />
                     <Circle center={[device.location.lat,device.location.lng]} radius={500} pathOptions={{color:'red', weight: 1, fillColor: '#f03', fillOpacity: 0.5}} />
                 </MapContainer>
-            </Card>
-            <Card className='rounded-0 mt-2'>
                 <Card.Body>
-                    <Card.Title className='text-info'>Station Information</Card.Title>
-                    <Card.Subtitle className='fw-light'>{device.description}</Card.Subtitle>
-                    <Row xs={2} className='mt-3 small'>
+                    <Card.Subtitle className='mb-2 fw-light'>
+                        <i className='bi-info-square' /> {device.description}
+                    </Card.Subtitle>
+                    <Row xs={2} className='small'>
                         <Col>
                             <strong>Data Sets</strong>
                             <p className='fw-ligher'>{statistics.measurements}</p>
