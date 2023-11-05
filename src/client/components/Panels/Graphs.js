@@ -259,6 +259,7 @@ const GraphContainer = (props) => {
         pointHoverBackgroundColor: (key === 'AQI')? lineColor : color(plot.traces[key].c || 'grey').rgbString(),
         pointHoverBorderColor: (key === 'AQI')? lineColor : color(plot.traces[key].c || 'grey').rgbString(),
         backgroundColor: (key === 'AQI')? fillColor : color(plot.traces[key].c || 'grey').alpha(0.1).rgbString(),
+        borderDash: (key === 'IAQ')?[5,2] : [],
         type: 'line',
         pointRadius: 0,
         fill: false,

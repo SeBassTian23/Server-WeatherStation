@@ -87,7 +87,7 @@ const PAGE_DATA_TEMPLATE = {
         yaxis: "Air Quality Index",
         traces: {
           "AQI": { "l": "PM2.5 & PM10", "c": colors.grey, fill: true },
-          "IAQ": { "l": "VOC", "c": colors.blue, fill: false }
+          "IAQ": { "l": "VOC", "c": colors.teal, fill: false }
         },
         min: 0,
         max: null
