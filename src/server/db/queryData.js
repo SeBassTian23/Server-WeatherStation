@@ -25,7 +25,8 @@ var queryData = function (query) {
   if(Data){
     return Data.aggregate(query.MONGODB).sort({ Time: -1 }).exec().then(rows => {
       rows = rows.map(row=>{
-        let iaq = new IAQ(row['Air [KOhms]'], row['rel, Humidity [%]']);
+        // Gas resistance needs to be converted to Ohm to work properly
+        let iaq = new IAQ(row['Air [KOhms]']*1000, row['rel, Humidity [%]']);
         row['IAQ'] = iaq.values().iaqScore || null
         return row;
       })
