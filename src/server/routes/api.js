@@ -11,6 +11,7 @@ const utc = require('dayjs/plugin/utc');
 const advancedFormat = require('dayjs/plugin/advancedFormat');
 const customParseFormat = require('dayjs/plugin/customParseFormat')
 const { getSunriseDateTimeUtc, getSunsetDateTimeUtc } = require('suntimes');
+const { Hemisphere, Moon } = require('lunarphase-js');
 dayjs.extend(localizedFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -65,6 +66,9 @@ router.get('/', function (req, res) {
     // Date And Time
     data.datetime.sunrise = getSunriseDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
     data.datetime.sunset = getSunsetDateTimeUtc(start_time.toDate(), appdata.latitude, appdata.longitude)
+    data.datetime.lunarphase = Moon.lunarPhase(start_time.toDate(), {
+      hemisphere: (appdata.latitude >= 0)? Hemisphere.NORTHERN : Hemisphere.SOUTHERN,
+    });
     data.datetime.period = "now"
 
     // Observation Table
@@ -127,6 +131,9 @@ router.get('/:year([0-9]{4})/:month([0-9]{1,2})/:day([0-9]{1,2})', function (req
     // Date and Time
     data.datetime.sunrise = getSunriseDateTimeUtc(new Date(year, month - 1, day), appdata.latitude, appdata.longitude)
     data.datetime.sunset = getSunsetDateTimeUtc(new Date(year, month - 1, day), appdata.latitude, appdata.longitude)
+    data.datetime.lunarphase = Moon.lunarPhase(new Date(year, month - 1, day), {
+      hemisphere: (appdata.latitude >= 0)? Hemisphere.NORTHERN : Hemisphere.SOUTHERN,
+    });
     data.datetime.period = "day"
 
     // Subheader

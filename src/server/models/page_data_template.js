@@ -147,6 +147,7 @@ const PAGE_DATA_TEMPLATE = {
     "timezone": "UTC",
     "sunrise": null,
     "sunset": null,
+    "lunarphase": null
   }
 };
 
