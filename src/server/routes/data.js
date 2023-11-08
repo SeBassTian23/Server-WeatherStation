@@ -16,6 +16,8 @@ const COLUMNS_TO_DISPLAY = require('../constants/db-cols.json');
 const PAGE_DATA_TEMPLATE = require('../models/page_data_template');
 
 const API_TOKEN = process.env.API_TOKEN;
+const PAGE_TITLE = process.env.PAGE_TITLE;
+const WIDGET_URL = process.env.CYCLIC_URL;
 
 /* Database */
 const db = process.env.SQLITE_FILE? require('../db/sqlite.js') : null;
@@ -315,6 +317,90 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
             error: `No dataset for the query »${req.params.datum}« available.`            
         });
     }
+});
+
+/* Get widget dataset */
+router.get('/widget', (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", WIDGET_URL);
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET');
+
+    if(Data && Device)
+        Device.findOne({default: true})
+        .then(device => {
+            // Find all entries for the default device
+            const deviceID = device.device_id;
+            const timezone = device.timezone;
+            const description = device.description;
+            const title = PAGE_TITLE;
+
+            return Data.findOne({ device_id: deviceID }, {__v: 0 }).sort({_id: -1}).then(entry => {
+                if(!entry)
+                    return {device_id: deviceID}
+                return {...replaceInKeysWith(entry.toJSON(), ",", "." ), ...{timezone,description,title}};
+                });
+        })
+        .then(entry => {
+            if(Object.keys(entry).length <= 1){
+                res.json({
+                    message: `success`,
+                    details: `There are not datasets for device »${entry.device_id}«.`,
+                    body: {}
+                });
+            }
+            else{
+                res.json({
+                    message: `success`,
+                    details: `Latest dataset »${entry._id}« from device »${entry.device_id}« at »${entry.created_at}«.`,
+                    body: entry
+                }); 
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: `Query Error`,
+                errorMessage: String(err).replace(/Error:\s?/i,' ')
+            }); 
+        });
+        
+    if(db)
+        db.serialize(function(){
+
+            let device_id;
+            let q = `SELECT data.*, devices.timezone, device.description from data INNER JOIN devices ON data.device_id = devices.device_id WHERE devices."default" = 1 ORDER BY data.ROWID DESC LIMIT 1`
+            
+            // TODO: More string validation
+            if( req.query.device ){
+                device_id = req.query.device;
+                timezone = req.query.timezone;
+                description = req.query.description;
+                title = PAGE_TITLE;
+                q = `SELECT data.*, devices.timezone from data INNER JOIN devices ON data.device_id = devices.device_id WHERE devices.device_id = "${device_id}" = 1 ORDER BY data.ROWID DESC LIMIT 1`
+            }
+
+            db.get(q, function(err, row){
+                if(err){
+                    res.status(500).json({
+                        error: `Database query failed.`
+                    });
+                }
+                if(!row){
+                    res.json({
+                        message: `success`,
+                        details: `There are not datasets for device »${device_id}«.`,
+                        body: {}
+                    });       
+                }
+                else{
+                    res.json({
+                        message: `success`,
+                        details: `Latest dataset »${row.ID}« from device »${row.device_id}« at »${row.created_at}«.`,
+                        body: {...row, ...{timezone,description,title}}
+                    });   
+                }
+            });
+        });
+
 });
 
 router.get('/status', (req, res) => {
