@@ -32,14 +32,24 @@ app.use(lessMiddleware(path.join(__dirname, '..', '..', 'public')));
 app.use(express.static(path.join(__dirname, '..', '..', 'public')));
 app.use(favicon(path.join(__dirname, '..', '..', 'public', 'favicon.ico')));
 
+app.disable("x-powered-by");
+
 if (process.env.NODE_ENV === "production"){
-  app.use(helmet.contentSecurityPolicy({
-    directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "'unsafe-inline'"],
-      "img-src": ["'self'", "*.tile.openstreetmap.org", "data:"]
-    },
-  }));
+
+  app.use(helmet())
+
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+          "script-src": ["'self'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "'unsafe-inline'"],
+          "img-src": ["'self'", "*.tile.openstreetmap.org", "data:"]
+        }
+      }
+    })
+  );
 }
 
 if (process.env.NODE_ENV !== "production"){
