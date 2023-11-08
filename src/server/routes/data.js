@@ -17,7 +17,7 @@ const PAGE_DATA_TEMPLATE = require('../models/page_data_template');
 
 const API_TOKEN = process.env.API_TOKEN;
 const PAGE_TITLE = process.env.PAGE_TITLE;
-const WIDGET_URL = process.env.CYCLIC_URL;
+const CORS_URL = process.env.CORS_URL;
 
 /* Database */
 const db = process.env.SQLITE_FILE? require('../db/sqlite.js') : null;
@@ -321,7 +321,7 @@ router.get('/:datum([0-9]+|[0-9a-fA-F]{24}|latest|devices)', (req, res) => {
 
 /* Get widget dataset */
 router.get('/widget', (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", WIDGET_URL);
+    res.header("Access-Control-Allow-Origin", CORS_URL);
     res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET');
 
