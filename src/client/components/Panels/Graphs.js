@@ -262,10 +262,11 @@ const GraphContainer = (props) => {
         borderDash: (key === 'IAQ')?[5,2] : [],
         type: 'line',
         pointRadius: 0,
-        fill: false,
         lineTension: 0,
         borderWidth: 2,
-        fill: plot.traces[key].fill || false
+        fill: plot.traces[key].fill? {
+          target: 'start'
+        } : false
       })
     }
 
