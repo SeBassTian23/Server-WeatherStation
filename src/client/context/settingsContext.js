@@ -3,8 +3,8 @@ import settingsReducer from "./settingsReducer";
 
 export const initialState = {
   theme: getStoredValue('theme') || 'auto',
-  calendarType: getStoredValue('calendarType') || 'iso8601',
-  units: getStoredValue('units') || 'metric',
+  calendarType: getStoredValue('calendarType') || guessPreferences('calendar') || 'iso8601',
+  units: getStoredValue('units') || guessPreferences('units') ||  'metric',
   cache: getStoredValue('cache') || 'off'
 }
 
@@ -65,4 +65,25 @@ function getStoredValue(item) {
   if( item === 'cache' && ['on','off'].indexOf(value) === -1 )
     return null;
   return value;
+}
+
+import {fahrenheitCountries} from '../constants/units-imperial'
+import {sundayFirst, mondayFirst, saturdayFirst} from '../constants/weekday-start'
+
+// Guess preferred calendar or units based on the RFC 5646 standard
+function guessPreferences(setting){
+  const userLanguage = navigator.language || navigator.userLanguage || 'en-US'
+
+  if(setting === 'calendar'){
+    if(sundayFirst.includes(userLanguage))
+      return userLanguage === 'he-IL'? 'hebrew' : 'gregory'
+    if(mondayFirst.includes(userLanguage))
+      return 'iso8601'
+    if(saturdayFirst.includes(userLanguage))
+      return 'islamic'  
+  }
+  if(setting === 'units'){
+    return fahrenheitCountries.includes(userLanguage)? 'imperial' : 'metric'
+  }
+  return null;
 }
