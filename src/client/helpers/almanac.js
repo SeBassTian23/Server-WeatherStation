@@ -58,7 +58,7 @@ export const temperatureToStr = function( data, type, units='metric' ){
     var str = "N/A";
 
     const temperature = {
-        "freezing": [Infinity,0],
+        "freezing": [-Infinity,0],
         "very cold": [0,6],
         "cold": [6,10],
         "cool": [10,14],

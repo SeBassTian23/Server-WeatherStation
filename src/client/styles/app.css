@@ -234,17 +234,11 @@ ul#pills-tab button.active {
 
 #shortcutlinks a{
   text-decoration: none;
-  color: initial;
 }
 
-#shortcutlinks a:hover {
-  filter:brightness(.7);
+#shortcutlinks a > i{
+  color: var(--bs-secondary-color);
 }
-
-#shortcutlinks a i {
-  color: var(--bs-primary);
-}
-
 
 #mapid .leaflet-tile-pane {
   filter: grayscale(1);
@@ -288,4 +282,43 @@ ul#pills-tab button.active {
   align-items: center;
   top:0;
   left:0;
+}
+
+.columns-4 {
+  columns: 1;
+}
+
+/* // Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) { 
+  .columns-4 {
+    columns: 1 !important;
+  }
+}
+
+/* // Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .columns-4 {
+    columns: 2 !important;
+  }
+}
+
+/* // Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .columns-4 {
+    columns: 4 !important;
+  }
+}
+
+/* // X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .columns-4 {
+    columns: 4 !important;
+  }
+}
+
+// XX-Large devices (larger desktops, 1400px and up)
+@media (min-width: 1400px) {
+  .columns-4 {
+    columns: 4 !important;
+  }
 }
