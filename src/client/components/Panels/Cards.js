@@ -35,7 +35,7 @@ export default function Cards(props) {
             </Card>
           </Col>)
         
-        const value = unitConverter(card.value, LabelGetUnit(card.label), state.units)
+        let value = unitConverter(card.value, LabelGetUnit(card.label), state.units)
         
         // Content for card title tag
         let cardTitle = `${LabelUnitStrip(card.label)}: ${value.join(" ")}`
@@ -65,20 +65,25 @@ export default function Cards(props) {
         if(card.label === 'AQI'){
           icon = <i className={`bi-tree-fill`} />
           let idx = aqi.items.findIndex( itm => {
-            const range = itm.label.split("-");
-            return card.value >= parseInt(range[0]) && (card.value <= parseInt(range[1]) || Number.isNaN( parseInt(range[1]) ) )
+            const range = itm.range;
+            return card.value >= range[0] && card.value <= range[1]
           });
           if(idx > -1){
             icon = <i className={`bi-tree-fill`} style={{color: `${aqi.items[idx].color}`}} />
-            cardTitle = `Air Quality: ${aqi.items[idx].title}`
+            cardTitle = `Air Quality: ${card.value} - ${aqi.items[idx].title}`
+            value[0] = aqi.items[idx].title.split(' ')
+            if( value[0] === 'Very' )
+              value[0] = `${value[0][0]} ${value[0][1]}`;
+            else
+              value[0] = value[0][0];            
           }
         }
 
         // Heat Index
         if(card.label === 'Heat Index [C]'){
           let idx = hi.items.findIndex( itm => {
-            const range = itm.label.split("-");
-            return card.value >= parseInt(range[0]) && (card.value <= parseInt(range[1]) || Number.isNaN( parseInt(range[1]) ) )
+            const range = itm.range;
+            return card.value >= range[0] && card.value <= range[1]
           });
           if(idx > -1){
             icon = <i className={`bi-exclamation-diamond-fill`} style={{color: `${hi.items[idx].color}`}} />
@@ -89,8 +94,8 @@ export default function Cards(props) {
         // UV Index
         if(card.label === 'UV-Index'){
           let idx = uvi.items.findIndex( itm => {
-            const range = itm.label.split("-");
-            return card.value >= parseInt(range[0]) && (card.value <= parseInt(range[1]) || Number.isNaN( parseInt(range[1]) ) )
+            const range = itm.range;
+            return card.value >= range[0] && card.value <= range[1]
           });
           if(idx > -1 && card.value > 2){
             icon = <i className={`bi-exclamation-triangle-fill`} style={{color: `${uvi.items[idx].color}`}} />
@@ -110,11 +115,13 @@ export default function Cards(props) {
               <div className={`mt-2 mb-0 fs-4`} data-field={card.field}>
                 {icon && <strong className='text-info indicator'>{icon}</strong>}
                 {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT') : value[0]}
-                {LabelGetUnit(card.label) &&
+                {value[1] !== '' &&
                   <span className='text-muted unit'>{value[1]}</span>
                 }
               </div>
-              <span className='mb-2 d-block text-muted smaller'>{LabelUnitStrip(card.label)}</span>
+              <span className='mb-2 d-block text-muted smaller'>{
+                LabelUnitStrip( card.label === 'AQI'? 'Air Quality (AQI)' : card.label )
+              }</span>
             </Card>
           </Col>
         )
