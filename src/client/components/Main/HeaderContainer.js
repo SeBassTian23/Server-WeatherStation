@@ -13,10 +13,7 @@ export default function HeaderContainer(props) {
           <Row>
             <Col sm className='ps-sm-0 ps-lg-5'>
               <h1 className='fs-2 text-light'>
-                Weather Station
-                <small className='text-muted fs-5 ms-2'>
-                  {props.locationName}
-                </small>
+                Weather Station | {props.locationName}
               </h1>
             </Col>
           </Row>
