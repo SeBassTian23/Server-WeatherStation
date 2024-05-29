@@ -101,8 +101,8 @@ const PAGE_DATA_TEMPLATE = {
       {
         yaxis: "Voltage",
         traces: { "Battery [V]": { "l": "Battery", "c": colors.grey, fill: true } },
-        min: 3.5,
-        max: 4.5
+        min: null,
+        max: 4.4
       }
     ],
     "data": []
