@@ -128,7 +128,7 @@ const PAGE_DATA_TEMPLATE = {
         "lat": null,
         "lng": null,
         "alt": null,
-        "elevation_unit": "Altitude [m]",
+        "elevation_unit": "[m]",
         "timezone": null
       },
       "voltage": "N/A",

@@ -22,7 +22,7 @@ export default function TabStation(props) {
             lat: 0,
             lng: 0,
             alt: 0,
-            elevation_unit: "Altitude [m]",
+            elevation_unit: "[m]",
             timezone: "UTC"
         },
         voltage: "N/A",

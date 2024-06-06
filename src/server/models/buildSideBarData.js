@@ -42,7 +42,7 @@ const buildSideBarData = function (appdata, selectedDate = new Date()) {
           "lat": appdata.latitude,
           "lng": appdata.longitude,
           "alt": appdata.altitude,
-          "elevation_unit": "Altitude [m]",
+          "elevation_unit": "[m]",
           "timezone": appdata.timezone
         },
         voltage: round(appdata.battery, 2),
