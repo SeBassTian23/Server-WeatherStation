@@ -26,7 +26,8 @@ router.get(/^(?!\/(data|api|download|db)\/).+$/, function (req, res) {
       "email": "sebastian.kuhlgert@gmail.com",
       "url": "https://kuhlgert.com"
     },
-    "title": titleAdd? `${titleAdd} | ` : '' + "Weather Station"
+    "title": titleAdd? `${titleAdd} | ` : '' + "Weather Station",
+    "location": process.env.PAGE_TITLE_LOCATION
   });
 });
 

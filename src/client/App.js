@@ -13,7 +13,7 @@ import FooterContainer from './components/Main/FooterContainer'
 function App() {
     return (
         <Suspense fallback={<h1>Loading App...</h1>}>
-            <HeaderContainer locationName='Lansing, MI' />
+            <HeaderContainer locationName={document.head.querySelector('meta[name="geo.placename"]').content || "" } />
             <RenderRoutes />
             <FooterContainer />
         </Suspense>

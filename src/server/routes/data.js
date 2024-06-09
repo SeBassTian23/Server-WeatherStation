@@ -16,8 +16,8 @@ const COLUMNS_TO_DISPLAY = require('../constants/db-cols.json');
 const PAGE_DATA_TEMPLATE = require('../models/page_data_template');
 
 const API_TOKEN = process.env.API_TOKEN;
-const PAGE_TITLE = process.env.PAGE_TITLE;
-const WIDGET_URL = process.env.CYCLIC_URL;
+const PAGE_TITLE_LOCATION = process.env.PAGE_TITLE_LOCATION;
+const WIDGET_URL = process.env.WIDGET_URL;
 
 /* Database */
 const db = process.env.SQLITE_FILE? require('../db/sqlite.js') : null;
@@ -332,7 +332,7 @@ router.get('/widget', (req, res, next) => {
             const deviceID = device.device_id;
             const timezone = device.timezone;
             const description = device.description;
-            const title = PAGE_TITLE;
+            const title = PAGE_TITLE_LOCATION;
 
             return Data.findOne({ device_id: deviceID }, {__v: 0 }).sort({_id: -1}).then(entry => {
                 if(!entry)
@@ -374,7 +374,7 @@ router.get('/widget', (req, res, next) => {
                 device_id = req.query.device;
                 timezone = req.query.timezone;
                 description = req.query.description;
-                title = PAGE_TITLE;
+                title = PAGE_TITLE_LOCATION;
                 q = `SELECT data.*, devices.timezone from data INNER JOIN devices ON data.device_id = devices.device_id WHERE devices.device_id = "${device_id}" = 1 ORDER BY data.ROWID DESC LIMIT 1`
             }
 
