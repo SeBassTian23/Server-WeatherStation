@@ -87,7 +87,7 @@ function SummaryTable(props) {
           <li><i className='bi-sunrise-fill text-info' /> Sunrise: {dayjs(timezoneAdjust(props.sunrise, props.timezone || 'UTC')).format('LT')} (local)</li>
           <li><i className='bi-sunset-fill text-info' /> Sunset: {dayjs(timezoneAdjust(props.sunset, props.timezone || 'UTC')).format('LT')} (local)</li>
           <li><i className='bi-sun-fill text-info' /> Daylight: {dayjs.duration( dayjs(props.sunset).diff(dayjs(props.sunrise), 'minute') , "minute").format('HH:mm')} hrs</li>
-          <li><i className='bi-moon-fill text-info' /> Moon: {props.lunarphase}</li>
+          <li><i className='bi-moon-stars-fill text-info' /> Moon: {props.lunarphase}</li>
         </ul>}
       </Card.Body>
     </Card>
