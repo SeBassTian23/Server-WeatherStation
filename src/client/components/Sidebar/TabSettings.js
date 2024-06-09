@@ -26,16 +26,16 @@ export default function TabSettings(props) {
           </Row>
           <Row className='py-3'>
             <Col>
-              <Card.Subtitle>Display Mode</Card.Subtitle>
-              <ThemeSelect />
-              <Form.Text className="text-muted">Select Light/Dark Mode</Form.Text>
+              <Card.Subtitle>Calendar</Card.Subtitle>
+              <CalendarSelect />
+              <Form.Text className="text-muted">Select Type of Calendar</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
-              <Card.Subtitle>Calendar</Card.Subtitle>
-              <CalendarSelect />
-              <Form.Text className="text-muted">Select Type of Calendar</Form.Text>
+              <Card.Subtitle>Display Mode</Card.Subtitle>
+              <ThemeSelect />
+              <Form.Text className="text-muted">Select Light/Dark Mode</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
