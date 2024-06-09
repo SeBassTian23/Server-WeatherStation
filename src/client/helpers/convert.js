@@ -13,9 +13,12 @@ export const unitConverter = function( value, unit=null, format=null){
     return [value, ""];
   }
 
+  if( (format === undefined || format === null) ){
+    return [round(value, 2), unit];
+  }
+
   // Convert temperature from Celsius to Fahrenheit or Kelvin
   if( (unit == "℃" || unit.match(/\[C|℃\]/i) ) ){
-    console.log()
     if( ['imperial', 'i'].indexOf(format) > -1 )
       return [ round(value * 1.8 + 32, 2), "℉" ];
     if( ['si'].indexOf(format) > -1 )
@@ -32,6 +35,13 @@ export const unitConverter = function( value, unit=null, format=null){
     return [ round(value, 2), "hPa" ];
   }
 
-  return [round(value, 2), unit]
+  // Convert distance from meters to feet
+  if( (unit == "m" || unit.match(/\[m\]/i) ) ){
+    if( ['imperial', 'i'].indexOf(format) > -1 )
+      return [ round(value * 3.28084 , 2), "ft" ];
+    return [ round(value, 2), "m" ];
+  }
+
+  return [round(value, 2), unit];
 
 };
