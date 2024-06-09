@@ -41,8 +41,8 @@ function ParameterBody(props) {
               <span className='me-2'><i className='bi bi-square-fill' style={{ "color": itm.color }} /> {itm.title}: </span>
               <span className='fw-light text-muted'>
                 {(itm.range[1] !== Infinity)? 
-                  <>{unitConverter(itm.range[0], props.unit, units)}-{unitConverter(itm.range[1], props.unit, units)}</> : 
-                  <>{unitConverter(itm.range[0], props.unit, units)} or higher</>
+                  <>{unitConverter(itm.range[0], props.unit, units, true)} - {unitConverter(itm.range[1], props.unit, units, true)}</> : 
+                  <>{unitConverter(itm.range[0], props.unit, units, true)} or higher</>
                 }
                 </span>
             </li>
