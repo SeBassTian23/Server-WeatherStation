@@ -42,11 +42,11 @@ const buildSideBarData = function (appdata, selectedDate = new Date()) {
           "lat": appdata.latitude,
           "lng": appdata.longitude,
           "alt": appdata.altitude,
-          "elevation_unit": "Altitude [m]",
+          "elevation_unit": "[m]",
           "timezone": appdata.timezone
         },
         voltage: round(appdata.battery, 2),
-        active: (active > DEVICE_INACTIVITY || Number.isNaN(active)) ? false : true
+        active: ( (active > DEVICE_INACTIVITY || appdata.latest === undefined) || Number.isNaN(active)) ? false : true
       },
       statistics: {
         measurements: appdata.measurements,

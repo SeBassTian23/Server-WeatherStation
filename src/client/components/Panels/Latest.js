@@ -64,7 +64,7 @@ const LatestContent = (props) => {
                 <tr key={idx}>
                   {header.map( (name, idx) => (
                     <td key={idx}>{
-                        (name === 'Time')? dayjs(timezoneAdjust(row[name],props.timezone)).format('LT') : unitConverter(row[name], name, state.units)[0]
+                        (name === 'Time')? dayjs(timezoneAdjust(row[name],props.timezone)).format('LT') : unitConverter(row[name], name, state.units)[0].toLocaleString()
                       }</td>
                     )
                   )} 

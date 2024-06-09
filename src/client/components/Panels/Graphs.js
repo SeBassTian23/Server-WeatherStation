@@ -58,6 +58,8 @@ import { color } from 'chart.js/helpers';
 import 'chartjs-community-adapter-dayjs';
 import zoomPlugin from 'chartjs-plugin-zoom';
 
+import annotationPlugin from 'chartjs-plugin-annotation';
+
 import { Line } from 'react-chartjs-2';
 
 import { chartOptions } from '../../constants/graph'
@@ -131,6 +133,7 @@ ChartJS.register(ArcElement,
   Tooltip,
   SubTitle,
   zoomPlugin,
+  annotationPlugin,
   sunRiseSetPlugin);
 
 export default function Graphs(props) {
@@ -315,6 +318,22 @@ const GraphContainer = (props) => {
     else {
       output.options.color = ChartJS.defaults.color;
       output.options.plugins.sunriseset.backgroundColor = null;
+    }
+
+    // Annotations
+    output.options.plugins["annotation"] = {
+      annotations: {
+        // label1: {
+        //   type: 'label',
+        //   xValue: "2024-01-01T23:02:54-05:00",
+        //   yValue: 60,
+        //   backgroundColor: 'rgba(245,245,245)',
+        //   content: ['This is my text', 'This is my text, second line'],
+        //   font: {
+        //     size: 18
+        //   }
+        // }
+      }
     }
 
     return output;

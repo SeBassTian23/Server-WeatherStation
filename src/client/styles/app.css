@@ -316,7 +316,7 @@ ul#pills-tab button.active {
   }
 }
 
-// XX-Large devices (larger desktops, 1400px and up)
+/* // XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
   .columns-4 {
     columns: 4 !important;

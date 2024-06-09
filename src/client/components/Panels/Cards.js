@@ -56,7 +56,7 @@ export default function Cards(props) {
           else if (card.value > 30)
             icon = <i className={`bi-thermometer-sun text-warning`} />
           else if (card.value > 25)
-            icon = <i className={`i-thermometer-high`} />
+            icon = <i className={`bi-thermometer-high`} />
           else
             icon = <i className={`bi-thermometer-half`} />
         }
@@ -114,7 +114,7 @@ export default function Cards(props) {
             <Card className={ 'bg-light-subtle'} title={cardTitle.trimEnd()}>
               <div className={`mt-2 mb-0 fs-4`} data-field={card.field}>
                 {icon && <strong className='text-info indicator'>{icon}</strong>}
-                {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT') : value[0]}
+                {(card.label == "Sunrise" || card.label == "Sunset")? dayjs(timezoneAdjust(card.value, card.unit || 'UTC')).format('LT') : value[0] > 999 ? value[0].toFixed(0).toLocaleString() : value[0].toLocaleString()}
                 {value[1] !== '' &&
                   <span className='text-muted unit'>{value[1]}</span>
                 }

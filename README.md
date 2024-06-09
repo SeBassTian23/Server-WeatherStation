@@ -31,7 +31,7 @@ The required parameters to setup the application are defined in the .env file. B
 | `DATABASE_FILE`           | Path and filename for the database file (default: `./db.sqlite`)                                       |
 | `MONGO_CONNECTION_STRING` | URL to the connect to a MongoDB instance.                                                              |
 | `API_TOKEN`               | Create a token that needs to be submitted with any API request                                         |
-| `PAGE_TITLE`              | The title of the top header                                                                            |
+| `PAGE_TITLE_LOCATION`     | The title of the top header                                                                            |
 | `DEVICE_ID`               | The device id of the data the app is supposed to display                                               |
 | `DEVICE_DESCRIPTION`      | Short description of your weather station                                                              |
 | `DEVICE_LOCATION`         | Station's location that appears in the dashboard's title                                               |
@@ -53,7 +53,7 @@ MONGO_CONNECTION_STRING=mongodb://localhost:27017/myDatabase
 API_TOKEN=YOUR_ACCESS_KEY
 
 ### Page Title
-PAGE_TITLE=Lansing, MI
+PAGE_TITLE_LOCATION=Lansing, MI
 
 ### Device Parameters
 DEVICE_ID=Device 01
