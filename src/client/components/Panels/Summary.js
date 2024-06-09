@@ -169,8 +169,8 @@ function TableRow ( props ) {
 function ValueFormat(props) {
   const [state] = useContext(SettingsContext);
   //(class=`index ${addClass}`) #{value}] #[small #[small.text-muted #{unit}]]
-  const value = unitConverter(props.value, props.unit, state.units)[0]
-
+  let value = unitConverter(props.value, props.unit, state.units)[0]
+  value = value > 999 ? value.toFixed(0).toLocaleString() : value.toLocaleString()
   if( props.addClass )
     return(
       <span className={props.addClass} title={props.title ? props.title: null}>{value}</span>
