@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 
 import Card from 'react-bootstrap/Card'
 import TabPane from 'react-bootstrap/TabPane'
@@ -11,8 +11,13 @@ dayjs.extend(localizedFormat);
 
 import { MapContainer, TileLayer, Circle } from 'react-leaflet'
 
+import { SettingsContext } from '../../context/settingsContext'
 import { unitConverter } from '../../helpers/convert'
+
+
 export default function TabStation(props) {
+
+    const [state] = useContext(SettingsContext);
 
     const [device, setDevice] = useState({
         device_id: "N/A",
