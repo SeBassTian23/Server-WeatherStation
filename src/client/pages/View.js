@@ -91,7 +91,7 @@ export default function View(props) {
           <Col sm>
             <Summary isLoading={loading} {...data.summary} {...data.datetime} />
           </Col>
-          <Col as='aside' sm='4' className='pt-4 pt-sm-0 d-print-none'>
+          <Col as='aside' lg='4' className='pt-4 pt-lg-0 d-print-none'>
             <Sidebar isLoading={loading} calendar={data.calendar} station={data.station} {...data.datetime} />
           </Col>
         </Row>

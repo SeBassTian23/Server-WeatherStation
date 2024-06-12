@@ -25,6 +25,8 @@ import timezoneAdjust, {timezoneGetOffset} from '../../helpers/timezone-adjust'
 
 import { aqi } from '../../constants/parameters'
 
+import { minimal_find_peaks } from '../../helpers/peak-detection'
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -150,7 +152,7 @@ export default function Graphs(props) {
   return (
     <Card>
       <Card.Body>
-        <Button variant='light' className='float-end bg-transparent border-0' id='fullscreen-graphs' title="Expand/Collaps Graphs" onClick={ToggleGraphWidth}>
+        <Button variant='light' className='float-end bg-transparent border-0 d-none d-lg-block' id='fullscreen-graphs' title="Expand/Collaps Graphs" onClick={ToggleGraphWidth}>
           <i className={`bi ${isGraphWidth ? "bi-fullscreen" : "bi-fullscreen-exit"} text-muted`} />
         </Button>
         <Card.Title className='text-info'>Observation History</Card.Title>
@@ -161,7 +163,7 @@ export default function Graphs(props) {
           <Card.Subtitle className='mb-2 text-muted fw-light'>Graphing of data collected {period}.</Card.Subtitle>
         }
 
-        <GraphContainer {...props} className={isGraphWidth ? "row-cols-md-2" : null} />
+        <GraphContainer {...props} className={isGraphWidth ? "row-cols-lg-2" : null} />
         <div className="small text-muted fw-light text-end">
           Click and drag to zoom in and double click to zoom out
         </div>
@@ -380,5 +382,13 @@ const GraphCanvas = (props) => {
     }
   }
 
-  return <Line ref={setChart} width={400} height={175} id={`graph-${props.idx}`} options={props.options} data={props.data} className="ratio ratio-21x9" onDoubleClick={(e) => onDoubleClick()} />
+  // https://www.pluralsight.com/resources/blog/guides/how-to-create-a-right-click-menu-using-react
+  const onContextMenu = (event) => {
+    if(chart){
+      event.preventDefault();
+      // alert('Hello');
+    }
+  }
+
+  return <Line ref={setChart} width={400} height={175} id={`graph-${props.idx}`} options={props.options} data={props.data} className="ratio ratio-21x9" onDoubleClick={(e) => onDoubleClick()} onContextMenu={onContextMenu} />
 }
