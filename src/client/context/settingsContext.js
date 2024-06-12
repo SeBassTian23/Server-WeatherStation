@@ -5,6 +5,7 @@ export const initialState = {
   theme: getStoredValue('theme') || 'auto',
   calendarType: getStoredValue('calendarType') || guessPreferences('calendar') || 'iso8601',
   units: getStoredValue('units') || guessPreferences('units') ||  'metric',
+  peaks: getStoredValue('peaks') || false,
   cache: getStoredValue('cache') || 'off'
 }
 
@@ -60,6 +61,9 @@ function getStoredValue(item) {
     return null;
   // Valid units
   if( item === 'units' && ['metric','imperial'].indexOf(value) === -1 )
+    return null;
+  // Valid peaks
+  if( item === 'peaks' && ['show', 'hide'].indexOf(value) === -1 )
     return null;
   // Valid cache options
   if( item === 'cache' && ['on','off'].indexOf(value) === -1 )

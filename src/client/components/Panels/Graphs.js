@@ -320,19 +320,38 @@ const GraphContainer = (props) => {
       output.options.plugins.sunriseset.backgroundColor = null;
     }
 
+    let autoAnnotation = {};
+
+    for (let i in output.data.datasets) {
+      const dataPeaks = output.data.datasets[i].data.map(itm => itm.y) || [];
+
+      const peaks = minimal_find_peaks( dataPeaks, 10, 0.9 ) || [];
+      for(let peakIdx in peaks){
+        const idx = peaks[peakIdx]
+        autoAnnotation[`${output.data.datasets[i].label}-${idx}`] = {
+          type: 'label',
+          xValue: output.data.datasets[i].data[idx].x,
+          yValue: output.data.datasets[i].data[idx].y,
+          backgroundColor: 'transparent',
+          display: (ctx) => ctx.chart.isDatasetVisible(i),
+          content: output.data.datasets[i].data[idx].y,
+          font: {
+            size: 8
+          },
+          padding: {
+            bottom: 20
+          }
+        }
+      }
+
+    }
+
     // Annotations
-    output.options.plugins["annotation"] = {
-      annotations: {
-        // label1: {
-        //   type: 'label',
-        //   xValue: "2024-01-01T23:02:54-05:00",
-        //   yValue: 60,
-        //   backgroundColor: 'rgba(245,245,245)',
-        //   content: ['This is my text', 'This is my text, second line'],
-        //   font: {
-        //     size: 18
-        //   }
-        // }
+    if(state.peaks && state.peaks === 'show'){
+      output.options.plugins["annotation"] = {
+        annotations: {
+          ...autoAnnotation
+        }
       }
     }
 
