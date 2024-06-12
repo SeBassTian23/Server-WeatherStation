@@ -340,6 +340,7 @@ const GraphContainer = (props) => {
           font: {
             size: 8
           },
+          color: (state.theme === 'dark')? 'rgb(222, 226, 230)' : 'rgba(0,0,0,1)',
           padding: {
             bottom: 20
           }
