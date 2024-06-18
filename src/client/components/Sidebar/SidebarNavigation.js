@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import Card from 'react-bootstrap/Card'
 import Nav from 'react-bootstrap/Nav'
 import NavItem from 'react-bootstrap/NavItem'
 import NavLink from 'react-bootstrap/NavLink'
+
+import * as ACTIONS from '../../constants/actions'
+import { TabsContext } from '../../context/tabsContext'
 
 export default function SidebarNavigation() {
   return (
@@ -18,10 +21,16 @@ export default function SidebarNavigation() {
   )
 }
 
-function SidebarNavItem( props ) {
-  return(
+function SidebarNavItem(props) {
+  const [state, dispatch] = useContext(TabsContext);
+
+  const clickHandler = (e) => {
+    dispatch({ type: ACTIONS.SELECT_TAB, payload: e })
+  };
+
+  return (
     <NavItem as='li' role="presentation">
-      <NavLink as='button' eventKey={props.eventKey} className='py-1' type="button" role="tab" aria-selected="false">
+      <NavLink as='button' onClick={() => clickHandler(props.eventKey)} eventKey={props.eventKey} className='py-1' type="button" role="tab" aria-selected="false">
         <i className={`bi ${props.icon} fs-5`} ></i> <small className='d-block smaller'>{props.label}</small>
       </NavLink>
     </NavItem>

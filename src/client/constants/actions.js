@@ -12,3 +12,6 @@ export const TOGGLE_PEAKLABEL = "TOGGLE PEAKS"
 
 // Settings Cache
 export const TOGGLE_CACHE = "TOGGLE CACHE";
+
+// Menu Tab
+export const SELECT_TAB = "SELECT TAB";
