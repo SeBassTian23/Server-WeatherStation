@@ -9,11 +9,20 @@ import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 dayjs.extend(localizedFormat);
 
-import { MapContainer, TileLayer, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Circle, useMap } from 'react-leaflet'
 
 import { SettingsContext } from '../../context/settingsContext'
 import { unitConverter } from '../../helpers/convert'
 
+const UpdateCenterView = ({ center }) => {
+    const map = useMap();
+  
+    useEffect(() => {
+      map.setView(center, 13);
+    }, [center, map]);
+  
+    return null;
+};
 
 export default function TabStation(props) {
 
@@ -81,6 +90,7 @@ export default function TabStation(props) {
                 <MapContainer center={[device.location.lat, device.location.lng]} zoom={12} scrollWheelZoom={false} id='mapid' style={{ width: "100%", height: "200px", position: "relative", outline: "none" }}>
                     <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" detectRetina={true} crossOrigin={true} />
                     <Circle center={[device.location.lat, device.location.lng]} radius={500} pathOptions={{ color: 'red', weight: 1, fillColor: '#f03', fillOpacity: 0.5 }} />
+                    <UpdateCenterView center={[device.location.lat, device.location.lng]} />
                 </MapContainer>
                 <Card.Body>
                     <Row xs={2} className='small'>
