@@ -7,5 +7,11 @@ export const SELECT_THEME = "SELECT THEME";
 // Settings Calendar
 export const SELECT_CALENDAR = "SELECT CALENDAR";
 
+// Settings Peaks
+export const TOGGLE_PEAKLABEL = "TOGGLE PEAKS"
+
 // Settings Cache
 export const TOGGLE_CACHE = "TOGGLE CACHE";
+
+// Menu Tab
+export const SELECT_TAB = "SELECT TAB";

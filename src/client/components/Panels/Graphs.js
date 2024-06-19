@@ -25,6 +25,8 @@ import timezoneAdjust, {timezoneGetOffset} from '../../helpers/timezone-adjust'
 
 import { aqi } from '../../constants/parameters'
 
+import { minimal_find_peaks } from '../../helpers/peak-detection'
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -150,7 +152,7 @@ export default function Graphs(props) {
   return (
     <Card>
       <Card.Body>
-        <Button variant='light' className='float-end bg-transparent border-0' id='fullscreen-graphs' title="Expand/Collaps Graphs" onClick={ToggleGraphWidth}>
+        <Button variant='light' className='float-end bg-transparent border-0 d-none d-lg-block' id='fullscreen-graphs' title="Expand/Collaps Graphs" onClick={ToggleGraphWidth}>
           <i className={`bi ${isGraphWidth ? "bi-fullscreen" : "bi-fullscreen-exit"} text-muted`} />
         </Button>
         <Card.Title className='text-info'>Observation History</Card.Title>
@@ -161,7 +163,7 @@ export default function Graphs(props) {
           <Card.Subtitle className='mb-2 text-muted fw-light'>Graphing of data collected {period}.</Card.Subtitle>
         }
 
-        <GraphContainer {...props} className={isGraphWidth ? "row-cols-md-2" : null} />
+        <GraphContainer {...props} className={isGraphWidth ? "row-cols-lg-2" : null} />
         <div className="small text-muted fw-light text-end">
           Click and drag to zoom in and double click to zoom out
         </div>
@@ -320,19 +322,39 @@ const GraphContainer = (props) => {
       output.options.plugins.sunriseset.backgroundColor = null;
     }
 
+    let autoAnnotation = {};
+
+    for (let i in output.data.datasets) {
+      const dataPeaks = output.data.datasets[i].data.map(itm => itm.y) || [];
+
+      const peaks = minimal_find_peaks( dataPeaks, 10, 0.9 ) || [];
+      for(let peakIdx in peaks){
+        const idx = peaks[peakIdx]
+        autoAnnotation[`${output.data.datasets[i].label}-${idx}`] = {
+          type: 'label',
+          xValue: output.data.datasets[i].data[idx].x,
+          yValue: output.data.datasets[i].data[idx].y,
+          backgroundColor: 'transparent',
+          display: (ctx) => ctx.chart.isDatasetVisible(i),
+          content: output.data.datasets[i].data[idx].y,
+          font: {
+            size: 8
+          },
+          color: (state.theme === 'dark')? 'rgb(222, 226, 230)' : 'rgba(0,0,0,1)',
+          padding: {
+            bottom: 20
+          }
+        }
+      }
+
+    }
+
     // Annotations
-    output.options.plugins["annotation"] = {
-      annotations: {
-        // label1: {
-        //   type: 'label',
-        //   xValue: "2024-01-01T23:02:54-05:00",
-        //   yValue: 60,
-        //   backgroundColor: 'rgba(245,245,245)',
-        //   content: ['This is my text', 'This is my text, second line'],
-        //   font: {
-        //     size: 18
-        //   }
-        // }
+    if(state.peaks && state.peaks === 'show'){
+      output.options.plugins["annotation"] = {
+        annotations: {
+          ...autoAnnotation
+        }
       }
     }
 
@@ -361,5 +383,13 @@ const GraphCanvas = (props) => {
     }
   }
 
-  return <Line ref={setChart} width={400} height={175} id={`graph-${props.idx}`} options={props.options} data={props.data} className="ratio ratio-21x9" onDoubleClick={(e) => onDoubleClick()} />
+  // https://www.pluralsight.com/resources/blog/guides/how-to-create-a-right-click-menu-using-react
+  const onContextMenu = (event) => {
+    if(chart){
+      event.preventDefault();
+      // alert('Hello');
+    }
+  }
+
+  return <Line ref={setChart} width={400} height={175} id={`graph-${props.idx}`} options={props.options} data={props.data} className="ratio ratio-21x9" onDoubleClick={(e) => onDoubleClick()} onContextMenu={onContextMenu} />
 }

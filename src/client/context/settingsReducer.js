@@ -23,6 +23,13 @@ const settingsReducer = (state, action) => {
           calendarType: action.payload
         }
       };
+    case ACTIONS.TOGGLE_PEAKLABEL:
+      return {
+        ...state,
+        ...{
+          peaks: action.payload
+        }
+      };
     case ACTIONS.TOGGLE_CACHE:
       return {
         ...state,

@@ -11,6 +11,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import { SettingsContext } from '../context/settingsContext'
+import TabsContextProvider from '../context/tabsContext'
 
 export default function View(props) {
 
@@ -25,14 +26,13 @@ export default function View(props) {
     function getRealtimeData(data) {
       // process the data here,
       // then pass it to state to be rendered
-      console.log('Data udpated')
       fetch('/api/')
         .then(res => res.json())
         .then(obj => {
           setData(obj.body);
         })
         .catch((err) => {
-          console.log(err.message);
+          console.error(err.message);
         });
     }
     sse.onmessage = e => getRealtimeData(e.data);
@@ -56,11 +56,11 @@ export default function View(props) {
         fetch('/data/status')
           .then(res => res.json())
           .then(obj => {
-            setData({ ...cachedData[props.path], ...{station: obj.body.station} });
+            setData({ ...cachedData[props.path], ...{ station: obj.body.station } });
             setLoading(false);
           })
           .catch((err) => {
-            console.log(err.message);
+            console.error(err.message);
           });
         return
       }
@@ -79,7 +79,7 @@ export default function View(props) {
       })
       .catch((err) => {
         setLoading(false);
-        console.log(err.message);
+        console.error(err.message);
       });
   }, [props.path]);
 
@@ -91,15 +91,17 @@ export default function View(props) {
           <Col sm>
             <Summary isLoading={loading} {...data.summary} {...data.datetime} />
           </Col>
-          <Col as='aside' sm='4' className='pt-4 pt-sm-0 d-print-none'>
-            <Sidebar isLoading={loading} calendar={data.calendar} station={data.station} {...data.datetime} />
+          <Col as='aside' lg='4' className='pt-4 pt-lg-0 d-print-none'>
+            <TabsContextProvider>
+              <Sidebar isLoading={loading} calendar={data.calendar} station={data.station} {...data.datetime} />
+            </TabsContextProvider>
           </Col>
         </Row>
       </Container>
       <Container>
         <Graphs isLoading={loading} {...data.graphs} {...data.datetime} />
       </Container>
-      { props.path === '/' && 
+      {props.path === '/' &&
         <Container>
           <Latest isLoading={loading} {...data.table} {...data.datetime} />
         </Container>

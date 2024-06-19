@@ -40,6 +40,13 @@ export default function TabSettings(props) {
           </Row>
           <Row className='py-3'>
             <Col>
+              <Card.Subtitle>Peak Labels</Card.Subtitle>
+              <PeakLabelSelect />
+              <Form.Text className="text-muted">Peak Detection and Labeling for Graphs</Form.Text>
+            </Col>
+          </Row>
+          <Row className='py-3'>
+            <Col>
               <Card.Subtitle>Cache</Card.Subtitle>
               <CacheToggle />
               <Form.Text className="text-muted">Cache Data from past Days when viewed</Form.Text>
@@ -97,6 +104,23 @@ const CalendarSelect = (props) => {
     <Form.Select defaultValue={state.calendarType} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='radioCalendarTypeSelect' size='sm' className='mt-2'>
       {[{label:'Gregory',value:'gregory'},{label:'ISO8601',value:'iso8601'},{label:'Hebrew',value:'hebrew'},{label:'Islamic',value:'islamic'}].map( (m,idx) => {
         return <option key={`calendarmode${idx}`} value={m.value}>{m.label}</option>
+      })}
+    </Form.Select>
+  )
+}
+
+const PeakLabelSelect = (props) => {
+  const [state, dispatch] = useContext(SettingsContext);
+  
+  const selectHandler = (e) => {
+    e.preventDefault();
+    dispatch({type: ACTIONS.TOGGLE_PEAKLABEL,  payload: e.target.value })
+  };
+
+  return (
+    <Form.Select defaultValue={state.peaks} onChange={(e)=>selectHandler(e)} aria-label="Select Peak Label Mode" id='PeakLabelSelect' size='sm' className='mt-2'>
+      {[{label:'Show',value: 'show'},{label:'Hide',value: 'hide'}].map( (m,idx) => {
+        return <option key={`peaklabelmode${idx}`} value={m.value}>{m.label}</option>
       })}
     </Form.Select>
   )
