@@ -228,16 +228,20 @@ ul#pills-tab button.active {
   border-radius: 0!important;
 }
 
+a[href^="http"]::after {
+  content: " ↗"
+}
+
 #calendar {
   padding: 0
 }
 
-#shortcutlinks a{
+#shortcutlinks a {
   text-decoration: none;
 }
 
 #shortcutlinks a > i{
-  color: var(--bs-secondary-color);
+  color: var(--bs-info);
 }
 
 #mapid .leaflet-tile-pane {
