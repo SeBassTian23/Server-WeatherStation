@@ -1,0 +1,53 @@
+doctype html
+html(lang='en')
+  block head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="ie=edge,chrome=1")
+    meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+    //- Favicon Links
+    link(rel="icon", href="/favicon.ico", sizes="any")
+    link(rel="icon", href="/icon.svg", type="image/svg+xml")
+    link(rel="apple-touch-icon", href="/apple-touch-icon.png")
+    link(rel="manifest", href="/site.webmanifest")
+
+    //- Theme
+    meta(name="theme-color" content="#212529")
+    
+    //- Page meta information
+    link(rel="canonical" href=url)
+    meta( name="robots" content="index, nofollow")
+
+    title Weather Station | Logs
+
+    link(href="/dist/app.css" rel="stylesheet")
+    link(href="/dist/bootstrap.min.css" rel="stylesheet")
+
+  body(data-bs-theme="light")
+    header
+      nav.align-items-center.border-bottom.border-5.border-info.pb-1.mb-3.pt-2.navbar.navbar-expand.navbar-light.bg-dark
+        .container
+          .row
+            .ps-sm-0.ps-lg-5.col-sm
+              h1.fs-2.text-light Weather Station | Logs
+    main
+      .container
+        ul.list-unstyled
+          each entry in body
+            li [#{new Date(entry.created_at).toLocaleString()}] [#{entry.device_id}] 
+              case entry.log_type
+                when 'log'
+                  span [Log] 
+                when 'info'
+                  span.text-info [Info]
+                when 'warn'
+                  span.text-warning [Warning] 
+                when 'error'
+                  span.text-danger [Error] 
+              | #{entry.message}
+    footer
+      .container
+        .px-1.py-2.row
+          .text-end.text-muted.small.col-sm
+            | #{details}
+
