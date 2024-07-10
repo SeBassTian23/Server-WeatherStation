@@ -20,36 +20,46 @@ export default function TabSettings(props) {
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Units</Card.Subtitle>
+              <Form.Text className="text-muted">Units to Display Data</Form.Text>
+            </Col>
+            <Col>
               <UnitsSelect />
-              <Form.Text className="text-muted">Select Units to Display Data</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Calendar</Card.Subtitle>
+              <Form.Text className="text-muted">Calendar Format</Form.Text>
+            </Col>
+            <Col>
               <CalendarSelect />
-              <Form.Text className="text-muted">Select Type of Calendar</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Display Mode</Card.Subtitle>
+              <Form.Text className="text-muted">UI Light/Dark Mode</Form.Text>
+            </Col>
+            <Col>
               <ThemeSelect />
-              <Form.Text className="text-muted">Select Light/Dark Mode</Form.Text>
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Peak Labels</Card.Subtitle>
-              <PeakLabelSelect />
               <Form.Text className="text-muted">Peak Detection and Labeling for Graphs</Form.Text>
+            </Col>
+            <Col>
+              <PeakLabelSelect />
             </Col>
           </Row>
           <Row className='py-3'>
             <Col>
               <Card.Subtitle>Cache</Card.Subtitle>
+              <Form.Text className="text-muted">Cache Data Viewed Days</Form.Text>
+            </Col>
+            <Col>
               <CacheToggle />
-              <Form.Text className="text-muted">Cache Data from past Days when viewed</Form.Text>
             </Col>
           </Row>
         </Card.Body>
@@ -67,7 +77,7 @@ const UnitsSelect = (props) => {
   };
 
   return (
-    <Form.Select defaultValue={state.units} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='selectUnits' size='sm' className='mt-2'>
+    <Form.Select defaultValue={state.units} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='selectUnits' size='sm'>
       {[{label:'Imperial (℉, inHg)',value:'imperial'},{label:'Metric (℃, hPa)',value:'metric'},{label:'SI (K, Pa)',value:'si'}].map( (m,idx) => {
         return <option key={`units${idx}`} value={m.value}>{m.label}</option>
       })}
@@ -84,7 +94,7 @@ const ThemeSelect = (props) => {
   };
 
   return (
-    <Form.Select defaultValue={state.theme} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='radioDisplayModeLight' size='sm' className='mt-2'>
+    <Form.Select defaultValue={state.theme} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='radioDisplayModeLight' size='sm'>
       {[{label:'Auto',value:'auto'},{label:'Light',value:'light'},{label:'Dark',value:'dark'}].map( (m,idx) => {
         return <option key={`displaymode${idx}`} value={m.value}>{m.label}</option>
       })}
@@ -101,7 +111,7 @@ const CalendarSelect = (props) => {
   };
 
   return (
-    <Form.Select defaultValue={state.calendarType} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='radioCalendarTypeSelect' size='sm' className='mt-2'>
+    <Form.Select defaultValue={state.calendarType} onChange={(e)=>selectHandler(e)} aria-label="Select Display Mode" id='radioCalendarTypeSelect' size='sm'>
       {[{label:'Gregory',value:'gregory'},{label:'ISO8601',value:'iso8601'},{label:'Hebrew',value:'hebrew'},{label:'Islamic',value:'islamic'}].map( (m,idx) => {
         return <option key={`calendarmode${idx}`} value={m.value}>{m.label}</option>
       })}
@@ -118,7 +128,7 @@ const PeakLabelSelect = (props) => {
   };
 
   return (
-    <Form.Select defaultValue={state.peaks} onChange={(e)=>selectHandler(e)} aria-label="Select Peak Label Mode" id='PeakLabelSelect' size='sm' className='mt-2'>
+    <Form.Select defaultValue={state.peaks} onChange={(e)=>selectHandler(e)} aria-label="Select Peak Label Mode" id='PeakLabelSelect' size='sm'>
       {[{label:'Show',value: 'show'},{label:'Hide',value: 'hide'}].map( (m,idx) => {
         return <option key={`peaklabelmode${idx}`} value={m.value}>{m.label}</option>
       })}
@@ -136,9 +146,8 @@ const CacheToggle = (props) => {
   };
 
   return (
-    <Form.Check type='switch' id='checkCache' className='mt-2'>
+    <Form.Check type='switch' id='checkCache' className='d-flex justify-content-md-end'>
       <Form.Check.Input type='checkbox' isValid={false} onChange={(e) => toggleHandler(e)} checked={checked} />
-      <Form.Check.Label>Cache Data</Form.Check.Label>
     </Form.Check>
   )
 }
