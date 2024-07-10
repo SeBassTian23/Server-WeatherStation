@@ -23,7 +23,7 @@ var queryAppData = function (device_id) {
       MAX(data.created_at) as latest,
       MIN(data.created_at) as start,
       COUNT(DISTINCT(strftime('%Y-%m-%d',datetime(data.created_at)))) as days,
-      (SELECT data."Battery [V]" FROM data WHERE data.device_id = "${device_id}" ORDER BY rowid DESC LIMIT 1) as "Battery [V]",
+      (SELECT data."Battery [V]" FROM data WHERE data.device_id = "${device_id}" ORDER BY rowid DESC LIMIT 1) as "battery",
       (SELECT SUM(
         length("ID") +
         length("device_id") +

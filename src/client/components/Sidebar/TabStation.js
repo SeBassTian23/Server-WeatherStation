@@ -24,6 +24,17 @@ const UpdateCenterView = ({ center }) => {
     return null;
 };
 
+const batteryIcon = (device) => {
+    if (device.voltage === 'N/A' || !device.active)
+        return <><i className='bi bi-battery text-muted' /> N/A</>;
+    else if (device.voltage > 3.3)
+        return <><i className='bi bi-battery-half text-muted' /> {device.voltage.toLocaleString()} V</>;
+    else if (device.voltage > 3.8)
+        return <><i className='bi bi-battery-full text-muted' /> {device.voltage.toLocaleString()} V</>;
+    else
+        return <><i className='bi bi-battery text-muted' /> N/A</>;
+}
+
 export default function TabStation(props) {
 
     const [state] = useContext(SettingsContext);
@@ -48,7 +59,6 @@ export default function TabStation(props) {
         start: "N/A",
         size: "N/A"
     });
-    const [battery, setBattery] = useState('');
 
     useEffect(() => {
         let size = {}
@@ -61,16 +71,6 @@ export default function TabStation(props) {
 
     useEffect(() => {
         setDevice(device => { return { ...device, ...props.device } })
-        if (device.voltage === 'N/A' || !device.active) {
-            setBattery(<><i className='bi bi-battery text-muted' /> N/A</>);
-        }
-        else if (device.voltage !== "N/A" & device.voltage > 3.8)
-            setBattery(<><i className='bi bi-battery-full text-muted' /> {device.voltage.toLocaleString()} V</>);
-        else if (device.voltage !== "N/A" & device.voltage > 3.3)
-            setBattery(<><i className='bi bi-battery-half text-muted' /> {device.voltage.toLocaleString()} V</>);
-        else
-            setBattery(<><i className='bi bi-battery text-muted' /> N/A</>);
-
     }, [props.device])
 
     return (
@@ -80,10 +80,10 @@ export default function TabStation(props) {
                     <Card.Title className='text-info'>{device.description}</Card.Title>
                     <Card.Subtitle className='small fw-light'>
                         <ul className='list-inline mb-0'>
-                            <li className='list-inline-item pe-2'><i className="bi-image-alt text-muted"></i> {unitConverter(device.location.alt, device.location.elevation_unit, state.units)[0].toLocaleString()} {unitConverter(device.location.alt, device.location.elevation_unit, state.units)[1]}</li>
-                            <li className='list-inline-item pe-2'>{battery}</li>
-                            <li className='list-inline-item pe-2'><i className={`${device.active ? 'bi-wifi' : 'bi-wifi-off'}  text-muted`}></i> {`${device.active ? 'online' : 'offline'}`}</li>
-                            <li className='list-inline-item'><i className="bi-upc text-muted"></i> {device.device_id}</li>
+                            <li className='list-inline-item pe-2' title='Station&apos;s elevation'><i className="bi-image-alt text-muted"></i> {unitConverter(device.location.alt, device.location.elevation_unit, state.units)[0].toLocaleString()} {unitConverter(device.location.alt, device.location.elevation_unit, state.units)[1]}</li>
+                            <li className='list-inline-item pe-2' title='Station&apos;s battery charge'>{batteryIcon(device)}</li>
+                            <li className='list-inline-item pe-2' title='Station&apos;s online status'><i className={`${device.active ? 'bi-wifi' : 'bi-wifi-off'}  text-muted`}></i> {`${device.active ? 'online' : 'offline'}`}</li>
+                            <li className='list-inline-item' title='Station&apos;s Device ID'><i className="bi-upc text-muted"></i> {device.device_id}</li>
                         </ul>
                     </Card.Subtitle>
                 </Card.Body>
