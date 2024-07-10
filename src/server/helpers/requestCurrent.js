@@ -31,7 +31,7 @@ const requestCurrent = function (req) {
   var end_time = start_time.add(1, 'day');
 
   var query = {
-    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" FROM data WHERE device_id = "${DEVICE_ID}" AND datetime(created_at) >= datetime('${start_time}') ORDER BY ROWID DESC`,
+    "SQLITE": `SELECT "created_at" AS Time, "${COLUMNS_TO_DISPLAY.join("\",\"")}" FROM data WHERE device_id = "${DEVICE_ID}" AND datetime(created_at) >= datetime('${start_time.toISOString()}') ORDER BY ROWID DESC`,
     "MONGODB": [
       { $match: { device_id: DEVICE_ID, created_at: { $gte: start_time.toDate() } } },
       { $addFields: { Time: '$created_at' } },
