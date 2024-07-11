@@ -80,7 +80,11 @@ function SummaryTable(props) {
       <Card.Body>
         <a className='float-end me-2' href={download} aria-label="Download Latest Observations as CSV"><i className='bi bi-download text-muted' /> </a>
         <Card.Title className='text-info'>Summary</Card.Title>
-        <Card.Subtitle className='text-muted mb-4 fw-light'>Data summarized for {period}.</Card.Subtitle>
+        <Card.Subtitle className='text-muted mb-4 fw-light'>Data summarized for {period}.
+        {(!props.device.active && period === 'today') && <>
+          <span style={{fontSize: '0.875rem'}} className='float-end px-1 py-0 alert alert-warning'><i className='bi bi-wifi-off' /> Offline</span>
+        </>}
+        </Card.Subtitle>
         <SummaryTableContent left={left} right={right} period={props.period} />
         {(props.sunrise && left.length > 0) &&
         <ul className='list-unstyled mb-0 text-muted fw-light small columns-4'>

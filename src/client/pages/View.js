@@ -86,10 +86,10 @@ export default function View(props) {
   return (
     <main>
       <Container>
-        <SubHeader isLoading={loading} {...data.subheader} {...data.datetime} />
+        <SubHeader isLoading={loading} {...data.subheader} {...data.datetime}  {...data.station} />
         <Row className='align-items-top pb-4'>
           <Col sm>
-            <Summary isLoading={loading} {...data.summary} {...data.datetime} />
+            <Summary isLoading={loading} {...data.summary} {...data.datetime} {...data.station} />
           </Col>
           <Col as='aside' lg='4' className='pt-4 pt-lg-0 d-print-none'>
             <TabsContextProvider>
