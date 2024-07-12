@@ -21,7 +21,6 @@ html(lang='en')
     title Weather Station | Logs
 
     link(href="/dist/app.css" rel="stylesheet")
-    link(href="/dist/bootstrap.min.css" rel="stylesheet")
 
   body(data-bs-theme="light")
     header
@@ -30,24 +29,37 @@ html(lang='en')
           .row
             .ps-sm-0.ps-lg-5.col-sm
               h1.fs-2.text-light Weather Station | Logs
-    main
-      .container
-        ul.list-unstyled
-          each entry in body
-            li [#{new Date(entry.created_at).toLocaleString()}] [#{entry.device_id}] 
-              case entry.log_type
-                when 'log'
-                  span [Log] 
-                when 'info'
-                  span.text-info [Info]
-                when 'warn'
-                  span.text-warning [Warning] 
-                when 'error'
-                  span.text-danger [Error] 
-              | #{entry.message}
-    footer
+
+    if message == "login"
+      main.py-5
+        form.w-25.m-auto.mt-5(action="viewlogs" method="GET")
+          h1.h3.mb-3.fw-normal Authentication
+
+          .form-floating
+            input.form-control#floatingToken(type="password" name="token" placeholder="Token")
+            label(for="floatingToken") Token
+
+          button.btn.btn-primary.w-100.py-2.my-3(type="submit") Show Logs
+
+    if message == "success"
+      main.pb-4
+        .container
+          ul.list-unstyled.font-monospace.small
+            each entry, index in body
+              li.text-muted(class=(index > 0 && new Date(entry.created_at).getDay() !== new Date(body[index-1].created_at).getDay() ? 'mt-2' : '' )) [#{new Date(entry.created_at).toISOString()}][#{entry.device_id}]
+                case entry.log_type
+                  when 'log'
+                    span [Log] 
+                  when 'info'
+                    span.text-info [Info]
+                  when 'warn'
+                    span.text-warning [Warning] 
+                  when 'error'
+                    span.text-danger [Error] 
+                span.text-dark #{entry.message}
+
+    footer.fixed-bottom.bg-body-tertiary
       .container
         .px-1.py-2.row
-          .text-end.text-muted.small.col-sm
+          .text-muted.small.col-sm
             | #{details}
-

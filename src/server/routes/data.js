@@ -638,7 +638,14 @@ router.get('/logs', (req, res) => {
 });
 
 router.get('/viewlogs', (req, res) => {
-    if( req.query.token === undefined || req.query.token !== API_TOKEN){
+    if(req.query.token === undefined){
+        res.render('log', {
+            message: `login`,
+            details: `Sign with your token.`,
+          });
+        return 
+    }
+    else if( req.query.token !== API_TOKEN){
         res.render('error', {
             error: 'Database Issue',
             errormsg: 'Provide the correct token to view the Device Log.'
@@ -650,7 +657,7 @@ router.get('/viewlogs', (req, res) => {
             DeviceLog.find({}).sort({"created_at": -1}).then( rows => {
                 res.render('log', {
                     message: `success`,
-                    details: `There are »${rows.length}« log messages recorded.`,
+                    details: `»${rows.length}« Log Messages recorded.`,
                     body: rows
                 });  
             });
@@ -666,7 +673,7 @@ router.get('/viewlogs', (req, res) => {
                     }
                     res.render('log', {
                         message: `success`,
-                        details: `There are »${rows.length}« log messages recorded.`,
+                        details: `»${rows.length}« Log Messages recorded.`,
                         body: rows
                     });   
                 }); 
