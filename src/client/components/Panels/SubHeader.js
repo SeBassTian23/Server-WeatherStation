@@ -44,7 +44,7 @@ export default function SubHeader(props) {
   let summary = ''
   if (data.period === 'now' && !props.isLoading ){
     summary = (
-      <Row id='summary-cards-lg' xs='2' sm='2' lg='4' className={!props.device.active? 'opacity-25' : '' }>
+      <Row id='summary-cards-lg' xs='2' sm='2' lg='4' className={ (props.device && !props.device.active)? 'opacity-25' : '' }>
         <Cards isLoading={props.isLoading} items={data.cards} size='lg' />
       </Row>
       )
