@@ -63,6 +63,7 @@ function ParameterBody(props) {
         )
         )}
       </ul>
+      <p className='text-muted form-text'>{props.description}</p>
       <p className='small mt-auto '>
         <span className='fw-light'>Source: </span>
         <a href={props.url} target='_blank' rel='noreferrer'>{props.source}</a>
