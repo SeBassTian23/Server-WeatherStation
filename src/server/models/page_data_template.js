@@ -139,7 +139,8 @@ const PAGE_DATA_TEMPLATE = {
       "days": "N/A",
       "latest": "N/A",
       "start": "N/A",
-      "size": "N/A"
+      "db_size": "N/A",
+      "db_type": "N/A"
     }
   },
   "datetime": {

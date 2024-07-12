@@ -25,7 +25,7 @@ const UpdateCenterView = ({ center }) => {
 };
 
 const batteryIcon = (device) => {
-    if (device.voltage === 'N/A' || !device.active)
+    if (!device || device.voltage === 'N/A' || !device.active)
         return <><i className='bi bi-battery text-muted' /> N/A</>;
     else if (device.voltage > 3.3)
         return <><i className='bi bi-battery-half text-muted' /> {device.voltage.toLocaleString()} V</>;
@@ -35,35 +35,26 @@ const batteryIcon = (device) => {
         return <><i className='bi bi-battery text-muted' /> N/A</>;
 }
 
+const altituteDisplay = (device, state) => {
+    if (device && device.location && state && state.units){
+        let value = unitConverter(device.location.alt, device.location.elevation_unit, state.units);
+        return `${value[0].toLocaleString()} ${value[1]}`;
+    }
+    else
+        return "N/A";
+}
+
 export default function TabStation(props) {
 
     const [state] = useContext(SettingsContext);
 
-    const [device, setDevice] = useState({
-        device_id: "N/A",
-        description: "N/A",
-        location: {
-            lat: 0,
-            lng: 0,
-            alt: 0,
-            elevation_unit: "[m]",
-            timezone: "UTC"
-        },
-        voltage: "N/A",
-        active: false
-    });
-    const [statistics, setStatistics] = useState({
-        measurements: "N/A",
-        days: "N/A",
-        latest: "N/A",
-        start: "N/A",
-        size: "N/A"
-    });
+    const [device, setDevice] = useState({});
+    const [statistics, setStatistics] = useState({});
 
     useEffect(() => {
         let size = {}
         if (props.statistics !== undefined) {
-            let sizearr = props.statistics.size.split(' ');
+            let sizearr = props.statistics.db_size.split(' ');
             size = { 'size': `${Number(sizearr[0]).toLocaleString()} ${sizearr[1]}` }
         }
         setStatistics(statistics => { return { ...statistics, ...props.statistics, ...size } })
@@ -77,46 +68,38 @@ export default function TabStation(props) {
         <TabPane eventKey='station' mountOnEnter={true}>
             <Card>
                 <Card.Body>
-                    <Card.Title className='text-info'>{device.description}</Card.Title>
+                    <Card.Title className='text-info'>{device.description || "N/A"}</Card.Title>
                     <Card.Subtitle className='small fw-light'>
                         <ul className='list-inline mb-0'>
-                            <li className='list-inline-item pe-2' title='Station&apos;s elevation'><i className="bi-image-alt text-muted"></i> {unitConverter(device.location.alt, device.location.elevation_unit, state.units)[0].toLocaleString()} {unitConverter(device.location.alt, device.location.elevation_unit, state.units)[1]}</li>
+                            <li className='list-inline-item pe-2' title='Station&apos;s elevation'><i className="bi-image-alt text-muted"></i> {altituteDisplay(device, state)}</li>
                             <li className='list-inline-item pe-2' title='Station&apos;s battery charge'>{batteryIcon(device)}</li>
                             <li className='list-inline-item pe-2' title='Station&apos;s online status'><i className={`${device.active ? 'bi-wifi' : 'bi-wifi-off'}  text-muted`}></i> {`${device.active ? 'online' : 'offline'}`}</li>
-                            <li className='list-inline-item' title='Station&apos;s Device ID'><i className="bi-upc text-muted"></i> {device.device_id}</li>
+                            <li className='list-inline-item' title='Station&apos;s Device ID'><i className="bi-upc text-muted"></i> {device.device_id || "N/A"}</li>
                         </ul>
                     </Card.Subtitle>
                 </Card.Body>
-                <MapContainer center={[device.location.lat, device.location.lng]} zoom={12} scrollWheelZoom={false} id='mapid' style={{ width: "100%", height: "200px", position: "relative", outline: "none" }}>
+                <MapContainer center={device.location ? [device.location.lat, device.location.lng] : [0,0]} zoom={12} scrollWheelZoom={false} id='mapid' style={{ width: "100%", height: "200px", position: "relative", outline: "none" }}>
                     <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" detectRetina={true} crossOrigin={true} />
-                    <Circle center={[device.location.lat, device.location.lng]} radius={500} pathOptions={{ color: 'red', weight: 1, fillColor: '#f03', fillOpacity: 0.5 }} />
-                    <UpdateCenterView center={[device.location.lat, device.location.lng]} />
+                    <Circle center={device.location ? [device.location.lat, device.location.lng] : [0,0]} radius={500} pathOptions={{ color: 'red', weight: 1, fillColor: '#f03', fillOpacity: 0.5 }} />
+                    <UpdateCenterView center={device.location ? [device.location.lat, device.location.lng] : [0,0]} />
                 </MapContainer>
                 <Card.Body>
                     <Row xs={2} className='small'>
                         <Col>
-                            <strong>Data Sets</strong>
-                            <p className='fw-ligher'>{statistics.measurements.toLocaleString()}</p>
+                            <strong>Records</strong>
+                            <p className='fw-ligher'>{statistics.measurements || "N/A"} over {statistics.days || "N/A"} days</p>
                         </Col>
                         <Col>
-                            <strong>Days Recorded</strong>
-                            <p className='fw-ligher'>{statistics.days.toLocaleString()}</p>
-                        </Col>
-                        <Col>
-                            <strong>Latest Entry</strong>
-                            <p className='fw-ligher'>{statistics.latest !== "N/A" ? dayjs(statistics.latest).format('L LT') : "N/A"}</p>
-                        </Col>
-                        <Col>
-                            <strong>Start Entry</strong>
-                            <p className='fw-ligher'>{statistics.start !== "N/A" ? dayjs(statistics.start).format('L LT') : "N/A"}</p>
+                            <strong>Last Update</strong>
+                            <p className='fw-ligher'>{statistics.latest && statistics.latest !== "N/A" ? dayjs(statistics.latest).format('L LT') : "N/A"}</p>
                         </Col>
                         <Col>
                             <strong>Timezone</strong>
-                            <p className='fw-ligher'>{device.location.timezone}</p>
+                            <p className='fw-ligher'>{device.location && device.location.timezone ? device.location.timezone : "N/A"}</p>
                         </Col>
                         <Col>
-                            <strong>Database Size</strong>
-                            <p className='fw-ligher'>{statistics.size}</p>
+                            <strong>Database</strong>
+                            <p className='fw-ligher'>{statistics.db_type || "N/A"} ({statistics.size || "N/A"})</p>
                         </Col>
                     </Row>
                 </Card.Body>

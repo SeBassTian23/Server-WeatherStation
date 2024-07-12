@@ -53,7 +53,8 @@ const buildSideBarData = function (appdata, selectedDate = new Date()) {
         days: appdata.days,
         latest: appdata.latest || 'N/A',
         start: appdata.start || 'N/A',
-        size: fileSizeSI(appdata.dbsize)
+        db_size: fileSizeSI(appdata.dbsize),
+        db_type: appdata.db_type || 'N/A'
       }
     },
     datetime: {
