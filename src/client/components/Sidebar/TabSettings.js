@@ -54,11 +54,11 @@ export default function TabSettings(props) {
             </Col>
           </Row>
           <Row className='py-3'>
-            <Col>
+            <Col xs={8}>
               <Card.Subtitle>Cache</Card.Subtitle>
               <Form.Text className="text-muted">Cache Data Viewed Days</Form.Text>
             </Col>
-            <Col>
+            <Col xs={4}>
               <CacheToggle />
             </Col>
           </Row>
@@ -146,7 +146,7 @@ const CacheToggle = (props) => {
   };
 
   return (
-    <Form.Check type='switch' id='checkCache' className='d-flex justify-content-md-end'>
+    <Form.Check type='switch' id='checkCache' className='d-flex justify-content-end pe-1'>
       <Form.Check.Input type='checkbox' isValid={false} onChange={(e) => toggleHandler(e)} checked={checked} />
     </Form.Check>
   )
