@@ -95,7 +95,7 @@ export default function SubHeader(props) {
           </> : <>
             <span className='fs-1 fw-bold text-info d-block'>{header}</span>
             {subheader}
-            {(!props.device.active && props.period === 'now') && <>
+            {(props.device && !props.device.active && props.period === 'now') && <>
               <span style={{fontSize: '0.725rem', whiteSpace: 'nowrap'}} className='mx-1 px-1 py-0 alert alert-warning'><i className='bi bi-wifi-off' /> Offline</span>
             </>}
           </>}
