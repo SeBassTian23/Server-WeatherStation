@@ -10,10 +10,16 @@ import RenderRoutes from './routes';
 import HeaderContainer from './components/Main/HeaderContainer'
 import FooterContainer from './components/Main/FooterContainer'
 
+const FallBackLoadingApp = () => {
+    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", fontSize: "1.25rem" }}>
+        Loading Application…
+    </div>
+}
+
 function App() {
     return (
-        <Suspense fallback={<h1>Loading App...</h1>}>
-            <HeaderContainer locationName={document.head.querySelector('meta[name="geo.placename"]').content || "" } />
+        <Suspense fallback={<FallBackLoadingApp />}>
+            <HeaderContainer locationName={document.head.querySelector('meta[name="geo.placename"]').content || ""} />
             <RenderRoutes />
             <FooterContainer />
         </Suspense>
