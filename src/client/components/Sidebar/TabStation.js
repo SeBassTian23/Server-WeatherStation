@@ -16,11 +16,11 @@ import { unitConverter } from '../../helpers/convert'
 
 const UpdateCenterView = ({ center }) => {
     const map = useMap();
-  
+
     useEffect(() => {
-      map.setView(center, 13);
+        map.setView(center, 13);
     }, [center, map]);
-  
+
     return null;
 };
 
@@ -36,7 +36,7 @@ const batteryIcon = (device) => {
 }
 
 const altituteDisplay = (device, state) => {
-    if (device && device.location && state && state.units){
+    if (device && device.location && state && state.units) {
         let value = unitConverter(device.location.alt, device.location.elevation_unit, state.units);
         return `${value[0].toLocaleString()} ${value[1]}`;
     }
@@ -78,16 +78,16 @@ export default function TabStation(props) {
                         </ul>
                     </Card.Subtitle>
                 </Card.Body>
-                <MapContainer center={device.location ? [device.location.lat, device.location.lng] : [0,0]} zoom={12} scrollWheelZoom={false} id='mapid' style={{ width: "100%", height: "200px", position: "relative", outline: "none" }}>
+                <MapContainer center={device.location ? [device.location.lat, device.location.lng] : [0, 0]} zoom={12} scrollWheelZoom={false} id='mapid' style={{ width: "100%", height: "200px", position: "relative", outline: "none" }}>
                     <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" detectRetina={true} crossOrigin={true} />
-                    <Circle center={device.location ? [device.location.lat, device.location.lng] : [0,0]} radius={500} pathOptions={{ color: 'red', weight: 1, fillColor: '#f03', fillOpacity: 0.5 }} />
-                    <UpdateCenterView center={device.location ? [device.location.lat, device.location.lng] : [0,0]} />
+                    <Circle center={device.location ? [device.location.lat, device.location.lng] : [0, 0]} radius={500} pathOptions={{ color: 'red', weight: 1, fillColor: '#f03', fillOpacity: 0.5 }} />
+                    <UpdateCenterView center={device.location ? [device.location.lat, device.location.lng] : [0, 0]} />
                 </MapContainer>
                 <Card.Body>
                     <Row xs={2} className='small'>
                         <Col>
                             <strong>Records</strong>
-                            <p className='fw-ligher'>{statistics.measurements || "N/A"} over {statistics.days || "N/A"} days</p>
+                            <p className='fw-ligher'>{Number(statistics.measurements).toLocaleString() || "N/A"} over {Number(statistics.days).toLocaleString() || "N/A"} days</p>
                         </Col>
                         <Col>
                             <strong>Last Update</strong>
