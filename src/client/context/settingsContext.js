@@ -46,6 +46,11 @@ const SettingsContextProvider = ({ children }) => {
   useEffect(() => {
     if (state.cache === 'off')
       localStorage.removeItem('cachedData');
+      if ('caches' in window) {
+        caches.delete('weather-station').catch( err => {
+          console.log(`Error clearing cache: ${err.message}`);
+        })
+      }
   }, [state.cache])
 
   return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
