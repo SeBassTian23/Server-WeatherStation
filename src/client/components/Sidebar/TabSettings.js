@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 
 import Card from 'react-bootstrap/Card'
 import Row from 'react-bootstrap/Row'
@@ -56,7 +56,7 @@ export default function TabSettings(props) {
           <Row className='py-3'>
             <Col xs={8}>
               <Card.Subtitle>Cache</Card.Subtitle>
-              <Form.Text className="text-muted">Cache Data Viewed Days</Form.Text>
+              <Form.Text className="text-muted">Cache Previously Viewed Days</Form.Text>
             </Col>
             <Col xs={4}>
               <CacheToggle />
@@ -138,16 +138,14 @@ const PeakLabelSelect = (props) => {
 
 const CacheToggle = (props) => {
   const [ state, dispatch ] = useContext(SettingsContext)
-  const [checked, setChecked] = useState( (state.cache === 'on')? true : null );
 
   const toggleHandler = (e) => {
-    setChecked(prev => !prev)
     dispatch({type: ACTIONS.TOGGLE_CACHE, payload: e.target.checked? 'on': 'off' })
   };
 
   return (
     <Form.Check type='switch' id='checkCache' className='d-flex justify-content-end pe-1'>
-      <Form.Check.Input type='checkbox' isValid={false} onChange={(e) => toggleHandler(e)} checked={checked} />
+      <Form.Check.Input type='checkbox' isValid={false} onChange={(e) => toggleHandler(e)} checked={ (state.cache === 'on')? true : false } />
     </Form.Check>
   )
 }
