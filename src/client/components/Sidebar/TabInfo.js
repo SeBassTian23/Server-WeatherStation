@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
 
 import Nav from 'react-bootstrap/Nav';
 import Tab from 'react-bootstrap/Tab';
@@ -52,7 +51,7 @@ function ParameterBody(props) {
       <ul className='list-unstyled small'>
         {props.items.map((itm, idx) => (
           <li key={idx} className='d-flex justify-content-between align-items-start'>
-            <span className='me-2'><i className='bi bi-square-fill' style={{ "color": itm.color }} /> {itm.title}: </span>
+            <span className='me-4'><i className='bi bi-square-fill' style={{ "color": itm.color }} /> {itm.title}: </span>
             <span className='fw-light text-muted'>
               {(itm.range[1] !== Infinity) ?
                 <>{unitConverter(itm.range[0], props.unit, units, true)} - {unitConverter(itm.range[1], props.unit, units, true)}</> :
