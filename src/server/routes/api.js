@@ -45,6 +45,7 @@ const requestDay = require('../helpers/requestDay')
 const requestMonth = require('../helpers/requestMonth')
 const requestYear = require('../helpers/requestYear')
 const requestRange = require('../helpers/requestRange')
+const requestDataAvailable = require('../helpers/requestDataAvailable')
 
 /* GET home page. */
 router.get('/', function (req, res) {
@@ -268,6 +269,26 @@ router.get('/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},[0-9]{4}-[0-9]{1,2}-[0-9]{1,2
       message: `success`,
       details: `Data returned.`,
       body: data
+    })
+
+  });
+
+});
+
+
+/* GET range */
+router.get('/check/:range([0-9]{4}-[0-9]{1,2}-[0-9]{1,2},(month|year|decade|century))', function (req, res) {
+
+  requestDataAvailable(req).then(function (values) {
+
+    values = values.map( itm => {
+      return itm.Time
+    });
+
+    res.json({
+      message: `success`,
+      details: `Data returned.`,
+      body: values
     })
 
   });

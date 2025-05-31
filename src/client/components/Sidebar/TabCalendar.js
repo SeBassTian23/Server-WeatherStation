@@ -9,6 +9,9 @@ import TabPane from 'react-bootstrap/TabPane'
 
 import Calendar from 'react-calendar';
 import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween';
+
+dayjs.extend(isBetween);
 
 import { Link } from 'react-router-dom'
 
@@ -118,8 +121,39 @@ function CalendarCard(props) {
     const onClickYear = (e) => {
         navigate(dayjs(e).format('/YYYY'))
     }
+    const onChange = (e) => {
+
+        fetch('/api/check/'+ dayjs(e.activeStartDate).format('YYYY-MM-DD')+',' + e.view )
+        .then(res => res.json())
+        .then(obj => {
+            setIsDisabled(obj.body)
+        })
+        .catch((err) => {
+            console.error(err.message);
+        });
+    }
 
     const [state] = useContext(SettingsContext);
+    const [isDisabled,setIsDisabled] = useState([]);
+
+    function isTileDisabled({ date, view }) {
+        // Add class to tiles in month view only
+        if (view === 'month') {
+            // Check if a date React-Calendar wants to check is within any of the ranges
+            let tile = dayjs(date).format('YYYY-MM-DD')
+            return isDisabled.indexOf(tile) > -1 ? false : true          
+        }
+        if (view === 'year') {
+            // Check if a date React-Calendar wants to check is within any of the ranges
+            let tile = dayjs(date).format('YYYY-MM')
+            return isDisabled.indexOf(tile) > -1 ? false : true          
+        }
+        if (view === 'decade') {
+            // Check if a date React-Calendar wants to check is within any of the ranges
+            let tile = dayjs(date).format('YYYY')
+            return isDisabled.indexOf(tile) > -1 ? false : true          
+        }
+    }
 
     return (
         <Card className='rounded-0 my-2'>
@@ -130,9 +164,13 @@ function CalendarCard(props) {
                     onClickYear={onClickYear}
                     onClickMonth={onClickMonth}
                     onClickDay={onClickDay}
+                    onViewChange={onChange}
+                    onActiveStartDateChange={onChange}
                     minDate={props.minDate}
-                    maxDate={props.maxDate}
-                    value={props.selectedDate} />
+                    maxDate={new Date()}
+                    value={props.selectedDate}
+                    tileDisabled={isTileDisabled}
+                    />
             </Card.Body>
         </Card>
     )
