@@ -89,12 +89,14 @@ function SummaryTable(props) {
         <Card.Title className='text-info'>Summary</Card.Title>
         <Card.Subtitle className='text-muted mb-4 fw-light'>Data summarized for {period}.</Card.Subtitle>
         <SummaryTableContent left={left} right={right} period={props.period} />
-        <ul className='list-unstyled mb-0 text-muted fw-light small' style={{ columnGap: "0.75rem", gridTemplateColumns: "repeat(4, 1fr)", display: "grid" }}>
-          <li><i className='bi-sunrise-fill text-info' /> Sunrise: {dayjs(timezoneAdjust(props.sunrise, props.timezone || 'UTC')).format('LT')} (local)</li>
-          <li><i className='bi-sunset-fill text-info' /> Sunset: {dayjs(timezoneAdjust(props.sunset, props.timezone || 'UTC')).format('LT')} (local)</li>
-          <li><i className='bi-sun-fill text-info' /> Daylight: {dayjs.duration(dayjs(props.sunset).diff(dayjs(props.sunrise), 'minute'), "minute").format('HH:mm')} hrs</li>
-          <li><i className='bi-moon-stars-fill text-info' /> Moon: {props.lunarphase}</li>
-        </ul>
+        {(props.period === 'day') && 
+          <ul className='list-unstyled mb-0 text-muted fw-light small text-center' style={{ columnGap: "0.75rem", gridTemplateColumns: "repeat(4, 1fr)", display: "grid" }}>
+            <li><i className='bi-sunrise-fill text-info' /> Sunrise: {dayjs(timezoneAdjust(props.sunrise, props.timezone || 'UTC')).format('LT')} (local)</li>
+            <li><i className='bi-sunset-fill text-info' /> Sunset: {dayjs(timezoneAdjust(props.sunset, props.timezone || 'UTC')).format('LT')} (local)</li>
+            <li><i className='bi-sun-fill text-info' /> Daylight: {dayjs.duration(dayjs(props.sunset).diff(dayjs(props.sunrise), 'minute'), "minute").format('HH:mm')} hrs</li>
+            <li><i className='bi-moon-stars-fill text-info' /> Moon: {props.lunarphase}</li>
+          </ul>
+        }
       </Card.Body>
     </Card>
   )
