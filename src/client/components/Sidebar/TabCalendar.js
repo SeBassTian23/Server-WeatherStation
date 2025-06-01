@@ -127,7 +127,10 @@ function CalendarCard(props) {
     const onChange = (e) => {
         if (e === undefined) {
             let view = 'month'
-            let path = location.pathname.substring(1).split(',')[0].replaceAll('-','/')
+            let path = location.pathname.trim()
+            if(path === "/")
+                path = dayjs().format('/YYYY/MM/DD')
+            path = path.substring(1).split(',')[0].replaceAll('-','/')
             switch (path.split('/').length) {
                 case (3):
                     view = 'month'
