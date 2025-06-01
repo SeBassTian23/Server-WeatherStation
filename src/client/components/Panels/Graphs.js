@@ -352,6 +352,7 @@ const GraphContainer = (props) => {
     // Annotations
     if(state.peaks && state.peaks === 'show'){
       output.options.plugins["annotation"] = {
+        clip: false,
         annotations: {
           ...autoAnnotation
         }
