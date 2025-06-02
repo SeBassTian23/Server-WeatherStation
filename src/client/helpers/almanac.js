@@ -58,16 +58,16 @@ export const temperatureToStr = function( data, type, units='metric' ){
     var str = "N/A";
 
     const temperature = {
-        "extremly cold": [-Infinity,-18],
-        "very cold": [-18,0],
-        "cold": [0,10],
-        "cool": [10,18],
-        "mild": [18,18],
-        "moderate": [18,24],
-        "warm": [24,29],
-        "hot": [29,32],
-        "very hot": [32,38],
-        "extremly hot": [38,46],
+        "extremely cold": [-Infinity, -18],
+        "very cold": [-18, 0],
+        "cold": [0, 10],
+        "cool": [10, 16],
+        "mild": [16, 20],
+        "moderate": [20, 26],
+        "warm": [26, 30],
+        "hot": [30, 35],
+        "very hot": [35, 40],
+        "extremely hot": [40, 46],
         "scorching": [46, Infinity]
     };
 
