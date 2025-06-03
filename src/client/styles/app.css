@@ -217,27 +217,25 @@ ul#pills-tab button.active {
   color: #fff;
 }
 
-/* // #summary-cards-lg div:nth-child(n+2) div {
-//   border-left: 1px solid rgba(0,0,0,.125);
-// }
-
-// color: #0d6efd; */
-
 /* General */
 .card {
   border-radius: 0!important;
+}
+
+a[href^="http"]::after {
+  content: " ↗"
 }
 
 #calendar {
   padding: 0
 }
 
-#shortcutlinks a{
+#shortcutlinks a {
   text-decoration: none;
 }
 
 #shortcutlinks a > i{
-  color: var(--bs-secondary-color);
+  color: var(--bs-info);
 }
 
 #mapid .leaflet-tile-pane {

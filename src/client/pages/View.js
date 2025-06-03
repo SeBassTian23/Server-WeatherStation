@@ -48,45 +48,88 @@ export default function View(props) {
   // On props change fetch new data
   useEffect(() => {
     setLoading(true);
-    var cachedData = {};
-    if (state.cache === 'on' && props.path !== '/') {
-      cachedData = localStorage.getItem('cachedData') || '{}';
-      cachedData = JSON.parse(cachedData)
-      if (cachedData[props.path] !== undefined) {
+
+    const fetchData = async( useCache, path )  => {
+
+      let cached;
+      if (useCache === 'on' && path !== '/') {
+        if ('caches' in window) {
+          const fetchFromCache = async (path) => {
+            const cache = await caches.open('weather-station');
+                  
+            // Try to get from cache first
+            const cachedResponse = await cache.match(path);
+            if (cachedResponse) {
+              return await cachedResponse.json();
+            }
+          };
+          cached = await fetchFromCache(path);
+        }
+        else {
+          const fetchFromLocalStorage = async (path) => {
+            let cachedData = localStorage.getItem('cachedData') || '{}';
+            cachedData = JSON.parse(cachedData);
+            return cachedData[path];
+          }
+          cached = await fetchFromLocalStorage(path);
+        }
+      }
+
+      if(cached !== undefined){
         fetch('/data/status')
           .then(res => res.json())
           .then(obj => {
-            setData({ ...cachedData[props.path], ...{ station: obj.body.station } });
+            setData({ ...cached, ...{ station: obj.body.station }, ...{ calendar: {maxDate: obj.body.calendar.maxDate } } });
             setLoading(false);
           })
           .catch((err) => {
             console.error(err.message);
           });
-        return
+      }
+      else {
+        fetch('/api' + props.path)
+        .then(res => res.json())
+        .then(obj => {
+          setData(obj.body);
+          setLoading(false);
+          if (state.cache === 'on' && props.path !== '/') {
+            if ('caches' in window) {
+              let cachedData = obj.body;
+              delete cachedData.station;
+              const response = new Response(JSON.stringify(cachedData), {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Date': new Date().toISOString()
+                }
+              });
+              caches.open('weather-station').then( e => e.put(props.path, response) )
+            }
+            else {
+              // Fall back to local storage
+              cachedData = localStorage.getItem('cachedData') || '{}';
+              cachedData = JSON.parse(cachedData);
+              cachedData[props.path] = obj.body;
+              delete cachedData[props.path].station
+              localStorage.setItem('cachedData', JSON.stringify(cachedData))
+            }
+          }
+        })
+        .catch((err) => {
+          setLoading(false);
+          if (err.code === 22 || err.code === 1014 || err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED")
+            localStorage.removeItem('cachedData')
+        });
       }
     }
 
-    fetch('/api' + props.path)
-      .then(res => res.json())
-      .then(obj => {
-        if (state.cache === 'on' && props.path !== '/') {
-          cachedData[props.path] = obj.body;
-          delete cachedData[props.path].station
-          localStorage.setItem('cachedData', JSON.stringify(cachedData))
-        }
-        setData(obj.body);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.error(err.message);
-      });
+    fetchData( state.cache, props.path);
+
   }, [props.path]);
 
   return (
     <main>
       <Container>
-        <SubHeader isLoading={loading} {...data.subheader} {...data.datetime} />
+        <SubHeader isLoading={loading} {...data.subheader} {...data.datetime}  {...data.station} />
         <Row className='align-items-top pb-4'>
           <Col sm>
             <Summary isLoading={loading} {...data.summary} {...data.datetime} />

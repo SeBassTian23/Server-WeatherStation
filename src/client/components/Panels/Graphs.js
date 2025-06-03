@@ -338,9 +338,9 @@ const GraphContainer = (props) => {
           display: (ctx) => ctx.chart.isDatasetVisible(i),
           content: output.data.datasets[i].data[idx].y,
           font: {
-            size: 8
+            size: 8,
           },
-          color: (state.theme === 'dark')? 'rgb(222, 226, 230)' : 'rgba(0,0,0,1)',
+          color: (theme === 'dark')? 'rgb(222, 226, 230)' : 'rgba(0,0,0,1)',
           padding: {
             bottom: 20
           }
@@ -352,6 +352,7 @@ const GraphContainer = (props) => {
     // Annotations
     if(state.peaks && state.peaks === 'show'){
       output.options.plugins["annotation"] = {
+        clip: false,
         annotations: {
           ...autoAnnotation
         }

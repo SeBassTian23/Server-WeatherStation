@@ -44,7 +44,7 @@ export default function SubHeader(props) {
   let summary = ''
   if (data.period === 'now' && !props.isLoading ){
     summary = (
-      <Row id='summary-cards-lg' xs='2' sm='2' lg='4'>
+      <Row id='summary-cards-lg' xs='2' sm='2' lg='4' className={ (props.device && !props.device.active)? 'opacity-25' : '' }>
         <Cards isLoading={props.isLoading} items={data.cards} size='lg' />
       </Row>
       )
@@ -95,6 +95,9 @@ export default function SubHeader(props) {
           </> : <>
             <span className='fs-1 fw-bold text-info d-block'>{header}</span>
             {subheader}
+            {(props.device && !props.device.active && props.period === 'now') && <>
+              <span style={{fontSize: '0.725rem', whiteSpace: 'nowrap'}} className='mx-1 px-1 py-0 alert alert-warning'><i className='bi bi-wifi-off' /> Offline</span>
+            </>}
           </>}
         </Col>
       </Col>

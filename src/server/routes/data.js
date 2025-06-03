@@ -23,6 +23,7 @@ const WIDGET_URL = process.env.WIDGET_URL;
 const db = process.env.SQLITE_FILE? require('../db/sqlite.js') : null;
 const Data = process.env.MONGO_CONNECTION_STRING? require('../db/models/data') : null;
 const Device = process.env.MONGO_CONNECTION_STRING? require('../db/models/device') : null;
+const DeviceLog = process.env.MONGO_CONNECTION_STRING? require('../db/models/device_log.js') : null;
 
 const replaceInKeysWith = require('../helpers/replaceInKeysWith');
 
@@ -512,6 +513,170 @@ router.post('/', (req, res) => {
                         });   
                     }); 
                 });
+            });
+    }
+});
+
+/* Save log event to DB */
+router.post('/log', (req, res) => {
+    if( req.body.token === undefined || req.body.token !== API_TOKEN){
+        res.status(403).json({
+            error: `Provide the correct token to log event.`            
+        });
+    }
+    else{
+        if(DeviceLog && Device){
+            var insert = {
+                device_id: null,
+                log_type: null,
+                message: ""
+            };
+            insert = {...insert, ...req.body.data }
+            insert["created_at"] = new Date().toISOString();
+            const entry = new DeviceLog(replaceInKeysWith(insert, '\\.', ','));
+            entry.save()
+            .then((savedEntry)=>{
+                sendEventsToAll({ id: savedEntry._id, msg:'New Log Entry Added', created_at: new Date().toISOString() });
+                res.json({
+                    message: `success`,
+                    details: `Log Event saved with ID »${savedEntry._id}«.`,
+                    body: {ID: savedEntry._id }
+                });             
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    error: `Log Event submission failed.`,
+                    errorMessage: String(err).replace(/Error:\s?/i,'')
+                });            
+            });
+        }
+
+        if(db)
+            db.serialize(function() {
+                var ins = [];
+                var cols = [
+                    "device_id",
+                    "log_type",
+                    "message",
+                    "created_at"
+                ]
+                for(var i in cols){
+                    if(req.body.data[cols[i]] !== undefined){
+                        if(cols[i] == "created_at")
+                            ins.push(`"${new Date().toISOString()}"`);
+                        else if(cols[i] == "device_id")
+                            ins.push(`"${req.body.data[cols[i]]}"`);
+                        else if(req.body.data[cols[i]] !== null)
+                            ins.push(`"${req.body.data[cols[i]]}"`);
+                        else
+                            ins.push(`NULL`);
+                    }
+                    else{
+                        ins.push(`NULL`);
+                    }
+                }
+                var q = `INSERT INTO device_logs ("${cols.join('","')}") VALUES (${ins})`;
+                console.log(q)
+                db.exec(q, function(err){
+                    if( err )
+                        return res.status(500).json({
+                            error: `Log Event submission failed.`,
+                            errorMessage: String(err).replace(/Error:\s?/i,'')
+                        });
+                    db.get(`SELECT device_logs.ID from device_logs ORDER BY ROWID DESC LIMIT 1`, function(err, row){
+                        if(err){
+                            return res.status(500).json({
+                                error: `Database query failed.`
+                            });
+                        }
+                        sendEventsToAll({ id: row.ID, msg:'New Log Event Added', created_at: new Date().toISOString() });
+                        res.json({
+                            message: `success`,
+                            details: `Log Event saved with ID »${row.ID}«.`,
+                            body: {ID: row.ID }
+                        });   
+                    }); 
+                });
+            });
+    }
+});
+
+/* Return log events from DB */
+router.get('/logs', (req, res) => {
+    if( req.query.token === undefined || req.query.token !== API_TOKEN){
+        res.status(403).json({
+            error: `Provide the correct token to view the Device Log.`
+        });
+    }
+    else{
+        if(DeviceLog){
+            DeviceLog.find({}).then( rows => {
+                res.json({
+                    message: `success`,
+                    details: `There are »${rows.length}« log messages recorded.`,
+                    body: rows
+                });  
+            });
+        }
+
+        if(db)
+            db.serialize(function(){
+                db.all(`SELECT * from device_logs ORDER BY "created_at" DESC`, function(err, rows){
+                    if(err){
+                        return res.status(500).json({
+                            error: `Database query failed.`
+                        });
+                    }
+                    res.json({
+                        message: `success`,
+                        details: `There are »${rows.length}« log messages recorded.`,
+                        body: rows
+                    });   
+                });
+            });
+    }
+});
+
+router.get('/viewlogs', (req, res) => {
+    if(req.query.token === undefined){
+        res.render('log', {
+            message: `login`,
+            details: `Sign with your token.`,
+          });
+        return 
+    }
+    else if( req.query.token !== API_TOKEN){
+        res.render('error', {
+            error: 'Database Issue',
+            errormsg: 'Provide the correct token to view the Device Log.'
+          });
+        return 
+    }
+    else{
+        if(DeviceLog){
+            DeviceLog.find({}).sort({"created_at": -1}).then( rows => {
+                res.render('log', {
+                    message: `success`,
+                    details: `»${rows.length}« Log Messages recorded.`,
+                    body: rows
+                });  
+            });
+        }
+
+        if(db)
+            db.serialize(function(){
+                db.all(`SELECT * from device_logs ORDER BY "created_at" DESC`, function(err, rows){
+                    if(err){
+                        return res.status(500).json({
+                            error: `Database query failed.`
+                        });
+                    }
+                    res.render('log', {
+                        message: `success`,
+                        details: `»${rows.length}« Log Messages recorded.`,
+                        body: rows
+                    });   
+                }); 
             });
     }
 });

@@ -43,6 +43,15 @@ CREATE TABLE IF NOT EXISTS "devices" (
 	"updated_at"	TEXT NOT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
+DROP TABLE IF EXISTS "device_logs";
+CREATE TABLE IF NOT EXISTS "device_logs" (
+	"ID"	INTEGER UNIQUE,
+	"device_id"	TEXT NOT NULL,
+	"log_type"	TEXT NOT NULL CHECK("log_type" IN ('log', 'info', 'warn', 'error')),
+	"message"	TEXT,
+	"created_at"	TEXT NOT NULL,
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
 DROP INDEX IF EXISTS "data_idx";
 CREATE INDEX IF NOT EXISTS "data_idx" ON "data" (
 	"created_at"	ASC
@@ -68,6 +77,11 @@ CREATE INDEX IF NOT EXISTS "devices_list_idx" ON "devices" (
 DROP INDEX IF EXISTS "devices_default_idx";
 CREATE INDEX IF NOT EXISTS "devices_default_idx" ON "devices" (
 	"default"	ASC
+);
+DROP INDEX IF EXISTS "device_logs_device_id_idx";
+CREATE INDEX IF NOT EXISTS "device_logs_device_id_idx" ON "device_logs" (
+	"device_id"	ASC,
+	"created_at"	ASC
 );
 COMMIT;
 DROP TRIGGER "main"."data_submit";

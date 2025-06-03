@@ -23,15 +23,8 @@ var queryAppData = function (device_id) {
       MAX(data.created_at) as latest,
       MIN(data.created_at) as start,
       COUNT(DISTINCT(strftime('%Y-%m-%d',datetime(data.created_at)))) as days,
-      (SELECT data."Battery [V]" FROM data WHERE data.device_id = "${device_id}" ORDER BY rowid DESC LIMIT 1) as "Battery [V]",
-      (SELECT SUM(
-        length("ID") +
-        length("device_id") +
-        length("created_at") +
-        ${COLUMNS_TO_DISPLAY.map(itm => `length("${itm}")` ).join(' +\n')}
-      ) AS subset_size_bytes
-        FROM data
-        WHERE data.device_id = "${device_id}") as dbsize
+      COALESCE((SELECT data."Battery [V]" FROM data WHERE data.device_id = "${device_id}" ORDER BY rowid DESC LIMIT 1), 'N/A') as battery,
+      (SELECT page_count * page_size as size FROM pragma_page_count(), pragma_page_size()) as dbsize
       FROM devices
       LEFT JOIN data ON devices.device_id = data.device_id
       WHERE devices.device_id = "${device_id}"`
@@ -122,10 +115,10 @@ var queryAppData = function (device_id) {
       }
     ]
 
-
   if (db)
     return new Promise(function (resolve, reject) {
       db.get(query, function (err, row) {
+        row.db_type = "SQLite";
         resolve(row);
       });
     });
@@ -146,7 +139,7 @@ var queryAppData = function (device_id) {
     ]).then(size=>{
       return Device.aggregate(query)
       .then(data => {
-        return {...data[0], ...size[0]}
+        return {...data[0], ...size[0], ...{db_type: "MongoDB"}}
       });
     })
   }

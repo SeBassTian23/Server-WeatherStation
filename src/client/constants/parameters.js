@@ -1,5 +1,6 @@
 export const aqi = {
   title: "Air Quality Index",
+  description: "The Air Quality Index (AQI) is a numerical scale that communicates the air pollution, based on measurements of key air pollutants including ground-level ozone, particulate matter, carbon monoxide, sulfur dioxide, and nitrogen dioxide.",
   source: "airnow.gov",
   url: "https://www.airnow.gov/aqi/aqi-basics/",
   unit: null,
@@ -45,6 +46,7 @@ export const aqi = {
 
 export const uvi = {
   title: "UV Index",
+  description: "The UV Index is a standardized scale from 0 to 11+ that measures the intensity of ultraviolet radiation from the sun at a particular time and location, indicating the risk of harm to unprotected skin and eyes.",
   source: "who.int",
   url: "https://www.who.int/news-room/q-a-detail/radiation-the-ultraviolet-(uv)-index",
   unit: null,
@@ -84,6 +86,7 @@ export const uvi = {
 
 export const hi = {
   title: "Heat Index",
+  description: "The Heat Index, also known as the \"feels like\" temperature, combines air temperature and relative humidity to represent how hot it actually feels to the human body.",
   source: "weather.gov",
   url: "https://www.weather.gov/ama/heatindex",
   unit: "[C]",
