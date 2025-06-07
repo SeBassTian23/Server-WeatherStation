@@ -75,11 +75,18 @@ export default function View(props) {
         }
       }
 
-      if(cached !== undefined){
+      if(cached){
         fetch('/data/status')
           .then(res => res.json())
           .then(obj => {
-            setData({ ...cached, ...{ station: obj.body.station }, ...{ calendar: {maxDate: obj.body.calendar.maxDate } } });
+            setData({ 
+              ...cached, 
+              station: obj.body.station, 
+              calendar: {
+                ...cached.calendar,
+                maxDate: obj.body.calendar.maxDate 
+              }
+            });
             setLoading(false);
           })
           .catch((err) => {
@@ -106,7 +113,7 @@ export default function View(props) {
             }
             else {
               // Fall back to local storage
-              cachedData = localStorage.getItem('cachedData') || '{}';
+              let cachedData = localStorage.getItem('cachedData') || '{}';
               cachedData = JSON.parse(cachedData);
               cachedData[props.path] = obj.body;
               delete cachedData[props.path].station
